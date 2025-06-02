@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,23 @@ class SubjectiveBloc extends Bloc<SubjectiveEvent, SubjectiveState> {
     on<FetchSubjectives>((event, emit) async {
       emit(SubjectiveLoading());
       try {
-        final subjectives = await repository.getSubjectives(event.bankId);
+        final response = await repository.getSubjectives(event.bankId);
+
+        if (response.statusCode! >= 400) {
+          throw DioException(
+            requestOptions: RequestOptions(),
+            response: response,
+            message: response.data['error'] ?? 'Failed to fetch Subjectives.',
+          );
+        }
+
+        final subjectives = (response.data as List)
+            .map((item) => Subjective.fromJson(item as Map<String, dynamic>))
+            .toList();
+
         emit(SubjectiveLoaded(subjectives));
+      } on DioException catch (e) {
+        emit(SubjectiveError(e.message!, statusCode: e.response?.statusCode));
       } catch (e) {
         emit(SubjectiveError(e.toString()));
       }
@@ -24,8 +40,19 @@ class SubjectiveBloc extends Bloc<SubjectiveEvent, SubjectiveState> {
 
     on<CreateSubjective>((event, emit) async {
       try {
-        await repository.createSubjective(event.subjective);
+        final response = await repository.createSubjective(event.subjective);
+
+        if (response.statusCode! >= 400) {
+          throw DioException(
+            requestOptions: RequestOptions(),
+            response: response,
+            message: response.data['error'] ?? 'Failed to create Subjective.',
+          );
+        }
+
         add(FetchSubjectives(event.subjective.bankId));
+      } on DioException catch (e) {
+        emit(SubjectiveError(e.message!, statusCode: e.response?.statusCode));
       } catch (e) {
         emit(SubjectiveError(e.toString()));
       }
@@ -33,8 +60,19 @@ class SubjectiveBloc extends Bloc<SubjectiveEvent, SubjectiveState> {
 
     on<UpdateSubjective>((event, emit) async {
       try {
-        await repository.updateSubjective(event.id, event.subjective);
+        final response = await repository.updateSubjective(event.id, event.subjective);
+
+        if (response.statusCode! >= 400) {
+          throw DioException(
+            requestOptions: RequestOptions(),
+            response: response,
+            message: response.data['error'] ?? 'Failed to update Subjective.',
+          );
+        }
+
         add(FetchSubjectives(event.subjective.bankId));
+      } on DioException catch (e) {
+        emit(SubjectiveError(e.message!, statusCode: e.response?.statusCode));
       } catch (e) {
         emit(SubjectiveError(e.toString()));
       }
@@ -42,8 +80,19 @@ class SubjectiveBloc extends Bloc<SubjectiveEvent, SubjectiveState> {
 
     on<DeleteSubjective>((event, emit) async {
       try {
-        await repository.deleteSubjective(event.id);
+        final response = await repository.deleteSubjective(event.id);
+
+        if (response.statusCode! >= 400) {
+          throw DioException(
+            requestOptions: RequestOptions(),
+            response: response,
+            message: response.data['error'] ?? 'Failed to delete Subjective.',
+          );
+        }
+
         add(FetchSubjectives(event.id));
+      } on DioException catch (e) {
+        emit(SubjectiveError(e.message!, statusCode: e.response?.statusCode));
       } catch (e) {
         emit(SubjectiveError(e.toString()));
       }

@@ -11,16 +11,19 @@ class VariableAnalysisRepository {
 
   final Logger _logger = Logger();
 
-  Future<Map<String, dynamic>> detectVariables(dynamic question) async {
+  Future<Response> detectVariables(dynamic question) async {
     try {
-      final response = await _client.post(
+      return await _client.post(
         '/variable-analysis',
         data: question.toJson(),
       );
-      return response.data;
-    } catch (e) {
-      _logger.e('Error detecting variables: $e');
-      return {};
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error detecting variables: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 }

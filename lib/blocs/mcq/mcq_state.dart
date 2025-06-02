@@ -23,8 +23,9 @@ class MCQLoaded extends MCQState {
 
 class MCQError extends MCQState {
   final String message;
+  final int? statusCode;
 
-  const MCQError(this.message);
+  const MCQError(this.message, {this.statusCode});
 
   @override
   List<Object?> get props => [message];

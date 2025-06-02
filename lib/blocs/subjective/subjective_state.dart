@@ -23,9 +23,10 @@ class SubjectiveLoaded extends SubjectiveState {
 
 class SubjectiveError extends SubjectiveState {
   final String message;
+  final int? statusCode;
 
-  const SubjectiveError(this.message);
+  const SubjectiveError(this.message, {this.statusCode});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, statusCode];
 }

@@ -20,10 +20,11 @@ class MCQVariationSuccess extends MCQVariationState {
   List<Object> get props => [variations];
 }
 
-class MCQVariationFailure extends MCQVariationState {
+class MCQVariationError extends MCQVariationState {
   final String error;
+  final int? statusCode;
 
-  const MCQVariationFailure(this.error);
+  const MCQVariationError(this.error, {this.statusCode});
 
   @override
   List<Object> get props => [error];

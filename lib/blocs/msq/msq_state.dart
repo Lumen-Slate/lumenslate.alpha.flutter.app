@@ -23,8 +23,9 @@ class MSQLoaded extends MSQState {
 
 class MSQError extends MSQState {
   final String message;
+  final int? statusCode;
 
-  const MSQError(this.message);
+  const MSQError(this.message, {this.statusCode});
 
   @override
   List<Object?> get props => [message];

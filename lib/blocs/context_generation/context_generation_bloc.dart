@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:dio/dio.dart';
 import '../../../../constants/dummy_data/questions/mcq.dart';
 import '../../../../constants/dummy_data/questions/msq.dart';
 import '../../../../constants/dummy_data/questions/nat.dart';
@@ -24,7 +25,18 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
     emit(ContextGeneratorLoading());
     try {
       final response = await aiRepository.generateContext(event.question, event.keywords);
-      emit(ContextGeneratorSuccess(response));
+
+      if (response.statusCode! >= 400) {
+        throw DioException(
+          requestOptions: RequestOptions(),
+          response: response,
+          message: response.data['error'] ?? 'Failed to generate context.',
+        );
+      }
+
+      emit(ContextGeneratorSuccess(response.data['response'].toString()));
+    } on DioException catch (e) {
+      emit(ContextGeneratorFailure(e.message!));
     } catch (e) {
       emit(ContextGeneratorFailure(e.toString()));
     }

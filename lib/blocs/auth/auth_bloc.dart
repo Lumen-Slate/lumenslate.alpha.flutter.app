@@ -44,6 +44,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             final createTeacherResponse = await teacherRepository.createTeacher(
               Teacher(id: response['id'], name: response['displayName'], email: response['email'], phone: ''),
             );
+
             if (createTeacherResponse.statusCode! >= 200) {
               teacher = Teacher.fromJson(createTeacherResponse.data);
               _logger.i('Teacher created successfully');
@@ -74,7 +75,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (e) {
         Logger().e(e);
         emit(AuthPending());
-        return;
       }
     });
 

@@ -27,7 +27,11 @@ class MSQVariationBloc extends Bloc<MSQVariationEvent, MSQVariationState> {
       final Response response = await msqVariationRepository.generateMSQVariations(event.msq);
 
       if (response.statusCode! >= 400) {
-        throw StateError(response.data['error'] ?? 'An error occurred while generating MSQ variations.');
+        throw DioException(
+          requestOptions: RequestOptions(),
+          response: response,
+          message: response.data['error'] ?? "Failed to generate MSQ variations",
+        );
       }
 
       List<MSQ> variations = response.data['variations']
@@ -41,13 +45,10 @@ class MSQVariationBloc extends Bloc<MSQVariationEvent, MSQVariationState> {
           .toList();
 
       emit(MSQVariationSuccess(variations));
-    } on StateError catch (e) {
-      emit(MSQVariationFailure(e.message));
     } on DioException catch (e) {
-      emit(MSQVariationFailure("Network error: ${e.message}"));
+      emit(MSQVariationError(e.message!, statusCode: e.response?.statusCode));
     } catch (e) {
-      Logger().e('Error generating MSQ variations: $e');
-      emit(MSQVariationFailure("Unexpected error: $e"));
+      emit(MSQVariationError(e.toString()));
     }
   }
 

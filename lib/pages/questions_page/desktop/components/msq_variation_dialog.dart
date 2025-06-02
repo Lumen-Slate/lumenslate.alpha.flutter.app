@@ -59,7 +59,7 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
                 const SizedBox(height: 20),
                 BlocConsumer<MSQVariationBloc, MSQVariationState>(
                   listener: (context, state) {
-                    if (state is MSQVariationFailure) {
+                    if (state is MSQVariationError) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Error: ${state.error}')),
                       );

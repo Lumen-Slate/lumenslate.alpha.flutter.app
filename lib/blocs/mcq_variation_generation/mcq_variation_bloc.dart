@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../models/questions/mcq.dart';
 import '../../repositories/ai/variation_generator.dart';
@@ -27,7 +26,12 @@ class MCQVariationBloc extends Bloc<MCQVariationEvent, MCQVariationState> {
       final Response response = await mcqVariationRepository.generateMCQVariations(event.mcq);
 
       if (response.statusCode! >= 400) {
-        throw StateError(response.data['error'] ?? 'An error occurred while generating MCQ variations.');
+        // throw StateError(response.data['error'] ?? 'An error occurred while generating MCQ variations.');
+        throw DioException(
+          requestOptions: RequestOptions(),
+          response: response,
+          message: response.data['error'] ?? 'An error occurred while generating MCQ variations.',
+        );
       }
 
       List<MCQ> variations = response.data['variations']
@@ -41,13 +45,10 @@ class MCQVariationBloc extends Bloc<MCQVariationEvent, MCQVariationState> {
           .toList();
 
       emit(MCQVariationSuccess(variations));
-    } on StateError catch (e) {
-      emit(MCQVariationFailure(e.message));
     } on DioException catch (e) {
-      emit(MCQVariationFailure("Network error: ${e.message}"));
+      emit(MCQVariationError(e.message!, statusCode: e.response?.statusCode));
     } catch (e) {
-      Logger().e('Error generating MCQ variations: $e');
-      emit(MCQVariationFailure("Unexpected error: $e"));
+      emit(MCQVariationError(e.toString()));
     }
   }
 

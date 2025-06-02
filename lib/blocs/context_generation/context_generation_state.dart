@@ -5,7 +5,7 @@ abstract class ContextGeneratorState extends Equatable {
   const ContextGeneratorState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class ContextGeneratorInitial extends ContextGeneratorState {}
@@ -23,9 +23,10 @@ class ContextGeneratorSuccess extends ContextGeneratorState {
 
 class ContextGeneratorFailure extends ContextGeneratorState {
   final String error;
+  final int? statusCode;
 
-  const ContextGeneratorFailure(this.error);
+  const ContextGeneratorFailure(this.error, {this.statusCode});
 
   @override
-  List<Object> get props => [error];
+  List<Object?> get props => [error, statusCode];
 }

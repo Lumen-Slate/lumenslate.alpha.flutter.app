@@ -5,7 +5,7 @@ sealed class MSQVariationState extends Equatable {
   const MSQVariationState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class MSQVariationInitial extends MSQVariationState {}
@@ -21,11 +21,12 @@ class MSQVariationSuccess extends MSQVariationState {
   List<Object> get props => [variations];
 }
 
-class MSQVariationFailure extends MSQVariationState {
+class MSQVariationError extends MSQVariationState {
   final String error;
+  final int? statusCode;
 
-  const MSQVariationFailure(this.error);
+  const MSQVariationError(this.error, {this.statusCode});
 
   @override
-  List<Object> get props => [error];
+  List<Object?> get props => [error, statusCode];
 }

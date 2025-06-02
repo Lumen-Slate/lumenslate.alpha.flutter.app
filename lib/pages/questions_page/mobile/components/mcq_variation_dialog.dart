@@ -41,7 +41,7 @@ class _MCQVariationDialogMobileState extends State<MCQVariationDialogMobile> {
         padding: const EdgeInsets.all(16),
         child: BlocConsumer<MCQVariationBloc, MCQVariationState>(
           listener: (context, state) {
-            if (state is MCQVariationFailure) {
+            if (state is MCQVariationError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Error: ${state.error}')),
               );

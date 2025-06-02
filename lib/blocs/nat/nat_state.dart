@@ -23,9 +23,10 @@ class NATLoaded extends NATState {
 
 class NATError extends NATState {
   final String message;
+  final int? statusCode;
 
-  const NATError(this.message);
+  const NATError(this.message, {this.statusCode});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, statusCode];
 }

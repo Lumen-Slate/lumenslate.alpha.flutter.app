@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,11 @@ class MSQBloc extends Bloc<MSQEvent, MSQState> {
         final response = await repository.getMSQs(event.bankId);
 
         if (response.statusCode! >= 400) {
-          throw StateError(response.data['error'] ?? 'Failed to fetch MSQs.');
+          throw DioException(
+            requestOptions: RequestOptions(),
+            response: response,
+            message: response.data['error'] ?? 'Failed to fetch MSQs.',
+          );
         }
 
         final msqs = (response.data as List)
@@ -27,6 +32,8 @@ class MSQBloc extends Bloc<MSQEvent, MSQState> {
             .toList();
 
         emit(MSQLoaded(msqs));
+      } on DioException catch (e) {
+        emit(MSQError(e.message!, statusCode: e.response?.statusCode));
       } catch (e) {
         emit(MSQError(e.toString()));
       }

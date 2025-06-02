@@ -11,18 +11,21 @@ class AIRepository {
 
   final Logger _logger = Logger();
 
-  Future<String> generateContext(String question, List<String> keywords) async {
+  Future<Response> generateContext(String question, List<String> keywords) async {
     final payload = {
       'question': question,
       'keywords': keywords,
     };
 
     try {
-      final response = await _client.post('/generate-context', data: payload);
-      return response.data['response'].toString();
-    } catch (e) {
-      _logger.e('Error creating post: $e');
-      return 'Error: $e';
+      return await _client.post('/generate-context', data: payload);
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error generating context: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 }

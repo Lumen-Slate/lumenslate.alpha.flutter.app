@@ -60,7 +60,7 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
                 const SizedBox(height: 20),
                 BlocConsumer<MCQVariationBloc, MCQVariationState>(
                   listener: (context, state) {
-                    if (state is MCQVariationFailure) {
+                    if (state is MCQVariationError) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Error: ${state.error}')),
                       );
