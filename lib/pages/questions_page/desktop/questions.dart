@@ -75,12 +75,12 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
     });
   }
 
-  void _refreshQuestions() {
-    setState(() {
-      allQuestions = [...dummyMCQs, ...dummyMSQs, ...dummyNATs, ...dummySubjectives];
-      _applyFilters();
-    });
-  }
+  // void _refreshQuestions() {
+  //   setState(() {
+  //     allQuestions = [...dummyMCQs, ...dummyMSQs, ...dummyNATs, ...dummySubjectives];
+  //     _applyFilters();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

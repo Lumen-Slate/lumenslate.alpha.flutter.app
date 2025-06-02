@@ -15,7 +15,7 @@ class HighlightTextEditingController extends TextEditingController {
   // Callback to be triggered when the selection changes
   void _onSelectionChange() {
     final selection = this.selection;
-    if (selection != null && selection.isValid) {
+    if (selection.isValid) {
       // Call the provided callback with the start and end indices
       onTextSelectionChanged?.call(selection.start, selection.end);
     }

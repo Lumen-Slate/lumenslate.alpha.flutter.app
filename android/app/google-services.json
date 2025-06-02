@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "352355856094",
+    "project_id": "lumen-slate",
+    "storage_bucket": "lumen-slate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352355856094:android:010e419f1c95d942b99c4f",
+        "android_client_info": {
+          "package_name": "com.harentortoise.lumenslate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMN_fS01BomWELCGNactGF9k5vgr087po"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
