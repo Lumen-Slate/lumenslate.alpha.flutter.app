@@ -47,7 +47,7 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Dashboard', style: GoogleFonts.poppins(fontSize: 16)),
-              onTap: () => context.go('/teacher-dashboard_page'),
+              onTap: () => context.go('/teacher-dashboard'),
             ),
           ],
         ),

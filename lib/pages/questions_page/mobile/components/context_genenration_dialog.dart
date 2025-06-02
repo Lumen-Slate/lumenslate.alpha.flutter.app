@@ -100,7 +100,7 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Question updated successfully')),
                     );
-                    context.go('/teacher-dashboard_page/questions_page');
+                    context.go('/teacher-dashboard/questions');
                   }
                 } else if (state is ContextGeneratorFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(

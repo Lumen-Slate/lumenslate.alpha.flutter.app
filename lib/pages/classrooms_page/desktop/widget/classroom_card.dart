@@ -139,7 +139,7 @@ class ClassroomCard extends StatelessWidget {
                         ),
                       )
                           : Text(
-                        "No assignments_page",
+                        "No assignments",
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: Colors.grey[600],

@@ -121,7 +121,7 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                         SnackBar(content: Text('Question updated successfully')),
                       );
                       // Refresh the question list
-                      context.go('/teacher-dashboard_page/questions_page');
+                      context.go('/teacher-dashboard/questions');
                     }
                   } else if (state is ContextGeneratorFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
