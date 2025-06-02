@@ -1,0 +1,23 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "lumen-slate",
+          "appId": "1:352355856094:android:010e419f1c95d942b99c4f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "lumen-slate",
+          "configurations": {
+            "android": "1:352355856094:android:010e419f1c95d942b99c4f",
+            "ios": "1:352355856094:ios:7ee3bf6d7ee94cd1b99c4f",
+            "web": "1:352355856094:web:1fe14860975a1247b99c4f"
+          }
+        }
+      }
+    }
+  }
+}
