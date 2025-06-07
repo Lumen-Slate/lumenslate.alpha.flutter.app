@@ -16,6 +16,7 @@ export 'package:lumen_slate/services/phone_auth_services.dart';
 // Repositories
 export 'package:lumen_slate/repositories/ai/context_generator.dart';
 export 'package:lumen_slate/repositories/ai/variation_generator.dart';
+export 'package:lumen_slate/repositories/ai/question_segmentation_repository.dart';
 export 'package:lumen_slate/repositories/mcq_repository.dart';
 export 'package:lumen_slate/repositories/msq_repository.dart';
 export 'package:lumen_slate/repositories/teacher_repository.dart';
@@ -27,6 +28,7 @@ export 'blocs/mcq/mcq_bloc.dart';
 export 'blocs/mcq_variation_generation/mcq_variation_bloc.dart';
 export 'blocs/msq/msq_bloc.dart';
 export 'blocs/msq_variation_generation/msq_variation_bloc.dart';
+export 'blocs/question_segmentation/question_segmentation_bloc.dart';
 
 // Cubits
 export 'cubit/phone_form/phone_number_form_cubit.dart';
