@@ -152,6 +152,17 @@ class TeacherDashboardMobile extends StatelessWidget {
               backgroundColor: Colors.greenAccent[200]!,
               onTap: () => context.push('/teacher-dashboard_page/assignments_page'),
             ),
+            const SizedBox(height: 20),
+            WideTile(
+              title: AutoSizeText("PDF Generator", style: GoogleFonts.poppins(fontSize: 30)),
+              subTitle: AutoSizeText("Generate question paper PDFs", style: GoogleFonts.poppins(fontSize: 14)),
+              description: AutoSizeText(
+                "Create professional question papers in PDF format with various question types and subjects.",
+                style: GoogleFonts.poppins(fontSize: 14),
+              ),
+              backgroundColor: Colors.blueAccent[100]!,
+              onTap: () => context.push('/teacher-dashboard/pdf-generator'),
+            ),
           ],
         ),
       ),

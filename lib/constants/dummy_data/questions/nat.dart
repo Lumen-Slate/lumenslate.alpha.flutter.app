@@ -4,7 +4,7 @@ final List<NAT> dummyNATs = [
   NAT(
     id: 'nat_1',
     bankId: '201',
-    question: 'Calculate the acceleration (m/s²) of an object if force is 20 N and mass is 4 kg.',
+    question: 'Calculate the acceleration (m/s^2) of an object if force is 20 N and mass is 4 kg.',
     variableIds: [],
     points: 8,
     answer: 5.0,
@@ -12,7 +12,7 @@ final List<NAT> dummyNATs = [
   NAT(
     id: 'nat_2',
     bankId: '202',
-    question: 'What is the value of π (up to 2 decimal places)?',
+    question: 'What is the value of pi (up to 2 decimal places)?',
     variableIds: [],
     points: 5,
     answer: 3.14,
@@ -36,7 +36,7 @@ final List<NAT> dummyNATs = [
   NAT(
     id: 'nat_5',
     bankId: '205',
-    question: 'If the side of a square is 5 cm, calculate its area (in cm²).',
+    question: 'If the side of a square is 5 cm, calculate its area (in cm^2).',
     variableIds: [],
     points: 4,
     answer: 25.0,
@@ -52,7 +52,7 @@ final List<NAT> dummyNATs = [
   NAT(
     id: 'nat_7',
     bankId: '202',
-    question: 'Calculate the molar mass of CO₂ (in g/mol).',
+    question: 'Calculate the molar mass of CO2 (in g/mol).',
     variableIds: [],
     points: 5,
     answer: 44.01,
@@ -68,7 +68,7 @@ final List<NAT> dummyNATs = [
   NAT(
     id: 'nat_9',
     bankId: '204',
-    question: 'What is the pH of a solution with a hydrogen ion concentration of 1 x 10⁻⁷ M?',
+    question: 'What is the pH of a solution with a hydrogen ion concentration of 1 x 10^-7 M?',
     variableIds: [],
     points: 5,
     answer: 7.0,
@@ -76,7 +76,7 @@ final List<NAT> dummyNATs = [
   NAT(
     id: 'nat_10',
     bankId: '205',
-    question: 'Calculate the density (in g/cm³) of an object with mass 50 g and volume 25 cm³.',
+    question: 'Calculate the density (in g/cm^3) of an object with mass 50 g and volume 25 cm^3.',
     variableIds: [],
     points: 4,
     answer: 2.0,

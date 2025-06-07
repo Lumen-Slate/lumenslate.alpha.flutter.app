@@ -226,6 +226,32 @@ class TeacherDashboardDesktop extends StatelessWidget {
                               ),
                             ],
                           ),
+                          SizedBox(height: 50),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () => context.push('/teacher-dashboard/pdf-generator'),
+                                child: WideTile(
+                                  title: AutoSizeText(
+                                    "PDF Generator",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 46,
+                                    ),
+                                  ),
+                                  subTitle: AutoSizeText(
+                                    "Generate question paper PDFs",
+                                    style: GoogleFonts.poppins(fontSize: 16),
+                                  ),
+                                  description: AutoSizeText(
+                                    "Create professional question papers in PDF format with various question types and subjects.",
+                                    style: GoogleFonts.poppins(fontSize: 16),
+                                  ),
+                                  backgroundColor: Colors.blueAccent[100]!,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
