@@ -27,8 +27,15 @@ class QuestionSegmentationBloc extends Bloc<QuestionSegmentationEvent, QuestionS
         throw StateError(response.data['error'] ?? 'An error occurred while segmenting the question.');
       }
 
-      List<String> segmentedQuestions = (response.data['segmentedQuestions'] as List)
-          .map<String>((item) => item.toString())
+      // Handle the actual response format from FastAPI microservice
+      // The API returns segmentedQuestion as a single string
+      String segmentedText = response.data['segmentedQuestion'] ?? '';
+      
+      // Split the text by lines to create individual segments
+      List<String> segmentedQuestions = segmentedText
+          .split('\n')
+          .where((line) => line.trim().isNotEmpty)
+          .map((line) => line.trim())
           .toList();
 
       emit(QuestionSegmentationSuccess(segmentedQuestions));

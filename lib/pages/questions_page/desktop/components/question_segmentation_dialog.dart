@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/question_segmentation/question_segmentation_bloc.dart';
 
@@ -31,8 +30,9 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: SizedBox(
+      child: Container(
         width: 800,
+        height: MediaQuery.of(context).size.height * 0.8, // Max 80% of screen height
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -66,31 +66,31 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                 ),
               ),
               const SizedBox(height: 20),
-              BlocConsumer<QuestionSegmentationBloc, QuestionSegmentationState>(
-                listener: (context, state) {
-                  if (state is QuestionSegmentationSuccess) {
-                    setState(() {
-                      _segmentedQuestions = state.segmentedQuestions;
-                    });
-                  } else if (state is QuestionSegmentationFailure) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: ${state.error}')),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state is QuestionSegmentationLoading) {
-                    return Column(
-                      children: [
-                        CircularProgressIndicator(),
-                        const SizedBox(height: 10),
-                        Text('Breaking down your question...'),
-                      ],
-                    );
-                  } else if (_segmentedQuestions.isNotEmpty) {
-                    return Container(
-                      constraints: BoxConstraints(maxHeight: 400),
-                      child: Column(
+              Expanded(
+                child: BlocConsumer<QuestionSegmentationBloc, QuestionSegmentationState>(
+                  listener: (context, state) {
+                    if (state is QuestionSegmentationSuccess) {
+                      setState(() {
+                        _segmentedQuestions = state.segmentedQuestions;
+                      });
+                    } else if (state is QuestionSegmentationFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: ${state.error}')),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is QuestionSegmentationLoading) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          const SizedBox(height: 10),
+                          Text('Breaking down your question...'),
+                        ],
+                      );
+                    } else if (_segmentedQuestions.isNotEmpty) {
+                      return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -141,29 +141,30 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                             ),
                           ),
                         ],
-                      ),
-                    );
-                  } else {
-                    return Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(Icons.quiz, size: 48, color: Colors.grey[400]),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Click "Segment Question" to break this question into smaller parts',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
+                      );
+                    } else {
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[300]!),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.quiz, size: 48, color: Colors.grey[400]),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Click "Segment Question" to break this question into smaller parts',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
               const SizedBox(height: 20),
               Row(
