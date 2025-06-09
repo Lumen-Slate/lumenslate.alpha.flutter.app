@@ -4,14 +4,20 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
-
 import '../../../constants/dummy_data/questions/mcq.dart';
 import '../../../constants/dummy_data/questions/msq.dart';
 import '../../../constants/dummy_data/questions/nat.dart';
 import '../../../constants/dummy_data/questions/subjective.dart';
 import '../../../models/questions/mcq.dart';
+import '../../../models/questions/msq.dart';
+import '../../../models/questions/nat.dart';
+import '../../../models/questions/subjective.dart';
 import '../../../common/widgets/search_dropdown.dart';
 import 'components/mcq_tile.dart';
+import 'components/msq_tile.dart';
+import 'components/nat_tile.dart';
+import 'components/subjective_tile.dart';
+
 class QuestionsDesktop extends StatefulWidget {
   const QuestionsDesktop({super.key});
 
@@ -45,7 +51,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
     setState(() {
       filteredQuestions = allQuestions.where((question) {
         bool matchesSearch =
-            searchMode == "Search by question" ? question.mcq.toLowerCase().contains(searchQuery) : true;
+            searchMode == "Search by question" ? question.question.toLowerCase().contains(searchQuery) : true;
         bool matchesPoints =
             searchMode == "Filter by points" ? (question.points >= minPoints && question.points <= maxPoints) : true;
         bool matchesType = selectedType == "All" || question.runtimeType.toString() == selectedType;
@@ -75,12 +81,18 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
     });
   }
 
-  // void _refreshQuestions() {
-  //   setState(() {
-  //     allQuestions = [...dummyMCQs, ...dummyMSQs, ...dummyNATs, ...dummySubjectives];
-  //     _applyFilters();
-  //   });
-  // }
+  Widget _buildQuestionTile(dynamic question) {
+    if (question is MCQ) {
+      return MCQTile(mcq: question);
+    } else if (question is MSQ) {
+      return MSQTile(msq: question);
+    } else if (question is NAT) {
+      return NATTile(nat: question);
+    } else if (question is Subjective) {
+      return SubjectiveTile(subjective: question);
+    }
+    return Container(); // Fallback for unknown types
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,10 +191,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                                 itemCount: filteredQuestions.length,
                                 itemBuilder: (context, index) {
                                   final question = filteredQuestions[index];
-                                  if (question is MCQ) {
-                                    return MCQTile(mcq: question);
-                                  }
-                                  return null;
+                                  return _buildQuestionTile(question);
                                 },
                                 separatorBuilder: (context, index) => const SizedBox(height: 20),
                               ),

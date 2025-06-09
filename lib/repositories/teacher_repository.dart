@@ -12,9 +12,9 @@ class TeacherRepository {
 
   final Logger _logger = Logger();
 
-  Future<Response> createTeacher(Teacher teacher) async {
+  Future<Response> createTeacher(Map<String,dynamic> data) async {
     try {
-      return await _client.post('/teachers', data: teacher.toJson());
+      return await _client.post('/teachers', data: data);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating teacher: Status code ${dioError.response?.statusCode}',

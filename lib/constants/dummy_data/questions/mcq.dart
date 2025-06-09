@@ -7,7 +7,7 @@ final List<MCQ> dummyMCQs = [
     question: 'What is the chemical formula for water?',
     variableIds: [],
     points: 5,
-    options: ['H₂O', 'CO₂', 'O₂', 'H₂'],
+    options: ['H2O', 'CO2', 'O2', 'H2'],
     answerIndex: 0,
   ),
   MCQ(
@@ -134,7 +134,7 @@ final List<MCQ> dummyMCQs = [
     question: 'What is the chemical formula for water?',
     variableIds: [],
     points: 5,
-    options: ['H₂O', 'CO₂', 'O₂', 'H₂'],
+    options: ['H2O', 'CO2', 'O2', 'H2'],
     answerIndex: 0,
   ),
   MCQ(
@@ -179,7 +179,7 @@ final List<MCQ> dummyMCQs = [
     question: 'What is the speed of light in a vacuum?',
     variableIds: [],
     points: 5,
-    options: ['3 x 10⁸ m/s', '3 x 10⁶ m/s', '3 x 10⁴ m/s', '3 x 10² m/s'],
+    options: ['3 x 10^8 m/s', '3 x 10^6 m/s', '3 x 10^4 m/s', '3 x 10^2 m/s'],
     answerIndex: 0,
   ),
 ];

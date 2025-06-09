@@ -35,7 +35,7 @@ final List<MSQ> dummyMSQs = [
     question: 'Which of the following are algebraic expressions?',
     variableIds: [],
     points: 5,
-    options: ['2x + 3', 'x² - 4', '3y + 2z', '5'],
+    options: ['2x + 3', 'x^2 - 4', '3y + 2z', '5'],
     answerIndices: [0, 1, 2],
   ),
   MSQ(

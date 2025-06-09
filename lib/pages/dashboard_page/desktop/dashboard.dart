@@ -24,7 +24,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
       },
       child: PopScope(
         onPopInvokedWithResult: (_, __) {
-          context.go('/teacher-dashboard_page');
+          context.go('/teacher-dashboard');
         },
         child: ResponsiveScaledBox(
           width: 1920,
@@ -140,7 +140,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  context.push('/teacher-dashboard_page/question-banks');
+                                  context.push('/teacher-dashboard/question-banks');
                                 },
                                 child: WideTile(
                                   title: AutoSizeText(
@@ -148,7 +148,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                     style: GoogleFonts.poppins(fontSize: 46),
                                   ),
                                   subTitle: AutoSizeText(
-                                    "Manage your questions_page banks",
+                                    "Manage your questions banks",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   description: AutoSizeText(
@@ -159,7 +159,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => context.push('/teacher-dashboard_page/questions_page'),
+                                onTap: () => context.push('/teacher-dashboard/questions'),
                                 child: WideTile(
                                   title: AutoSizeText(
                                     "Questions",
@@ -172,7 +172,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   description: AutoSizeText(
-                                    "A special question entry powered by AI to help you create questions_page faster.",
+                                    "A special question entry powered by AI to help you create questions faster.",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   backgroundColor: Colors.deepPurpleAccent[100]!,
@@ -185,7 +185,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               GestureDetector(
-                                onTap: () => context.push('/teacher-dashboard_page/classrooms_page'),
+                                onTap: () => context.push('/teacher-dashboard/classrooms'),
                                 child: WideTile(
                                   title: AutoSizeText(
                                     "Classrooms",
@@ -194,18 +194,18 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                     ),
                                   ),
                                   subTitle: AutoSizeText(
-                                    "Manage classrooms_page",
+                                    "Manage classrooms",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   description: AutoSizeText(
-                                    "Manager your classrooms_page, add students, teachers, and assign subjects to them.",
+                                    "Manager your classrooms, add students, teachers, and assign subjects to them.",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   backgroundColor: Colors.orangeAccent[100]!,
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => context.push('/teacher-dashboard_page/assignments_page'),
+                                onTap: () => context.push('/teacher-dashboard/assignments'),
                                 child: WideTile(
                                   title: AutoSizeText(
                                     "Assignments",
@@ -214,14 +214,40 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                     ),
                                   ),
                                   subTitle: AutoSizeText(
-                                    "Create and export assignments_page",
+                                    "Create and export assignments",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   description: AutoSizeText(
-                                    "Use AI powered assignment creator to create randomized assignments_page.",
+                                    "Use AI powered assignment creator to create randomized assignments.",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   backgroundColor: Colors.greenAccent[200]!,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () => context.push('/teacher-dashboard/pdf-generator'),
+                                child: WideTile(
+                                  title: AutoSizeText(
+                                    "PDF Generator",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 46,
+                                    ),
+                                  ),
+                                  subTitle: AutoSizeText(
+                                    "Generate question paper PDFs",
+                                    style: GoogleFonts.poppins(fontSize: 16),
+                                  ),
+                                  description: AutoSizeText(
+                                    "Create professional question papers in PDF format with various question types and subjects.",
+                                    style: GoogleFonts.poppins(fontSize: 16),
+                                  ),
+                                  backgroundColor: Colors.blueAccent[100]!,
                                 ),
                               ),
                             ],

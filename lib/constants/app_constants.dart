@@ -11,6 +11,6 @@ class AppConstants {
 
 
   // Microservice domain, only for testing, microservice should be communicated with backend
-  static const String microserviceDomain = 'http://0.0.0.0:8000';
+  static const String microserviceDomain = 'http://localhost:8000';
   // static const String microserviceDomain = 'http://35.202.107.107:8000/';
 }
