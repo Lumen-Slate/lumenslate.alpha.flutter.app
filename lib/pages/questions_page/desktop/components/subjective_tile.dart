@@ -72,7 +72,7 @@ class SubjectiveTile extends StatelessWidget {
                           context: context,
                           builder: (context) => QuestionSegmentationDialog(
                             question: subjective.question,
-                            type: subjective.runtimeType.toString(),
+                            type: "Subjective",
                             id: subjective.id,
                           ),
                         );

@@ -127,7 +127,7 @@ class MCQTile extends StatelessWidget {
                           context: context,
                           builder: (context) => QuestionSegmentationDialog(
                             question: mcq.question,
-                            type: mcq.runtimeType.toString(),
+                            type: "MCQ",
                             id: mcq.id,
                           ),
                         );
