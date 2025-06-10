@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/context_generation/context_generation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 
 class ContextGenerationDialog extends StatefulWidget {
   final String question;
@@ -46,6 +47,69 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
     context.read<ContextGeneratorBloc>().add(GenerateContext(widget.question, _keywords));
   }
 
+  void _overrideQuestion() {
+    if (_contextController.text.isNotEmpty) {
+      context.read<ContextGeneratorBloc>().add(
+        OverrideQuestionWithContext(
+          questionId: widget.id,
+          questionType: widget.type,
+          contextualizedQuestion: _contextController.text,
+        ),
+      );
+    }
+  }
+
+  void _saveAsNewQuestion() {
+    if (_contextController.text.isNotEmpty) {
+      Map<String, dynamic> questionData = _getDefaultQuestionData();
+      
+      context.read<ContextGeneratorBloc>().add(
+        SaveAsNewQuestionWithContext(
+          questionType: widget.type,
+          bankId: "6aa0c742-2920-4556-9c24-8d41c8be1ffb", // Valid bank ID from API examples
+          contextualizedQuestion: _contextController.text,
+          questionData: questionData,
+        ),
+      );
+    }
+  }
+
+  Map<String, dynamic> _getDefaultQuestionData() {
+    switch (widget.type.toLowerCase()) {
+      case 'mcq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndex': 0,
+          'variableIds': [],
+        };
+      case 'msq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndices': [0],
+          'variableIds': [],
+        };
+      case 'nat':
+        return {
+          'points': 5,
+          'answer': 0.0,
+          'variable': [],
+        };
+      case 'subjective':
+        return {
+          'points': 10,
+          'idealAnswer': '',
+          'gradingCriteria': ['Accuracy', 'Completeness', 'Clarity'],
+          'variable': [],
+        };
+      default:
+        return {
+          'points': 5,
+        };
+    }
+  }
+
   void _saveQuestion() {
     context.read<ContextGeneratorBloc>().add(SaveQuestion(widget.id, widget.type, _contextController.text));
   }
@@ -53,55 +117,73 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: SizedBox(
-        width: 800,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Context Generation',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 600,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Context Generation',
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                child: Text(
-                  widget.question,
-                  style: TextStyle(fontSize: 16),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
                 ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Original Question:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(height: 20),
-              Form(
-                key: _formKey,
-                child: TextFormField(
-                  controller: _keywordController,
-                  decoration: InputDecoration(
-                    labelText: 'Enter keyword',
-                    border: OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () => _addKeyword(_keywordController.text),
+              child: Text(widget.question),
+            ),
+            const SizedBox(height: 20),
+            Form(
+              key: _formKey,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _keywordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Add Keyword',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a keyword';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: _addKeyword,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Keyword cannot be empty';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (value) => _addKeyword(value),
-                ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => _addKeyword(_keywordController.text),
+                    child: const Text('Add'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
+            ),
+            const SizedBox(height: 10),
+            if (_keywords.isNotEmpty) ...[
               Wrap(
-                spacing: 8.0,
+                spacing: 8,
                 children: _keywords.map((keyword) => Chip(
                   label: Text(keyword),
                   onDeleted: () => _removeKeyword(keyword),
@@ -156,10 +238,9 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                     onPressed: _saveQuestion,
                     child: Text('Save Question'),
                   ),
-                ],
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );

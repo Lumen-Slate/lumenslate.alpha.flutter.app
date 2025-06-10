@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/context_generation/context_generation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 
 class ContextGenerationDialogMobile extends StatefulWidget {
   final String question;
@@ -46,6 +47,69 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
     context.read<ContextGeneratorBloc>().add(GenerateContext(widget.question, _keywords));
   }
 
+  void _overrideQuestion() {
+    if (_contextController.text.isNotEmpty) {
+      context.read<ContextGeneratorBloc>().add(
+        OverrideQuestionWithContext(
+          questionId: widget.id,
+          questionType: widget.type,
+          contextualizedQuestion: _contextController.text,
+        ),
+      );
+    }
+  }
+
+  void _saveAsNewQuestion() {
+    if (_contextController.text.isNotEmpty) {
+      Map<String, dynamic> questionData = _getDefaultQuestionData();
+      
+      context.read<ContextGeneratorBloc>().add(
+        SaveAsNewQuestionWithContext(
+          questionType: widget.type,
+          bankId: "6aa0c742-2920-4556-9c24-8d41c8be1ffb", // Valid bank ID from API examples
+          contextualizedQuestion: _contextController.text,
+          questionData: questionData,
+        ),
+      );
+    }
+  }
+
+  Map<String, dynamic> _getDefaultQuestionData() {
+    switch (widget.type.toLowerCase()) {
+      case 'mcq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndex': 0,
+          'variableIds': [],
+        };
+      case 'msq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndices': [0],
+          'variableIds': [],
+        };
+      case 'nat':
+        return {
+          'points': 5,
+          'answer': 0.0,
+          'variable': [],
+        };
+      case 'subjective':
+        return {
+          'points': 10,
+          'idealAnswer': '',
+          'gradingCriteria': ['Accuracy', 'Completeness', 'Clarity'],
+          'variable': [],
+        };
+      default:
+        return {
+          'points': 5,
+        };
+    }
+  }
+
   void _saveQuestion() {
     context.read<ContextGeneratorBloc>().add(SaveQuestion(widget.id, widget.type, _contextController.text));
   }
@@ -53,41 +117,82 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.all(12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: SingleChildScrollView(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
         padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Context Generation', style: Theme.of(context).textTheme.titleLarge),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Context Generation',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
-            Text(widget.question),
+            Text(
+              'Original Question:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                widget.question,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
             const SizedBox(height: 16),
             Form(
               key: _formKey,
-              child: TextFormField(
-                controller: _keywordController,
-                decoration: InputDecoration(
-                  labelText: 'Enter keyword',
-                  border: OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () => _addKeyword(_keywordController.text),
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _keywordController,
+                    decoration: InputDecoration(
+                      labelText: 'Add Keyword',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () => _addKeyword(_keywordController.text),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a keyword';
+                      }
+                      return null;
+                    },
+                    onFieldSubmitted: _addKeyword,
                   ),
-                ),
-                validator: (value) =>
-                (value == null || value.trim().isEmpty) ? 'Keyword cannot be empty' : null,
-                onFieldSubmitted: (value) => _addKeyword(value),
+                ],
               ),
             ),
             const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              children: _keywords
-                  .map((k) => Chip(label: Text(k), onDeleted: () => _removeKeyword(k)))
-                  .toList(),
-            ),
-            const SizedBox(height: 16),
+            if (_keywords.isNotEmpty) ...[
+              Wrap(
+                spacing: 8,
+                children: _keywords.map((keyword) => Chip(
+                  label: Text(keyword),
+                  onDeleted: () => _removeKeyword(keyword),
+                )).toList(),
+              ),
+              const SizedBox(height: 16),
+            ],
             BlocConsumer<ContextGeneratorBloc, ContextGeneratorState>(
               listener: (context, state) {
                 if (state is ContextGeneratorSuccess) {
@@ -95,16 +200,29 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                     _generatedContext = state.response;
                     _contextController.text = _generatedContext;
                   });
-                  if (state.response == 'Question updated successfully') {
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Question updated successfully')),
-                    );
-                    context.go('/teacher-dashboard_page/questions_page');
-                  }
                 } else if (state is ContextGeneratorFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: ${state.error}')),
+                  );
+                } else if (state is QuestionOverrideSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                  );
+                  context.read<QuestionsBloc>().add(const LoadQuestions());
+                  Navigator.of(context).pop();
+                } else if (state is QuestionOverrideFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Override failed: ${state.error}'), backgroundColor: Colors.red),
+                  );
+                } else if (state is SaveAsNewQuestionSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                  );
+                  context.read<QuestionsBloc>().add(const LoadQuestions());
+                  Navigator.of(context).pop();
+                } else if (state is SaveAsNewQuestionFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Save failed: ${state.error}'), backgroundColor: Colors.red),
                   );
                 }
               },
@@ -112,9 +230,97 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                 if (state is ContextGeneratorLoading) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
-                    child: CircularProgressIndicator(),
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 10),
+                        Text(
+                          'Generating context...',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (state is QuestionOverrideLoading) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 10),
+                        Text(
+                          'Overriding question...',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (state is SaveAsNewQuestionLoading) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 10),
+                        Text(
+                          'Saving new question...',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (_contextController.text.isNotEmpty) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Generated Context:',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        maxLines: 6,
+                        controller: _contextController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: _overrideQuestion,
+                              icon: const Icon(Icons.update),
+                              label: const Text('Override Current Question'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: _saveAsNewQuestion,
+                              icon: const Icon(Icons.add),
+                              label: const Text('Save as New Question'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   );
                 }
+                
                 return TextField(
                   maxLines: 6,
                   controller: _contextController,
@@ -125,7 +331,7 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                 );
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -134,13 +340,15 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                     child: const Text('Generate'),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _saveQuestion,
-                    child: const Text('Save'),
+                if (_contextController.text.isEmpty) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _saveQuestion,
+                      child: const Text('Save'),
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ],
