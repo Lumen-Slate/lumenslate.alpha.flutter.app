@@ -140,7 +140,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  context.push('/teacher-dashboard/question-banks');
+                                  context.go('/teacher-dashboard/question-banks');
                                 },
                                 child: WideTile(
                                   title: AutoSizeText(
@@ -159,7 +159,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => context.push('/teacher-dashboard/questions'),
+                                onTap: () => context.go('/teacher-dashboard/questions'),
                                 child: WideTile(
                                   title: AutoSizeText(
                                     "Questions",
@@ -185,7 +185,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               GestureDetector(
-                                onTap: () => context.push('/teacher-dashboard/classrooms'),
+                                onTap: () => context.go('/teacher-dashboard/classrooms'),
                                 child: WideTile(
                                   title: AutoSizeText(
                                     "Classrooms",
@@ -205,7 +205,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => context.push('/teacher-dashboard/assignments'),
+                                onTap: () => context.go('/teacher-dashboard/assignments'),
                                 child: WideTile(
                                   title: AutoSizeText(
                                     "Assignments",
@@ -231,7 +231,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               GestureDetector(
-                                onTap: () => context.push('/teacher-dashboard/pdf-generator'),
+                                onTap: () => context.go('/teacher-dashboard/pdf-generator'),
                                 child: WideTile(
                                   title: AutoSizeText(
                                     "PDF Generator",
