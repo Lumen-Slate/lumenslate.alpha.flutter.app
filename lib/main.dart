@@ -21,6 +21,8 @@ class LumenSlate extends StatelessWidget {
         RepositoryProvider(create: (context) => QuestionSegmentationRepository()),
         RepositoryProvider(create: (context) => MCQRepository()),
         RepositoryProvider(create: (context) => MSQRepository()),
+        RepositoryProvider(create: (context) => NATRepository()),
+        RepositoryProvider(create: (context) => SubjectiveRepository()),
         RepositoryProvider(create: (context) => TeacherRepository()),
       ],
       child: MultiBlocProvider(
@@ -39,6 +41,14 @@ class LumenSlate extends StatelessWidget {
           BlocProvider(create: (context) => QuestionSegmentationBloc(RepositoryProvider.of<QuestionSegmentationRepository>(context))),
           BlocProvider(create: (context) => MCQBloc(RepositoryProvider.of<MCQRepository>(context))),
           BlocProvider(create: (context) => MSQBloc(RepositoryProvider.of<MSQRepository>(context))),
+          BlocProvider(
+            create: (context) => QuestionsBloc(
+              mcqRepository: RepositoryProvider.of<MCQRepository>(context),
+              msqRepository: RepositoryProvider.of<MSQRepository>(context),
+              natRepository: RepositoryProvider.of<NATRepository>(context),
+              subjectiveRepository: RepositoryProvider.of<SubjectiveRepository>(context),
+            ),
+          ),
         ],
         child: MaterialApp.router(
           title: AppConstants.appName,

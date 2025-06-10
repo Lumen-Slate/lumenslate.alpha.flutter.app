@@ -19,6 +19,8 @@ export 'package:lumen_slate/repositories/ai/variation_generator.dart';
 export 'package:lumen_slate/repositories/ai/question_segmentation_repository.dart';
 export 'package:lumen_slate/repositories/mcq_repository.dart';
 export 'package:lumen_slate/repositories/msq_repository.dart';
+export 'package:lumen_slate/repositories/nat_repository.dart';
+export 'package:lumen_slate/repositories/subjective_repository.dart';
 export 'package:lumen_slate/repositories/teacher_repository.dart';
 
 // Blocs
@@ -29,6 +31,7 @@ export 'blocs/mcq_variation_generation/mcq_variation_bloc.dart';
 export 'blocs/msq/msq_bloc.dart';
 export 'blocs/msq_variation_generation/msq_variation_bloc.dart';
 export 'blocs/question_segmentation/question_segmentation_bloc.dart';
+export 'blocs/questions/questions_bloc.dart';
 
 // Cubits
 export 'cubit/phone_form/phone_number_form_cubit.dart';

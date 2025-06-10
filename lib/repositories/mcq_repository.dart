@@ -14,7 +14,7 @@ class MCQRepository {
 
   Future<Response> createMCQ(MCQ mcq) async {
     try {
-      return await _client.post('/mcq', data: mcq.toJson());
+      return await _client.post('/mcqs', data: mcq.toJson());
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating MCQ: Status code ${dioError.response?.statusCode}',
@@ -25,9 +25,16 @@ class MCQRepository {
     }
   }
 
-  Future<Response> getMCQs(String bankId) async {
+  Future<Response> getMCQs({String? bankId, int limit = 10, int offset = 0}) async {
     try {
-      return await _client.get('/mcq/bank/$bankId');
+      Map<String, dynamic> queryParams = {
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+      };
+      if (bankId != null) {
+        queryParams['bankId'] = bankId;
+      }
+      return await _client.get('/mcqs', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error fetching MCQs: Status code ${dioError.response?.statusCode}',
@@ -40,7 +47,7 @@ class MCQRepository {
 
   Future<Response> updateMCQ(String id, MCQ mcq) async {
     try {
-      return await _client.put('/mcq/$id', data: mcq.toJson());
+      return await _client.put('/mcqs/$id', data: mcq.toJson());
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error updating MCQ: Status code ${dioError.response?.statusCode}',
@@ -51,9 +58,22 @@ class MCQRepository {
     }
   }
 
+  Future<Response> patchMCQ(String id, Map<String, dynamic> updates) async {
+    try {
+      return await _client.patch('/mcqs/$id', data: updates);
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error patching MCQ: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
+    }
+  }
+
   Future<Response> deleteMCQ(String id) async {
     try {
-      return await _client.delete('/mcq/$id');
+      return await _client.delete('/mcqs/$id');
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error deleting MCQ: Status code ${dioError.response?.statusCode}',
