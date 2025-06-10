@@ -23,22 +23,50 @@ class NATTile extends StatelessWidget {
         ),
       ),
       child: Column(
-        spacing: 15,
+        spacing: 20,
         children: [
           Row(
+            spacing: 12,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
-                  '${nat.question} (${nat.runtimeType})',
+                  nat.question,
                   style: GoogleFonts.poppins(fontSize: 24, color: Colors.black),
                 ),
               ),
-              Text(
-                '${nat.points} Points',
-                style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
+              Container(
+                decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Text(
+                  nat.runtimeType.toString(),
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(8)),
+                child: Text(
+                  '${nat.points} Points',
+                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.orange.shade800),
+                ),
               ),
             ],
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.greenAccent.shade100,
+              ),
+              child: Text(
+                "Answer: ${nat.answer.toString()}",
+                textAlign: TextAlign.start,
+                style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
+              ),
+            ),
           ),
           Row(
             children: [

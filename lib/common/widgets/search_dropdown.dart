@@ -40,19 +40,16 @@ class _SearchDropdownState extends State<SearchDropdown> {
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 14),
-                    Text(
-                      selectedValue ?? widget.items.first,
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                child: Center(
+                  child: Text(
+                    selectedValue ?? widget.items.first,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.black,
                     ),
-                    const Spacer(),
-                  ],
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
@@ -118,6 +115,7 @@ class _SearchDropdownState extends State<SearchDropdown> {
           setState(() {
             selectedValue = value;
           });
+          widget.onChanged?.call(value);
         },
         buttonStyleData: ButtonStyleData(
           height: 50,

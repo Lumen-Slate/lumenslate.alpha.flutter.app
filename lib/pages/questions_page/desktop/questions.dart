@@ -34,9 +34,8 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
 
   @override
   void initState() {
-    super.initState();
-    // Load questions from database
     context.read<QuestionsBloc>().add(const LoadQuestions());
+    super.initState();
   }
 
   void _filterQuestions(String query) {
@@ -49,35 +48,35 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
   void _applyFilters() {
     setState(() {
       filteredQuestions = allQuestions.where((question) {
-        bool matchesSearch =
-            searchMode == "Search by question" ? question.question.toLowerCase().contains(searchQuery) : true;
-        bool matchesPoints =
-            searchMode == "Filter by points" ? (question.points >= minPoints && question.points <= maxPoints) : true;
+        bool matchesSearch = searchMode == "Search by question"
+            ? question.question.toLowerCase().contains(searchQuery)
+            : true;
+        bool matchesPoints = searchMode == "Filter by points"
+            ? (question.points >= minPoints && question.points <= maxPoints)
+            : true;
         bool matchesType = selectedType == "All" || question.runtimeType.toString() == selectedType;
         return matchesSearch && matchesPoints && matchesType;
       }).toList();
     });
   }
 
-  void _updateSearchMode(String mode) {
-    setState(() {
-      searchMode = mode;
-      searchQuery = "";
-      filteredQuestions = allQuestions;
-
-      if (mode == "Filter by points") {
-        minPoints = 0;
-        maxPoints = 100;
-        _applyFilters();
-      }
-    });
-  }
+  // void _updateSearchMode(String mode) {
+  //   setState(() {
+  //     searchMode = mode;
+  //     searchQuery = "";
+  //     filteredQuestions = allQuestions;
+  //
+  //     if (mode == "Filter by points") {
+  //       minPoints = 0;
+  //       maxPoints = 100;
+  //       _applyFilters();
+  //     }
+  //   });
+  // }
 
   void _updateQuestionType(String type) {
-    setState(() {
-      selectedType = type;
-      _applyFilters();
-    });
+    selectedType = type;
+    _applyFilters();
   }
 
   Widget _buildQuestionTile(dynamic question) {
@@ -111,9 +110,9 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                 filteredQuestions = state.questions;
               });
             } else if (state is QuestionsFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error loading questions: ${state.error}')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Error loading questions: ${state.error}')));
             }
           },
           child: SingleChildScrollView(
@@ -127,9 +126,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                       "Questions",
                       maxLines: 2,
                       minFontSize: 80,
-                      style: GoogleFonts.poppins(
-                        fontSize: 80,
-                      ),
+                      style: GoogleFonts.poppins(fontSize: 80),
                     ),
                   ),
                   const SizedBox(height: 50),
@@ -139,10 +136,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                         flex: 5,
                         child: Container(
                           padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(30),
-                          ),
+                          decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(30)),
                           child: Column(
                             children: [
                               Row(
@@ -159,35 +153,29 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                                       backgroundColor: WidgetStateProperty.all(Colors.white),
                                       hintText: "Search question",
                                       hintStyle: WidgetStateProperty.all(
-                                        GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          color: Colors.black,
-                                        ),
+                                        GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                                       ),
                                     ),
                                   ),
-                                  PopupMenuButton<String>(
-                                    iconSize: 36,
-                                    style: ButtonStyle(
-                                      backgroundColor: WidgetStateProperty.all(Colors.white),
-                                      elevation: WidgetStateProperty.all(5),
-                                      shadowColor: WidgetStateProperty.all(Colors.grey[300]),
-                                    ),
-                                    onSelected: _updateSearchMode,
-                                    icon: Icon(Icons.filter_list, color: Colors.teal[700]),
-                                    itemBuilder: (context) => [
-                                      PopupMenuItem(
-                                        value: "Search by question",
-                                        child: Text("Search by question"),
-                                      ),
-                                      PopupMenuItem(
-                                        value: "Filter by points",
-                                        child: Text("Filter by points"),
-                                      ),
-                                    ],
-                                  ),
+                                  // PopupMenuButton<String>(
+                                  //   iconSize: 36,
+                                  //
+                                  //   style: ButtonStyle(
+                                  //     alignment: Alignment.center,
+                                  //     backgroundColor: WidgetStateProperty.all(Colors.white),
+                                  //     elevation: WidgetStateProperty.all(5),
+                                  //     shadowColor: WidgetStateProperty.all(Colors.grey[300]),
+                                  //   ),
+                                  //   onSelected: _updateSearchMode,
+                                  //   icon: Icon(Icons.filter_list, color: Colors.teal[700]),
+                                  //   itemBuilder: (context) => [
+                                  //     PopupMenuItem(value: "Search by question", child: Text("Search by question")),
+                                  //     PopupMenuItem(value: "Filter by points", child: Text("Filter by points")),
+                                  //   ],
+                                  // ),
                                   SizedBox(
                                     width: 150,
+                                    height: 60,
                                     child: SearchDropdown(
                                       items: ["All", "MCQ", "MSQ", "NAT", "Subjective"],
                                       selectedValue: selectedType,
@@ -200,7 +188,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                               BlocBuilder<QuestionsBloc, QuestionsState>(
                                 builder: (context, state) {
                                   if (state is QuestionsLoading) {
-                                    return Container(
+                                    return SizedBox(
                                       height: 600,
                                       child: Center(
                                         child: Column(
@@ -214,7 +202,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                                       ),
                                     );
                                   }
-                                  
+
                                   return SizedBox(
                                     height: 600,
                                     child: ListView.separated(

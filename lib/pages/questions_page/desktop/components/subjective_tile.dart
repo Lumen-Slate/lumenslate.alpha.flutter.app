@@ -23,20 +23,33 @@ class SubjectiveTile extends StatelessWidget {
         ),
       ),
       child: Column(
-        spacing: 15,
+        spacing: 20,
         children: [
           Row(
+            spacing: 12,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
-                  '${subjective.question} (${subjective.runtimeType})',
+                  subjective.question,
                   style: GoogleFonts.poppins(fontSize: 24, color: Colors.black),
                 ),
               ),
-              Text(
-                '${subjective.points} Points',
-                style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
+              Container(
+                decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Text(
+                  subjective.runtimeType.toString(),
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(8)),
+                child: Text(
+                  '${subjective.points} Points',
+                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.orange.shade800),
+                ),
               ),
             ],
           ),

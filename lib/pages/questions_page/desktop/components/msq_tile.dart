@@ -18,72 +18,71 @@ class MSQTile extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black12,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       child: Column(
-        spacing: 15,
+        spacing: 20,
         children: [
           Row(
+            spacing: 12,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
-                  '${msq.question} (${msq.runtimeType})',
+                  msq.question,
                   style: GoogleFonts.poppins(fontSize: 24, color: Colors.black),
                 ),
               ),
-              Text(
-                '${msq.points} Points',
-                style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
+              Container(
+                decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Text(
+                  msq.runtimeType.toString(),
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800),
+                ),
               ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              SizedBox(
-                width: 1500,
-                child: SingleChildScrollView(
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 12,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemCount: msq.options.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.grey[100],
-                        ),
-                        child: Text(
-                          msq.options[index],
-                          style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
-                        ),
-                      );
-                    },
-                  ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(8)),
+                child: Text(
+                  '${msq.points} Points',
+                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.orange.shade800),
                 ),
               ),
             ],
+          ),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 12,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: msq.options.length,
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.all(15),
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: (msq.answerIndices.contains(index)) ? Colors.greenAccent.shade100 : Colors.grey[100],
+                ),
+                child: Text(
+                  msq.options[index],
+                  textAlign: TextAlign.start,
+                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
+                ),
+              );
+            },
           ),
           Row(
             children: [
               Spacer(),
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[100],
-                ),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.grey[100]),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -91,12 +90,13 @@ class MSQTile extends StatelessWidget {
                       icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.orange[700]),
                       onPressed: () async {
                         await showDialog(
-                            context: context,
-                            builder: (context) => ContextGenerationDialog(
-                                  question: msq.question,
-                                  type: msq.runtimeType.toString(),
-                                  id: msq.id,
-                                ));
+                          context: context,
+                          builder: (context) => ContextGenerationDialog(
+                            question: msq.question,
+                            type: msq.runtimeType.toString(),
+                            id: msq.id,
+                          ),
+                        );
                       },
                       iconSize: 21,
                     ),
@@ -105,11 +105,8 @@ class MSQTile extends StatelessWidget {
                       onPressed: () async {
                         await showDialog(
                           context: context,
-                          builder: (context) => QuestionSegmentationDialog(
-                            question: msq.question,
-                            type: "MSQ",
-                            id: msq.id,
-                          ),
+                          builder: (context) =>
+                              QuestionSegmentationDialog(question: msq.question, type: "MSQ", id: msq.id),
                         );
                       },
                       iconSize: 21,
@@ -118,9 +115,9 @@ class MSQTile extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
-} 
+}
