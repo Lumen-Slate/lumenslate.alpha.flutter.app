@@ -15,7 +15,7 @@ class MCQBloc extends Bloc<MCQEvent, MCQState> {
     on<FetchMCQs>((event, emit) async {
       emit(MCQLoading());
       try {
-        final response = await repository.getMCQs(event.bankId);
+        final response = await repository.getMCQs(bankId: event.bankId);
 
         if (response.statusCode! >= 400) {
           throw StateError(response.data['error'] ?? 'Failed to fetch MCQs.');

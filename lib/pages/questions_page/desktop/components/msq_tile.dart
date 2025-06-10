@@ -107,7 +107,7 @@ class MSQTile extends StatelessWidget {
                           context: context,
                           builder: (context) => QuestionSegmentationDialog(
                             question: msq.question,
-                            type: msq.runtimeType.toString(),
+                            type: "MSQ",
                             id: msq.id,
                           ),
                         );

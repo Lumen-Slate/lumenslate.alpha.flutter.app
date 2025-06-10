@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../constants/app_constants.dart';
-import '../constants/dummy_data/questions/nat.dart';
 import '../models/questions/nat.dart';
 
 class NATRepository {
@@ -13,64 +12,91 @@ class NATRepository {
 
   final Logger _logger = Logger();
 
-  Future<Map<String, dynamic>> createNAT(NAT nat) async {
+  Future<Response> createNAT(NAT nat) async {
     try {
-      final response = await _client.post('/nat', data: nat.toJson());
-      return response.data;
-    } catch (e) {
-      _logger.e('Error creating NAT: $e');
-      dummyNATs.add(nat);
-      return nat.toJson();
+      return await _client.post('/nats', data: nat.toJson());
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error creating NAT: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 
-  Future<List<NAT>> getNATs(String bankId) async {
+  Future<Response> getNATs({String? bankId, int limit = 10, int offset = 0}) async {
     try {
-      final response = await _client.get('/nat/bank/$bankId');
-      return (response.data as List)
-          .map((item) => NAT.fromJson(item as Map<String, dynamic>))
-          .toList();
-    } catch (e) {
-      _logger.e('Error fetching NATs: $e');
-      return dummyNATs.where((nat) => nat.bankId == bankId).toList();
-    }
-  }
-
-  Future<Map<String, dynamic>> updateNAT(String id, NAT nat) async {
-    try {
-      final response = await _client.put('/nat/$id', data: nat.toJson());
-      return response.data;
-    } catch (e) {
-      _logger.e('Error updating NAT: $e');
-      final index = dummyNATs.indexWhere((item) => item.id == id);
-      if (index != -1) {
-        dummyNATs[index] = nat;
+      Map<String, dynamic> queryParams = {
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+      };
+      if (bankId != null) {
+        queryParams['bankId'] = bankId;
       }
-      return nat.toJson();
+      return await _client.get('/nats', queryParameters: queryParams);
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error fetching NATs: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 
-  Future<bool> deleteNAT(String id) async {
+  Future<Response> updateNAT(String id, NAT nat) async {
     try {
-      await _client.delete('/nat/$id');
-      return true;
-    } catch (e) {
-      _logger.e('Error deleting NAT: $e');
-      dummyNATs.removeWhere((nat) => nat.id == id);
-      return true;
+      return await _client.put('/nats/$id', data: nat.toJson());
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error updating NAT: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 
-  Future<bool> createBulkNATs(List<NAT> nats) async {
+  Future<Response> patchNAT(String id, Map<String, dynamic> updates) async {
     try {
-      final response = await _client.post(
-        '/nat/bulk',
+      return await _client.patch('/nats/$id', data: updates);
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error patching NAT: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
+    }
+  }
+
+  Future<Response> deleteNAT(String id) async {
+    try {
+      return await _client.delete('/nats/$id');
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error deleting NAT: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
+    }
+  }
+
+  Future<Response> createBulkNATs(List<NAT> nats) async {
+    try {
+      return await _client.post(
+        '/nats/bulk',
         data: nats.map((nat) => nat.toJson()).toList(),
       );
-      return response.statusCode == 201;
-    } catch (e) {
-      _logger.e('Error creating bulk NATs: $e');
-      return false;
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error creating bulk NATs: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 }

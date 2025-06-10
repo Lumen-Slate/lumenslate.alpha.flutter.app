@@ -14,7 +14,7 @@ class MSQRepository {
 
   Future<Response> createMSQ(MSQ msq) async {
     try {
-      return await _client.post('/msq', data: msq.toJson());
+      return await _client.post('/msqs', data: msq.toJson());
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating MSQ: Status code ${dioError.response?.statusCode}',
@@ -25,9 +25,16 @@ class MSQRepository {
     }
   }
 
-  Future<Response> getMSQs(String bankId) async {
+  Future<Response> getMSQs({String? bankId, int limit = 10, int offset = 0}) async {
     try {
-      return await _client.get('/msq/bank/$bankId');
+      Map<String, dynamic> queryParams = {
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+      };
+      if (bankId != null) {
+        queryParams['bankId'] = bankId;
+      }
+      return await _client.get('/msqs', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error fetching MSQs: Status code ${dioError.response?.statusCode}',
@@ -40,7 +47,7 @@ class MSQRepository {
 
   Future<Response> updateMSQ(String id, MSQ msq) async {
     try {
-      return await _client.put('/msq/$id', data: msq.toJson());
+      return await _client.put('/msqs/$id', data: msq.toJson());
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error updating MSQ: Status code ${dioError.response?.statusCode}',
@@ -51,9 +58,22 @@ class MSQRepository {
     }
   }
 
+  Future<Response> patchMSQ(String id, Map<String, dynamic> updates) async {
+    try {
+      return await _client.patch('/msqs/$id', data: updates);
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error patching MSQ: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
+    }
+  }
+
   Future<Response> deleteMSQ(String id) async {
     try {
-      return await _client.delete('/msq/$id');
+      return await _client.delete('/msqs/$id');
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error deleting MSQ: Status code ${dioError.response?.statusCode}',
@@ -67,7 +87,7 @@ class MSQRepository {
   Future<Response> createBulkMSQs(List<MSQ> msqs) async {
     try {
       return await _client.post(
-        '/msq/bulk',
+        '/msqs/bulk',
         data: msqs.map((msq) => msq.toJson()).toList(),
       );
     } on DioException catch (dioError, stackTrace) {

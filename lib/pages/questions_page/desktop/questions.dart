@@ -3,11 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../constants/dummy_data/questions/mcq.dart';
-import '../../../constants/dummy_data/questions/msq.dart';
-import '../../../constants/dummy_data/questions/nat.dart';
-import '../../../constants/dummy_data/questions/subjective.dart';
+import '../../../blocs/questions/questions_bloc.dart';
 import '../../../models/questions/mcq.dart';
 import '../../../models/questions/msq.dart';
 import '../../../models/questions/nat.dart';
@@ -26,7 +24,7 @@ class QuestionsDesktop extends StatefulWidget {
 }
 
 class QuestionsDesktopState extends State<QuestionsDesktop> {
-  List<dynamic> allQuestions = [...dummyMCQs, ...dummyMSQs, ...dummyNATs, ...dummySubjectives];
+  List<dynamic> allQuestions = [];
   List<dynamic> filteredQuestions = [];
   String searchQuery = "";
   String searchMode = "Search by question";
@@ -37,7 +35,8 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
   @override
   void initState() {
     super.initState();
-    filteredQuestions = allQuestions;
+    // Load questions from database
+    context.read<QuestionsBloc>().add(const LoadQuestions());
   }
 
   void _filterQuestions(String query) {
@@ -104,105 +103,139 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
           onPressed: () => context.go('/add-question'),
           child: Icon(Icons.add),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: AutoSizeText(
-                    "Questions",
-                    maxLines: 2,
-                    minFontSize: 80,
-                    style: GoogleFonts.poppins(
-                      fontSize: 80,
+        body: BlocListener<QuestionsBloc, QuestionsState>(
+          listener: (context, state) {
+            if (state is QuestionsLoaded) {
+              setState(() {
+                allQuestions = state.questions;
+                filteredQuestions = state.questions;
+              });
+            } else if (state is QuestionsFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error loading questions: ${state.error}')),
+              );
+            }
+          },
+          child: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: AutoSizeText(
+                      "Questions",
+                      maxLines: 2,
+                      minFontSize: 80,
+                      style: GoogleFonts.poppins(
+                        fontSize: 80,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 50),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              spacing: 14,
-                              children: [
-                                Expanded(
-                                  child: SearchBar(
-                                    onChanged: _filterQuestions,
-                                    leading: Padding(
-                                      padding: const EdgeInsets.only(left: 12.0),
-                                      child: const Icon(Icons.search),
-                                    ),
-                                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                                    hintText: "Search question",
-                                    hintStyle: WidgetStateProperty.all(
-                                      GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color: Colors.black,
+                  const SizedBox(height: 50),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                spacing: 14,
+                                children: [
+                                  Expanded(
+                                    child: SearchBar(
+                                      onChanged: _filterQuestions,
+                                      leading: Padding(
+                                        padding: const EdgeInsets.only(left: 12.0),
+                                        child: const Icon(Icons.search),
+                                      ),
+                                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                                      hintText: "Search question",
+                                      hintStyle: WidgetStateProperty.all(
+                                        GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                PopupMenuButton<String>(
-                                  iconSize: 36,
-                                  style: ButtonStyle(
-                                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                                    elevation: WidgetStateProperty.all(5),
-                                    shadowColor: WidgetStateProperty.all(Colors.grey[300]),
-                                  ),
-                                  onSelected: _updateSearchMode,
-                                  icon: Icon(Icons.filter_list, color: Colors.teal[700]),
-                                  itemBuilder: (context) => [
-                                    PopupMenuItem(
-                                      value: "Search by question",
-                                      child: Text("Search by question"),
+                                  PopupMenuButton<String>(
+                                    iconSize: 36,
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                                      elevation: WidgetStateProperty.all(5),
+                                      shadowColor: WidgetStateProperty.all(Colors.grey[300]),
                                     ),
-                                    PopupMenuItem(
-                                      value: "Filter by points",
-                                      child: Text("Filter by points"),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 150,
-                                  child: SearchDropdown(
-                                    items: ["All", "MCQ", "MSQ", "NAT", "Subjective"],
-                                    selectedValue: selectedType,
-                                    onChanged: (value) => _updateQuestionType(value!),
+                                    onSelected: _updateSearchMode,
+                                    icon: Icon(Icons.filter_list, color: Colors.teal[700]),
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(
+                                        value: "Search by question",
+                                        child: Text("Search by question"),
+                                      ),
+                                      PopupMenuItem(
+                                        value: "Filter by points",
+                                        child: Text("Filter by points"),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              height: 600,
-                              child: ListView.separated(
-                                itemCount: filteredQuestions.length,
-                                itemBuilder: (context, index) {
-                                  final question = filteredQuestions[index];
-                                  return _buildQuestionTile(question);
-                                },
-                                separatorBuilder: (context, index) => const SizedBox(height: 20),
+                                  SizedBox(
+                                    width: 150,
+                                    child: SearchDropdown(
+                                      items: ["All", "MCQ", "MSQ", "NAT", "Subjective"],
+                                      selectedValue: selectedType,
+                                      onChanged: (value) => _updateQuestionType(value!),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 20),
+                              BlocBuilder<QuestionsBloc, QuestionsState>(
+                                builder: (context, state) {
+                                  if (state is QuestionsLoading) {
+                                    return Container(
+                                      height: 600,
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            CircularProgressIndicator(),
+                                            const SizedBox(height: 16),
+                                            Text('Loading questions...'),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  
+                                  return SizedBox(
+                                    height: 600,
+                                    child: ListView.separated(
+                                      itemCount: filteredQuestions.length,
+                                      itemBuilder: (context, index) {
+                                        final question = filteredQuestions[index];
+                                        return _buildQuestionTile(question);
+                                      },
+                                      separatorBuilder: (context, index) => const SizedBox(height: 20),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

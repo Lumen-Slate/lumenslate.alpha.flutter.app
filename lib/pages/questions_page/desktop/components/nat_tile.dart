@@ -72,7 +72,7 @@ class NATTile extends StatelessWidget {
                           context: context,
                           builder: (context) => QuestionSegmentationDialog(
                             question: nat.question,
-                            type: nat.runtimeType.toString(),
+                            type: "NAT",
                             id: nat.id,
                           ),
                         );

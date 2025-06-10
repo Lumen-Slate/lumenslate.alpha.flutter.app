@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../blocs/question_segmentation/question_segmentation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 
 class QuestionSegmentationDialog extends StatefulWidget {
   final String question;
@@ -26,14 +27,78 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
     context.read<QuestionSegmentationBloc>().add(SegmentQuestion(widget.question));
   }
 
+  void _overrideQuestion() {
+    if (_segmentedQuestions.isNotEmpty) {
+      context.read<QuestionSegmentationBloc>().add(
+        OverrideQuestionWithParts(
+          questionId: widget.id,
+          questionType: widget.type,
+          segmentedQuestions: _segmentedQuestions,
+        ),
+      );
+    }
+  }
+
+  void _addQuestion() {
+    if (_segmentedQuestions.isNotEmpty) {
+      Map<String, dynamic> questionData = _getDefaultQuestionData();
+      
+      context.read<QuestionSegmentationBloc>().add(
+        AddQuestionWithParts(
+          questionType: widget.type,
+          bankId: "6aa0c742-2920-4556-9c24-8d41c8be1ffb", // Valid bank ID from API examples
+          segmentedQuestions: _segmentedQuestions,
+          questionData: questionData,
+        ),
+      );
+    }
+  }
+
+  Map<String, dynamic> _getDefaultQuestionData() {
+    switch (widget.type.toLowerCase()) {
+      case 'mcq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndex': 0,
+          'variableIds': [],
+        };
+      case 'msq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndices': [0],
+          'variableIds': [],
+        };
+      case 'nat':
+        return {
+          'points': 5,
+          'answer': 0.0,
+          'variable': [],
+        };
+      case 'subjective':
+        return {
+          'points': 10,
+          'idealAnswer': 'Default ideal answer',
+          'gradingCriteria': ['Default grading criteria'],
+          'variable': [],
+        };
+      default:
+        return {
+          'points': 5,
+          'variableIds': [],
+        };
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
+        width: MediaQuery.of(context).size.width * 0.95, // Increased from 0.9 to 0.95 for more width
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
+          maxHeight: MediaQuery.of(context).size.height * 0.9, // Increased from 0.8 to 0.9 for more height
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -79,6 +144,26 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Error: ${state.error}')),
                       );
+                    } else if (state is QuestionOverrideSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                      );
+                      context.read<QuestionsBloc>().add(const LoadQuestions());
+                      Navigator.of(context).pop();
+                    } else if (state is QuestionOverrideFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Override failed: ${state.error}'), backgroundColor: Colors.red),
+                      );
+                    } else if (state is AddQuestionSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                      );
+                      context.read<QuestionsBloc>().add(const LoadQuestions());
+                      Navigator.of(context).pop();
+                    } else if (state is AddQuestionFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Add question failed: ${state.error}'), backgroundColor: Colors.red),
+                      );
                     }
                   },
                   builder: (context, state) {
@@ -90,6 +175,30 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                           const SizedBox(height: 10),
                           Text(
                             'Breaking down your question...',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      );
+                    } else if (state is QuestionOverrideLoading) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Overriding question...',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      );
+                    } else if (state is AddQuestionLoading) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Adding new question...',
                             style: TextStyle(fontSize: 14),
                           ),
                         ],
@@ -172,32 +281,76 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
                 children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _segmentQuestion,
-                      icon: Icon(Icons.auto_fix_high, size: 18),
-                      label: Text('Segment', style: TextStyle(fontSize: 14)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                  // Segment button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _segmentQuestion,
+                          icon: Icon(Icons.auto_fix_high, size: 18),
+                          label: Text('Segment Question', style: TextStyle(fontSize: 14)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text('Close', style: TextStyle(fontSize: 14)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
+                  
+                  // Action buttons (shown only when segmented questions are available)
+                  if (_segmentedQuestions.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _overrideQuestion,
+                            icon: Icon(Icons.edit, size: 16),
+                            label: Text('Override', style: TextStyle(fontSize: 12)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _addQuestion,
+                            icon: Icon(Icons.add, size: 16),
+                            label: Text('Add New', style: TextStyle(fontSize: 12)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ],
+                  
+                  const SizedBox(height: 12),
+                  // Close button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text('Close', style: TextStyle(fontSize: 14)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

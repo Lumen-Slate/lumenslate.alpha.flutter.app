@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import '../constants/dummy_data/questions/subjective.dart';
-import '../models/questions/subjective.dart';
 import '../constants/app_constants.dart';
+import '../models/questions/subjective.dart';
 
 class SubjectiveRepository {
   final Dio _client = Dio(
@@ -13,64 +12,91 @@ class SubjectiveRepository {
 
   final Logger _logger = Logger();
 
-  Future<Map<String, dynamic>> createSubjective(Subjective subjective) async {
+  Future<Response> createSubjective(Subjective subjective) async {
     try {
-      final response = await _client.post('/subjective', data: subjective.toJson());
-      return response.data;
-    } catch (e) {
-      _logger.e('Error creating Subjective: $e');
-      dummySubjectives.add(subjective);
-      return subjective.toJson();
+      return await _client.post('/subjectives', data: subjective.toJson());
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error creating Subjective: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 
-  Future<List<Subjective>> getSubjectives(String bankId) async {
+  Future<Response> getSubjectives({String? bankId, int limit = 10, int offset = 0}) async {
     try {
-      final response = await _client.get('/subjective/bank/$bankId');
-      return (response.data as List)
-          .map((item) => Subjective.fromJson(item as Map<String, dynamic>))
-          .toList();
-    } catch (e) {
-      _logger.e('Error fetching Subjectives: $e');
-      return dummySubjectives.where((subjective) => subjective.bankId == bankId).toList();
-    }
-  }
-
-  Future<Map<String, dynamic>> updateSubjective(String id, Subjective subjective) async {
-    try {
-      final response = await _client.put('/subjective/$id', data: subjective.toJson());
-      return response.data;
-    } catch (e) {
-      _logger.e('Error updating Subjective: $e');
-      final index = dummySubjectives.indexWhere((item) => item.id == id);
-      if (index != -1) {
-        dummySubjectives[index] = subjective;
+      Map<String, dynamic> queryParams = {
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+      };
+      if (bankId != null) {
+        queryParams['bankId'] = bankId;
       }
-      return subjective.toJson();
+      return await _client.get('/subjectives', queryParameters: queryParams);
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error fetching Subjectives: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 
-  Future<bool> deleteSubjective(String id) async {
+  Future<Response> updateSubjective(String id, Subjective subjective) async {
     try {
-      await _client.delete('/subjective/$id');
-      return true;
-    } catch (e) {
-      _logger.e('Error deleting Subjective: $e');
-      dummySubjectives.removeWhere((subjective) => subjective.id == id);
-      return true;
+      return await _client.put('/subjectives/$id', data: subjective.toJson());
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error updating Subjective: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 
-  Future<bool> createBulkSubjectives(List<Subjective> subjectives) async {
+  Future<Response> patchSubjective(String id, Map<String, dynamic> updates) async {
     try {
-      final response = await _client.post(
-        '/subjective/bulk',
+      return await _client.patch('/subjectives/$id', data: updates);
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error patching Subjective: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
+    }
+  }
+
+  Future<Response> deleteSubjective(String id) async {
+    try {
+      return await _client.delete('/subjectives/$id');
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error deleting Subjective: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
+    }
+  }
+
+  Future<Response> createBulkSubjectives(List<Subjective> subjectives) async {
+    try {
+      return await _client.post(
+        '/subjectives/bulk',
         data: subjectives.map((subjective) => subjective.toJson()).toList(),
       );
-      return response.statusCode == 201;
-    } catch (e) {
-      _logger.e('Error creating bulk Subjectives: $e');
-      return false;
+    } on DioException catch (dioError, stackTrace) {
+      _logger.e(
+        'Error creating bulk Subjectives: Status code ${dioError.response?.statusCode}',
+        error: dioError,
+        stackTrace: stackTrace,
+      );
+      return dioError.response!;
     }
   }
 }

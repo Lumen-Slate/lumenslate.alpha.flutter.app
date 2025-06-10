@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../blocs/question_segmentation/question_segmentation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 
 class QuestionSegmentationDialog extends StatefulWidget {
   final String question;
@@ -26,13 +27,79 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
     context.read<QuestionSegmentationBloc>().add(SegmentQuestion(widget.question));
   }
 
+  void _overrideQuestion() {
+    if (_segmentedQuestions.isNotEmpty) {
+      context.read<QuestionSegmentationBloc>().add(
+        OverrideQuestionWithParts(
+          questionId: widget.id,
+          questionType: widget.type,
+          segmentedQuestions: _segmentedQuestions,
+        ),
+      );
+    }
+  }
+
+  void _addQuestion() {
+    if (_segmentedQuestions.isNotEmpty) {
+      // For demonstration, using default values - in real app, you'd want to get these from context/user input
+      Map<String, dynamic> questionData = _getDefaultQuestionData();
+      
+      context.read<QuestionSegmentationBloc>().add(
+        AddQuestionWithParts(
+          questionType: widget.type,
+          bankId: "6aa0c742-2920-4556-9c24-8d41c8be1ffb", // Valid bank ID from API examples
+          segmentedQuestions: _segmentedQuestions,
+          questionData: questionData,
+        ),
+      );
+    }
+  }
+
+  Map<String, dynamic> _getDefaultQuestionData() {
+    // Create default question data based on type
+    switch (widget.type.toLowerCase()) {
+      case 'mcq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndex': 0,
+          'variableIds': [],
+        };
+      case 'msq':
+        return {
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndices': [0],
+          'variableIds': [],
+        };
+      case 'nat':
+        return {
+          'points': 5,
+          'answer': 0.0,
+          'variable': [],
+        };
+      case 'subjective':
+        return {
+          'points': 10,
+          'idealAnswer': 'Default ideal answer',
+          'gradingCriteria': ['Default grading criteria'],
+          'variable': [],
+        };
+      default:
+        return {
+          'points': 5,
+          'variableIds': [],
+        };
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        width: 800,
-        height: MediaQuery.of(context).size.height * 0.8, // Max 80% of screen height
+        width: MediaQuery.of(context).size.width * 0.85, // 85% of screen width, more responsive
+        height: MediaQuery.of(context).size.height * 0.9, // 90% of screen height for more space
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -77,6 +144,28 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Error: ${state.error}')),
                       );
+                    } else if (state is QuestionOverrideSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                      );
+                      // Refresh questions list
+                      context.read<QuestionsBloc>().add(const LoadQuestions());
+                      Navigator.of(context).pop();
+                    } else if (state is QuestionOverrideFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Override failed: ${state.error}'), backgroundColor: Colors.red),
+                      );
+                    } else if (state is AddQuestionSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                      );
+                      // Refresh questions list
+                      context.read<QuestionsBloc>().add(const LoadQuestions());
+                      Navigator.of(context).pop();
+                    } else if (state is AddQuestionFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Add question failed: ${state.error}'), backgroundColor: Colors.red),
+                      );
                     }
                   },
                   builder: (context, state) {
@@ -87,6 +176,24 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                           CircularProgressIndicator(),
                           const SizedBox(height: 10),
                           Text('Breaking down your question...'),
+                        ],
+                      );
+                    } else if (state is QuestionOverrideLoading) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          const SizedBox(height: 10),
+                          Text('Overriding question...'),
+                        ],
+                      );
+                    } else if (state is AddQuestionLoading) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          const SizedBox(height: 10),
+                          Text('Adding new question...'),
                         ],
                       );
                     } else if (_segmentedQuestions.isNotEmpty) {
@@ -167,25 +274,68 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                 ),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: _segmentQuestion,
-                    icon: Icon(Icons.auto_fix_high),
-                    label: Text('Segment Question'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
+                  // Main segmentation button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: _segmentQuestion,
+                        icon: Icon(Icons.auto_fix_high),
+                        label: Text('Segment Question'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text('Close'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.white,
+                  const SizedBox(height: 16),
+                  // Action buttons (shown only when segmented questions are available)
+                  if (_segmentedQuestions.isNotEmpty) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: _overrideQuestion,
+                          icon: Icon(Icons.edit),
+                          label: Text('Override Question'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: _addQuestion,
+                          icon: Icon(Icons.add),
+                          label: Text('Add Question'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          ),
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 16),
+                  ],
+                  // Close button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text('Close'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

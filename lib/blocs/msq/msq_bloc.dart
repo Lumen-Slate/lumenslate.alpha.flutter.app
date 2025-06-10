@@ -16,7 +16,7 @@ class MSQBloc extends Bloc<MSQEvent, MSQState> {
     on<FetchMSQs>((event, emit) async {
       emit(MSQLoading());
       try {
-        final response = await repository.getMSQs(event.bankId);
+        final response = await repository.getMSQs(bankId: event.bankId);
 
         if (response.statusCode! >= 400) {
           throw StateError(response.data['error'] ?? 'Failed to fetch MSQs.');
