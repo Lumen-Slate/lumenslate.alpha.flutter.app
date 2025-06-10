@@ -70,8 +70,16 @@ class QuestionSegmentationRepository {
       newQuestionData['question'] = multiPartQuestion;
       newQuestionData['bankId'] = bankId;
 
+      // Debug logging
+      _logger.d('Adding question with parts:');
+      _logger.d('Question type: $questionType');
+      _logger.d('Bank ID: $bankId');
+      _logger.d('Multi-part question: $multiPartQuestion');
+      _logger.d('Full request data: $newQuestionData');
+
       // Use POST to create a new question
       String endpoint = '/${questionType.toLowerCase()}s';
+      _logger.d('Endpoint: $endpoint');
       
       return await _backendClient.post(
         endpoint,
@@ -83,6 +91,9 @@ class QuestionSegmentationRepository {
         error: dioError,
         stackTrace: stackTrace,
       );
+      if (dioError.response?.data != null) {
+        _logger.e('Error response data: ${dioError.response?.data}');
+      }
       return dioError.response!;
     }
   }

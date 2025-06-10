@@ -47,7 +47,7 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
       context.read<QuestionSegmentationBloc>().add(
         AddQuestionWithParts(
           questionType: widget.type,
-          bankId: "default-bank-id", // You should get this from context
+          bankId: "6aa0c742-2920-4556-9c24-8d41c8be1ffb", // Valid bank ID from API examples
           segmentedQuestions: _segmentedQuestions,
           questionData: questionData,
         ),
@@ -69,21 +69,21 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
         return {
           'points': 5,
           'options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'correctAnswers': [0],
+          'answerIndices': [0],
           'variableIds': [],
         };
       case 'nat':
         return {
           'points': 5,
           'answer': 0.0,
-          'variableIds': [],
+          'variable': [],
         };
       case 'subjective':
         return {
           'points': 10,
-          'idealAnswer': '',
-          'gradingCriteria': [],
-          'variableIds': [],
+          'idealAnswer': 'Default ideal answer',
+          'gradingCriteria': ['Default grading criteria'],
+          'variable': [],
         };
       default:
         return {
@@ -98,8 +98,8 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        width: 800,
-        height: MediaQuery.of(context).size.height * 0.8, // Max 80% of screen height
+        width: MediaQuery.of(context).size.width * 0.85, // 85% of screen width, more responsive
+        height: MediaQuery.of(context).size.height * 0.9, // 90% of screen height for more space
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
