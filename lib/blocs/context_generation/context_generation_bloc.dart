@@ -77,7 +77,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
     OverrideQuestionWithContext event,
     Emitter<ContextGeneratorState> emit,
   ) async {
-    emit(QuestionOverrideLoading());
+    emit(ContextOverrideLoading());
     try {
       final Response response = await aiRepository.overrideQuestionWithContext(
         event.questionId,
@@ -89,14 +89,14 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
         throw StateError(response.data['error'] ?? 'An error occurred while overriding the question.');
       }
 
-      emit(QuestionOverrideSuccess('Question successfully overridden with context.'));
+      emit(ContextOverrideSuccess('Question successfully overridden with context.'));
     } on StateError catch (e) {
-      emit(QuestionOverrideFailure(e.message));
+      emit(ContextOverrideFailure(e.message));
     } on DioException catch (e) {
-      emit(QuestionOverrideFailure("Network error: ${e.message}"));
+      emit(ContextOverrideFailure("Network error: ${e.message}"));
     } catch (e) {
       Logger().e('Error overriding question with context: $e');
-      emit(QuestionOverrideFailure("Unexpected error: $e"));
+      emit(ContextOverrideFailure("Unexpected error: $e"));
     }
   }
 
@@ -104,7 +104,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
     SaveAsNewQuestionWithContext event,
     Emitter<ContextGeneratorState> emit,
   ) async {
-    emit(SaveAsNewQuestionLoading());
+    emit(ContextSaveAsNewLoading());
     try {
       final Response response = await aiRepository.saveAsNewQuestionWithContext(
         event.questionType,
@@ -117,14 +117,14 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
         throw StateError(response.data['error'] ?? 'An error occurred while saving the new question.');
       }
 
-      emit(SaveAsNewQuestionSuccess('New question with context successfully saved.'));
+      emit(ContextSaveAsNewSuccess('New question with context successfully saved.'));
     } on StateError catch (e) {
-      emit(SaveAsNewQuestionFailure(e.message));
+      emit(ContextSaveAsNewFailure(e.message));
     } on DioException catch (e) {
-      emit(SaveAsNewQuestionFailure("Network error: ${e.message}"));
+      emit(ContextSaveAsNewFailure("Network error: ${e.message}"));
     } catch (e) {
       Logger().e('Error saving new question with context: $e');
-      emit(SaveAsNewQuestionFailure("Unexpected error: $e"));
+      emit(ContextSaveAsNewFailure("Unexpected error: $e"));
     }
   }
 }

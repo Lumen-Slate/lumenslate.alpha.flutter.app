@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/context_generation/context_generation_bloc.dart';
 import '../../../../blocs/questions/questions_bloc.dart';
@@ -204,23 +203,23 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: ${state.error}')),
                   );
-                } else if (state is QuestionOverrideSuccess) {
+                } else if (state is ContextOverrideSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message), backgroundColor: Colors.green),
                   );
                   context.read<QuestionsBloc>().add(const LoadQuestions());
                   Navigator.of(context).pop();
-                } else if (state is QuestionOverrideFailure) {
+                } else if (state is ContextOverrideFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Override failed: ${state.error}'), backgroundColor: Colors.red),
                   );
-                } else if (state is SaveAsNewQuestionSuccess) {
+                } else if (state is ContextSaveAsNewSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message), backgroundColor: Colors.green),
                   );
                   context.read<QuestionsBloc>().add(const LoadQuestions());
                   Navigator.of(context).pop();
-                } else if (state is SaveAsNewQuestionFailure) {
+                } else if (state is ContextSaveAsNewFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Save failed: ${state.error}'), backgroundColor: Colors.red),
                   );
@@ -241,7 +240,7 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                       ],
                     ),
                   );
-                } else if (state is QuestionOverrideLoading) {
+                } else if (state is ContextOverrideLoading) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: Column(
@@ -255,7 +254,7 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                       ],
                     ),
                   );
-                } else if (state is SaveAsNewQuestionLoading) {
+                } else if (state is ContextSaveAsNewLoading) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: Column(
