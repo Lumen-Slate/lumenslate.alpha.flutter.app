@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 
 class AgentPayload {
-  final MultipartFile file;
+  final PlatformFile? file;
   final String teacherId;
   final String role;
   final String message;
@@ -9,7 +10,7 @@ class AgentPayload {
   final DateTime updatedAt;
 
   AgentPayload({
-    required this.file,
+    this.file,
     required this.teacherId,
     required this.role,
     required this.message,
@@ -17,10 +18,9 @@ class AgentPayload {
     required this.updatedAt,
   });
 
-
   FormData toFormData() {
     return FormData.fromMap({
-      'file': file,
+      'file': file != null ? MultipartFile.fromBytes(file!.bytes!, filename: file!.name) : null,
       'teacherId': teacherId,
       'role': role,
       'message': message,

@@ -9,6 +9,7 @@ import '../pages/dashboard_page/dashboard.dart';
 import '../pages/loading_page/loading.dart';
 import '../pages/question_bank_page/question_bank.dart';
 import '../pages/questions_page/questions.dart';
+import '../pages/rag_agent_page/desktop/rag_agent_page.dart';
 import '../pages/sign_in_page/sign_in.dart';
 import '../pages/pdf_generator_page.dart';
 
@@ -30,6 +31,7 @@ final GoRouter router = GoRouter(
         GoRoute(path: '/assignments', pageBuilder: (context, state) => MaterialPage(child: AssignmentsPage())),
         GoRoute(path: '/pdf-generator', pageBuilder: (context, state) => MaterialPage(child: PdfGeneratorPage())),
         GoRoute(path: '/agent', pageBuilder: (context, state) => MaterialPage(child: ChatAgentPageDesktop())),
+        GoRoute(path: '/rag-agent', pageBuilder: (context, state) => MaterialPage(child: RagAgentPageDesktop())),
       ],
     ),
     GoRoute(path: '/add-question', pageBuilder: (context, state) => MaterialPage(child: AddQuestion())),

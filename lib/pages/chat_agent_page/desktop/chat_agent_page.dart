@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../../../blocs/chat_agent/chat_agent_bloc.dart';
 import '../../../models/chat_message.dart';
@@ -20,6 +21,7 @@ class ChatAgentPageDesktop extends StatefulWidget {
 
 class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
   final TextEditingController _textController = TextEditingController();
+  PlatformFile? _selectedFile;
 
   @override
   void initState() {
@@ -38,6 +40,38 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
     if (text.isNotEmpty) {
       context.read<ChatAgentBloc>().add(CallAgent(teacherId: widget.teacherId, messageString: text));
       _textController.clear();
+    }
+  }
+
+  Future<void> _pickSupportedFile() async {
+    final allowedExtensions = [
+      // Images
+      'jpg', 'jpeg', 'png', 'webp',
+      // Audio
+      'wav', 'mp3', 'aiff', 'aac', 'ogg', 'flac',
+      // Text
+      'pdf',
+    ];
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: allowedExtensions,
+      allowMultiple: false,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.first;
+      final ext = file.extension?.toLowerCase();
+      if (!allowedExtensions.contains(ext)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unsupported file type selected.')),
+        );
+        return;
+      }
+      setState(() {
+        _selectedFile = file;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selected: ${file.name}')),
+      );
     }
   }
 
@@ -92,6 +126,33 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                           },
                         ),
                       ),
+                      // Show selected file and unselect button if a file is selected
+                      if (_selectedFile != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.attach_file, color: Colors.blue),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _selectedFile!.name,
+                                  style: const TextStyle(fontSize: 14),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, size: 20),
+                                tooltip: 'Unselect file',
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedFile = null;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       // Message Input
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -107,7 +168,15 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                 onSubmitted: (_) => _sendMessage(context),
                               ),
                             ),
-                            IconButton(icon: const Icon(Icons.send), onPressed: () => _sendMessage(context)),
+                            IconButton(
+                              icon: const Icon(Icons.attach_file),
+                              tooltip: 'Attach file',
+                              onPressed: _pickSupportedFile,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.send),
+                              onPressed: () => _sendMessage(context),
+                            ),
                           ],
                         ),
                       ),
@@ -122,5 +191,3 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
     );
   }
 }
-
-
