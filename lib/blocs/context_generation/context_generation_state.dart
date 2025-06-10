@@ -29,3 +29,43 @@ class ContextGeneratorFailure extends ContextGeneratorState {
   @override
   List<Object> get props => [error];
 }
+
+class QuestionOverrideLoading extends ContextGeneratorState {}
+
+class QuestionOverrideSuccess extends ContextGeneratorState {
+  final String message;
+
+  const QuestionOverrideSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class QuestionOverrideFailure extends ContextGeneratorState {
+  final String error;
+
+  const QuestionOverrideFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class SaveAsNewQuestionLoading extends ContextGeneratorState {}
+
+class SaveAsNewQuestionSuccess extends ContextGeneratorState {
+  final String message;
+
+  const SaveAsNewQuestionSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class SaveAsNewQuestionFailure extends ContextGeneratorState {
+  final String error;
+
+  const SaveAsNewQuestionFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}

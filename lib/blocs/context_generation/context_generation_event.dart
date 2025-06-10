@@ -27,3 +27,35 @@ class SaveQuestion extends ContextGeneratorEvent {
   @override
   List<Object> get props => [id, type, updatedQuestion];
 }
+
+class OverrideQuestionWithContext extends ContextGeneratorEvent {
+  final String questionId;
+  final String questionType;
+  final String contextualizedQuestion;
+
+  const OverrideQuestionWithContext({
+    required this.questionId,
+    required this.questionType,
+    required this.contextualizedQuestion,
+  });
+
+  @override
+  List<Object> get props => [questionId, questionType, contextualizedQuestion];
+}
+
+class SaveAsNewQuestionWithContext extends ContextGeneratorEvent {
+  final String questionType;
+  final String bankId;
+  final String contextualizedQuestion;
+  final Map<String, dynamic> questionData;
+
+  const SaveAsNewQuestionWithContext({
+    required this.questionType,
+    required this.bankId,
+    required this.contextualizedQuestion,
+    required this.questionData,
+  });
+
+  @override
+  List<Object> get props => [questionType, bankId, contextualizedQuestion, questionData];
+}
