@@ -13,8 +13,8 @@
 | Link Type | URL |
 |----------|-----|
 | 🧩 Frontend (Flutter Web) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.flutter.app) |
-| ⚙️ Backend (Go + Firebase) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gin.server) |
-| 🤖 AI Microservice (FastAPI) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.fastapi.microservice.ai) |
+| ⚙️ Backend (Go + MongoDB) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gin.server) |
+| 🤖 AI Microservice (gRPC) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gRPC.microservice.ai) |
 | 📹 Demo Video (3 min) | [Watch on Vimeo](https://vimeo.com/1094177673/9b0442be5d) |
 | 🌐 Live MVP | [Visit](https://lumen-slate.firebaseapp.com) |
 
@@ -115,7 +115,7 @@ firebase/    → Firebase-related configuration
 | ------------------- | ------------------------------------------------------------------------ |
 | **Frontend**        | Flutter Web                                                              |
 | **Backend**         | Go (Gin), Firebase                                                       |
-| **AI Microservice** | FastAPI, gRPC, Vertex AI, Gemini                                         |
+| **AI Microservice** | gRPC, Vertex AI, Gemini                                         |
 | **Database**        | MongoDB                                                                  |
 | **Infra**           | Google Cloud Run (backend & microservice)<br>Firebase Hosting (frontend) |
 | **Other APIs**      | Google Speech-to-Text, Vertex AI RAG                                     |
