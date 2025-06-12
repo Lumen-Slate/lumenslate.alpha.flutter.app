@@ -97,11 +97,19 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
                       return Column(
                         children: [
                           ...checkboxes,
-                          ElevatedButton(
-                            onPressed: _selectedVariations.isNotEmpty
-                                ? () => context.read<MSQBloc>().add(SaveBulkMSQs(_selectedVariations))
-                                : null,
-                            child: Text('Add Selected Questions'),
+                          BlocBuilder<MSQBloc, MSQState>(
+                            builder: (context, state) {
+                              if (state is MSQLoading) {
+                                return Center(child: CircularProgressIndicator());
+                              } else {
+                                return ElevatedButton(
+                                  onPressed: _selectedVariations.isNotEmpty
+                                      ? () => context.read<MSQBloc>().add(SaveBulkMSQs(_selectedVariations))
+                                      : null,
+                                  child: Text('Save Selected Questions'),
+                                );
+                              }
+                            },
                           ),
                         ],
                       );
