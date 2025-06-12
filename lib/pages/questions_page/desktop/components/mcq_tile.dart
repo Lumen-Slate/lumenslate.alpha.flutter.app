@@ -5,7 +5,6 @@ import '../../../../blocs/mcq_variation_generation/mcq_variation_bloc.dart';
 import '../../../../models/questions/mcq.dart';
 import 'context_generation_dialog.dart';
 import 'mcq_variation_dialog.dart';
-import 'question_segmentation_dialog.dart';
 
 class MCQTile extends StatelessWidget {
   final MCQ mcq;
@@ -115,17 +114,6 @@ class MCQTile extends StatelessWidget {
                           ),
                         );
                         // _refreshQuestions();
-                      },
-                      iconSize: 21,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.auto_fix_high, color: Colors.green[700]),
-                      onPressed: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (context) =>
-                              QuestionSegmentationDialog(question: mcq.question, type: "MCQ", id: mcq.id),
-                        );
                       },
                       iconSize: 21,
                     ),

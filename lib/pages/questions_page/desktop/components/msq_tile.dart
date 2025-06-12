@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../models/questions/msq.dart';
 import 'context_generation_dialog.dart';
-import 'question_segmentation_dialog.dart';
 
 class MSQTile extends StatelessWidget {
   final MSQ msq;
@@ -96,17 +95,6 @@ class MSQTile extends StatelessWidget {
                             type: msq.runtimeType.toString(),
                             id: msq.id,
                           ),
-                        );
-                      },
-                      iconSize: 21,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.auto_fix_high, color: Colors.green[700]),
-                      onPressed: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (context) =>
-                              QuestionSegmentationDialog(question: msq.question, type: "MSQ", id: msq.id),
                         );
                       },
                       iconSize: 21,
