@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/mcq/mcq_bloc.dart';
 import '../../../../blocs/mcq_variation_generation/mcq_variation_bloc.dart';
-import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/mcq.dart';
 
 
@@ -35,7 +34,6 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
     return BlocListener<MCQBloc, MCQState>(
       listener: (context, state) {
         if (state is MCQLoaded) {
-          context.read<QuestionsBloc>().add(const LoadQuestions());
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

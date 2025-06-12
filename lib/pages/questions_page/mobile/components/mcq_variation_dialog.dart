@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../blocs/mcq/mcq_bloc.dart';
 import '../../../../blocs/mcq_variation_generation/mcq_variation_bloc.dart';
-import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/mcq.dart';
 
 class MCQVariationDialogMobile extends StatefulWidget {
@@ -31,8 +30,6 @@ class _MCQVariationDialogMobileState extends State<MCQVariationDialogMobile> {
     return BlocListener<MCQBloc, MCQState>(
       listener: (context, state) {
         if (state is MCQLoaded) {
-          // Refresh the questions list
-          context.read<QuestionsBloc>().add(const LoadQuestions());
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

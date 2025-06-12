@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/msq/msq_bloc.dart';
 import '../../../../blocs/msq_variation_generation/msq_variation_bloc.dart';
-import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/msq.dart';
 
 class MSQVariationDialog extends StatefulWidget {
@@ -34,8 +33,6 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
     return BlocListener<MSQBloc, MSQState>(
       listener: (context, state) {
         if (state is MSQLoaded) {
-          // Refresh the questions list
-          context.read<QuestionsBloc>().add(const LoadQuestions());
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
