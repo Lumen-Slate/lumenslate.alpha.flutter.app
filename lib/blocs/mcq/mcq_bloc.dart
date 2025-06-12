@@ -82,9 +82,9 @@ class MCQBloc extends Bloc<MCQEvent, MCQState> {
           throw StateError(response.data['error'] ?? 'Failed to save bulk MCQs.');
         }
 
-        Logger().i('Bulk MCQs saved successfully: ${response.data['message']}');
+        Logger().i('Bulk MCQs saved successfully');
 
-        final mcqs = (response.data['mcqs'] as List)
+        final mcqs = (response.data as List)
             .map((item) => MCQ.fromJson(item as Map<String, dynamic>))
             .toList();
 
