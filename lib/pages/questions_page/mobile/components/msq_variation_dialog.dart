@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../blocs/msq/msq_bloc.dart';
 import '../../../../blocs/msq_variation_generation/msq_variation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/msq.dart';
 
 class MSQVariationDialogMobile extends StatefulWidget {
@@ -30,6 +31,8 @@ class _MSQVariationDialogMobileState extends State<MSQVariationDialogMobile> {
     return BlocListener<MSQBloc, MSQState>(
       listener: (context, state) {
         if (state is MSQLoaded) {
+          // Refresh the main questions list
+          context.read<QuestionsBloc>().add(const LoadQuestions());
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
