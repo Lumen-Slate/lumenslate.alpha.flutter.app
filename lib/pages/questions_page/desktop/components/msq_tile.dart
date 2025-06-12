@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../blocs/msq_variation_generation/msq_variation_bloc.dart';
 import '../../../../models/questions/msq.dart';
 import 'context_generation_dialog.dart';
+import 'msq_variation_dialog.dart';
 
 class MSQTile extends StatelessWidget {
   final MSQ msq;
@@ -94,6 +97,23 @@ class MSQTile extends StatelessWidget {
                             question: msq.question,
                             type: msq.runtimeType.toString(),
                             id: msq.id,
+                          ),
+                        );
+                      },
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.account_tree, color: Colors.blue[700]),
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) => PopScope(
+                            onPopInvokedWithResult: (didPop, result) {
+                              if (didPop) {
+                                context.read<MSQVariationBloc>().add(MSQVariationReset());
+                              }
+                            },
+                            child: MSQVariationDialog(msq: msq),
                           ),
                         );
                       },

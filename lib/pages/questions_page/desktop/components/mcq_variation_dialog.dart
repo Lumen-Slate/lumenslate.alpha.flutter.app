@@ -48,25 +48,26 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: SizedBox(
           width: 800,
+          height: MediaQuery.of(context).size.height * 0.8,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'Generate MCQ Variations',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
-                BlocConsumer<MCQVariationBloc, MCQVariationState>(
-                  listener: (context, state) {
-                    if (state is MCQVariationFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: ${state.error}')),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
+                Expanded(
+                  child: BlocConsumer<MCQVariationBloc, MCQVariationState>(
+                    listener: (context, state) {
+                      if (state is MCQVariationFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${state.error}')),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
                     if (state is MCQVariationSuccess) {
                       List<CheckboxListTile> checkboxes = [];
 
@@ -94,9 +95,16 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
                       }
 
                       return Column(
-                        spacing: 30,
                         children: [
-                          ...checkboxes,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                spacing: 20,
+                                children: checkboxes,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                           BlocBuilder<MCQBloc, MCQState>(
                             builder: (context, state) {
                               if (state is MCQLoading) {
@@ -130,9 +138,10 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
                         ],
                       );
                     } else {
-                      return CircularProgressIndicator();
+                      return Center(child: CircularProgressIndicator());
                     }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),
