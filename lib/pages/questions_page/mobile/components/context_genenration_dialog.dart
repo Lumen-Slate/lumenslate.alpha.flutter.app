@@ -77,35 +77,37 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
     switch (widget.type.toLowerCase()) {
       case 'mcq':
         return {
-          'Points': 5,
-          'Options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'AnswerIndex': 0,
-          'VariableIds': [],
+          'id': '',
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndex': 0,
+          'variableIds': [],
         };
       case 'msq':
         return {
-          'Points': 5,
-          'Options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'AnswerIndices': [0],
-          'VariableIds': [],
+          'id': '',
+          'points': 5,
+          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
+          'answerIndices': [0],
+          'variableIds': [],
         };
       case 'nat':
         return {
-          'Points': 5,
-          'Answer': 0.0,
-          'Variable': [],
+          'points': 5,
+          'answer': 0.0,
+          'variable': [],
         };
       case 'subjective':
         return {
-          'Points': 10,
-          'IdealAnswer': 'Default ideal answer',
-          'GradingCriteria': ['Default grading criteria'],
-          'Variable': [],
+          'points': 10,
+          'idealAnswer': 'Default ideal answer',
+          'gradingCriteria': ['Default grading criteria'],
+          'variable': [],
         };
       default:
         return {
-          'Points': 5,
-          'VariableIds': [],
+          'points': 5,
+          'variableIds': [],
         };
     }
   }

@@ -65,7 +65,12 @@ class AIRepository {
       _logger.d('Question type: $questionType');
       _logger.d('Bank ID: $bankId');
       _logger.d('Contextualized question: $contextualizedQuestion');
+      _logger.d('Original question data: $questionData');
+      _logger.d('Final request data keys: ${newQuestionData.keys.toList()}');
+      _logger.d('Final request data values: ${newQuestionData.values.toList()}');
       _logger.d('Full request data: $newQuestionData');
+      _logger.d('AnswerIndex value: ${newQuestionData['AnswerIndex']}');
+      _logger.d('AnswerIndex type: ${newQuestionData['AnswerIndex'].runtimeType}');
 
       // Use POST to create a new question
       String endpoint = '/${questionType.toLowerCase()}s';
