@@ -77,32 +77,30 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
     switch (widget.type.toLowerCase()) {
       case 'mcq':
         return {
-          'id': '',
+          'variableIds': [],
           'points': 5,
           'options': ['Option A', 'Option B', 'Option C', 'Option D'],
           'answerIndex': 0,
-          'variableIds': [],
         };
       case 'msq':
         return {
-          'id': '',
+          'variableIds': [],
           'points': 5,
           'options': ['Option A', 'Option B', 'Option C', 'Option D'],
           'answerIndices': [0],
-          'variableIds': [],
         };
       case 'nat':
         return {
+          'variableIds': [],
           'points': 5,
           'answer': 0.0,
-          'variable': [],
         };
       case 'subjective':
         return {
+          'variableIds': [],
           'points': 10,
           'idealAnswer': 'Default ideal answer',
           'gradingCriteria': ['Default grading criteria'],
-          'variable': [],
         };
       default:
         return {
