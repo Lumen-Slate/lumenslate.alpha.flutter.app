@@ -35,11 +35,17 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
         if (state is MSQLoaded) {
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('MSQ variants saved successfully')),
+            SnackBar(
+              content: Text('MSQ variants saved successfully'),
+              backgroundColor: Colors.green,
+            ),
           );
         } else if (state is MSQError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.message}')),
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },

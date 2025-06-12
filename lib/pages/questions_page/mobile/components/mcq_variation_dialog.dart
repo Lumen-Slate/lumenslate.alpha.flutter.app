@@ -32,11 +32,17 @@ class _MCQVariationDialogMobileState extends State<MCQVariationDialogMobile> {
         if (state is MCQLoaded) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('MCQ variants saved successfully')),
+            SnackBar(
+              content: Text('MCQ variants saved successfully'),
+              backgroundColor: Colors.green,
+            ),
           );
         } else if (state is MCQError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.message}')),
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
