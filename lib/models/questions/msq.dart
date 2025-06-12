@@ -17,9 +17,8 @@ class MSQ {
     required this.answerIndices,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+  Map<String, dynamic> toJson({bool forCreation = false}) {
+    Map<String, dynamic> json = {
       'bankId': bankId,
       'question': question,
       'variableIds': variableIds,
@@ -27,6 +26,13 @@ class MSQ {
       'options': options,
       'answerIndices': answerIndices,
     };
+    
+    // Only include id if not for creation (backend generates its own IDs)
+    if (!forCreation) {
+      json['id'] = id;
+    }
+    
+    return json;
   }
 
   factory MSQ.fromJson(Map<String, dynamic> json) {

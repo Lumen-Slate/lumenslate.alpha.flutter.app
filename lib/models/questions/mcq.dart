@@ -17,9 +17,8 @@ class MCQ {
     required this.answerIndex,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+  Map<String, dynamic> toJson({bool forCreation = false}) {
+    Map<String, dynamic> json = {
       'bankId': bankId,
       'question': question,
       'variableIds': variableIds,
@@ -27,6 +26,13 @@ class MCQ {
       'options': options,
       'answerIndex': answerIndex,
     };
+    
+    // Only include id if not for creation (backend generates its own IDs)
+    if (!forCreation) {
+      json['id'] = id;
+    }
+    
+    return json;
   }
 
   factory MCQ.fromJson(Map<String, dynamic> json) {
