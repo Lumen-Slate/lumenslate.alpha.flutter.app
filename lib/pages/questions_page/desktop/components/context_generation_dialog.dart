@@ -205,17 +205,17 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                       );
                     }
                   },
-                  builder: (context, state) {
-                    if (state is ContextGeneratorLoading) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                          const SizedBox(height: 10),
-                          Text('Generating context...'),
-                        ],
-                      );
-                    } else if (state is ContextOverrideLoading) {
+                                  builder: (context, state) {
+                  if (state is ContextGeneratorLoading) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        const SizedBox(height: 10),
+                        Text('Generating context...'),
+                      ],
+                    );
+                  } else if (state is ContextOverrideLoading) {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

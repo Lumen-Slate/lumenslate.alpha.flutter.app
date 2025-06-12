@@ -17,6 +17,13 @@ class GenerateContext extends ContextGeneratorEvent {
   List<Object> get props => [question, keywords];
 }
 
+class ContextGeneratorReset extends ContextGeneratorEvent {
+  const ContextGeneratorReset();
+
+  @override
+  List<Object> get props => [];
+}
+
 class SaveQuestion extends ContextGeneratorEvent {
   final String id;
   final String type;

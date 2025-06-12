@@ -16,6 +16,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
 
   ContextGeneratorBloc(this.aiRepository) : super(ContextGeneratorInitial()) {
     on<GenerateContext>(_onGenerateContext);
+    on<ContextGeneratorReset>(_onContextGeneratorReset);
     on<SaveQuestion>(_onSaveQuestion);
     on<OverrideQuestionWithContext>(_onOverrideQuestionWithContext);
     on<SaveAsNewQuestionWithContext>(_onSaveAsNewQuestionWithContext);
@@ -32,6 +33,13 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
     } catch (e) {
       emit(ContextGeneratorFailure(e.toString()));
     }
+  }
+
+  Future<void> _onContextGeneratorReset(
+    ContextGeneratorReset event,
+    Emitter<ContextGeneratorState> emit,
+  ) async {
+    emit(ContextGeneratorInitial());
   }
 
   Future<void> _onSaveQuestion(
