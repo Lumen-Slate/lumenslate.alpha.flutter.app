@@ -9,6 +9,7 @@ import '../../../models/questions/mcq.dart';
 import '../../../models/questions/msq.dart';
 import 'components/context_genenration_dialog.dart';
 import 'components/mcq_variation_dialog.dart';
+import 'components/msq_variation_dialog.dart';
 
 class QuestionsMobile extends StatefulWidget {
   const QuestionsMobile({super.key});
@@ -210,6 +211,24 @@ class _QuestionsMobileState extends State<QuestionsMobile> {
                                 await showDialog(
                                   context: context,
                                   builder: (_) => MCQVariationDialogMobile(mcq: question),
+                                );
+                                _refreshQuestions();
+                              },
+                            ),
+                          ),
+                        if (question is MSQ)
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.account_tree),
+                              label: const Text('Variations'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue.shade100,
+                                foregroundColor: Colors.blue.shade800,
+                              ),
+                              onPressed: () async {
+                                await showDialog(
+                                  context: context,
+                                  builder: (_) => MSQVariationDialogMobile(msq: question),
                                 );
                                 _refreshQuestions();
                               },
