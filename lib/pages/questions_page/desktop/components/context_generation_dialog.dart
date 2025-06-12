@@ -80,14 +80,14 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
         return {
           'points': 5,
           'options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'answerIndex': 0,
+          'AnswerIndex': 0,
           'variableIds': [],
         };
       case 'msq':
         return {
           'points': 5,
           'options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'answerIndices': [0],
+          'AnswerIndices': [0],
           'variableIds': [],
         };
       case 'nat':
