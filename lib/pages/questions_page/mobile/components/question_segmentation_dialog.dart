@@ -3,15 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../blocs/question_segmentation/question_segmentation_bloc.dart';
 import '../../../../blocs/questions/questions_bloc.dart';
+import '../../../../models/questions/mcq.dart';
+import '../../../../models/questions/msq.dart';
+import '../../../../models/questions/nat.dart';
+import '../../../../models/questions/subjective.dart';
 
 class QuestionSegmentationDialog extends StatefulWidget {
-  final String question;
+  final dynamic questionObject;
   final String id;
   final String type;
 
   const QuestionSegmentationDialog({
     super.key,
-    required this.question,
+    required this.questionObject,
     required this.id,
     required this.type,
   });
@@ -23,8 +27,24 @@ class QuestionSegmentationDialog extends StatefulWidget {
 class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> {
   List<String> _segmentedQuestions = [];
 
+  String _getQuestionText() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        return (widget.questionObject as MCQ).question;
+      case MSQ:
+        return (widget.questionObject as MSQ).question;
+      case NAT:
+        return (widget.questionObject as NAT).question;
+      case Subjective:
+        return (widget.questionObject as Subjective).question;
+      default:
+        return widget.questionObject.toString();
+    }
+  }
+
   void _segmentQuestion() {
-    context.read<QuestionSegmentationBloc>().add(SegmentQuestion(widget.question));
+    String questionText = _getQuestionText();
+    context.read<QuestionSegmentationBloc>().add(SegmentQuestion(questionText));
   }
 
   void _overrideQuestion() {
@@ -41,12 +61,13 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
 
   void _addQuestion() {
     if (_segmentedQuestions.isNotEmpty) {
-      Map<String, dynamic> questionData = _getDefaultQuestionData();
+      Map<String, dynamic> questionData = _getQuestionDataWithOriginalProperties();
+      String bankId = _getBankIdFromOriginalQuestion();
       
       context.read<QuestionSegmentationBloc>().add(
         AddQuestionWithParts(
           questionType: widget.type,
-          bankId: "6aa0c742-2920-4556-9c24-8d41c8be1ffb", // Valid bank ID from API examples
+          bankId: bankId,
           segmentedQuestions: _segmentedQuestions,
           questionData: questionData,
         ),
@@ -54,34 +75,53 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
     }
   }
 
-  Map<String, dynamic> _getDefaultQuestionData() {
-    switch (widget.type.toLowerCase()) {
-      case 'mcq':
+  String _getBankIdFromOriginalQuestion() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        return (widget.questionObject as MCQ).bankId;
+      case MSQ:
+        return (widget.questionObject as MSQ).bankId;
+      case NAT:
+        return (widget.questionObject as NAT).bankId;
+      case Subjective:
+        return (widget.questionObject as Subjective).bankId;
+      default:
+        return ''; // Fallback, though this should not happen
+    }
+  }
+
+  Map<String, dynamic> _getQuestionDataWithOriginalProperties() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        final mcq = widget.questionObject as MCQ;
         return {
-          'points': 5,
-          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'answerIndex': 0,
-          'variableIds': [],
+          'variableIds': mcq.variableIds,
+          'points': mcq.points,
+          'options': mcq.options, // Use original options
+          'answerIndex': mcq.answerIndex,
         };
-      case 'msq':
+      case MSQ:
+        final msq = widget.questionObject as MSQ;
         return {
-          'points': 5,
-          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'answerIndices': [0],
-          'variableIds': [],
+          'variableIds': msq.variableIds,
+          'points': msq.points,
+          'options': msq.options, // Use original options
+          'answerIndices': msq.answerIndices,
         };
-      case 'nat':
+      case NAT:
+        final nat = widget.questionObject as NAT;
         return {
-          'points': 5,
-          'answer': 0.0,
-          'variable': [],
+          'variableIds': nat.variableIds,
+          'points': nat.points,
+          'answer': nat.answer,
         };
-      case 'subjective':
+      case Subjective:
+        final subjective = widget.questionObject as Subjective;
         return {
-          'points': 10,
-          'idealAnswer': 'Default ideal answer',
-          'gradingCriteria': ['Default grading criteria'],
-          'variable': [],
+          'variableIds': subjective.variableIds,
+          'points': subjective.points,
+          'idealAnswer': subjective.idealAnswer,
+          'gradingCriteria': subjective.gradingCriteria,
         };
       default:
         return {
@@ -126,7 +166,7 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      widget.question,
+                      _getQuestionText(),
                       style: TextStyle(fontSize: 14),
                     ),
                   ],

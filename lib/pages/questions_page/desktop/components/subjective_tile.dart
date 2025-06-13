@@ -71,7 +71,7 @@ class SubjectiveTile extends StatelessWidget {
                         await showDialog(
                             context: context,
                             builder: (context) => ContextGenerationDialog(
-                                  question: subjective.question,
+                                  questionObject: subjective,
                                   type: subjective.runtimeType.toString(),
                                   id: subjective.id,
                                 ));
@@ -84,7 +84,7 @@ class SubjectiveTile extends StatelessWidget {
                         await showDialog(
                           context: context,
                           builder: (context) => QuestionSegmentationDialog(
-                            question: subjective.question,
+                            questionObject: subjective,
                             type: "Subjective",
                             id: subjective.id,
                           ),

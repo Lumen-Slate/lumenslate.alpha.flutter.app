@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/context_generation/context_generation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
+import '../../../../models/questions/mcq.dart';
+import '../../../../models/questions/msq.dart';
+import '../../../../models/questions/nat.dart';
+import '../../../../models/questions/subjective.dart';
 
 class ContextGenerationDialogMobile extends StatefulWidget {
-  final String question;
-  final String id;
+  final dynamic questionObject;
   final String type;
+  final String id;
 
   const ContextGenerationDialogMobile({
     super.key,
-    required this.question,
-    required this.id,
+    required this.questionObject,
     required this.type,
+    required this.id,
   });
 
   @override
@@ -43,25 +47,135 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
   }
 
   void _generateContext() {
-    context.read<ContextGeneratorBloc>().add(GenerateContext(widget.question, _keywords));
+    String questionText = _getQuestionText();
+    context.read<ContextGeneratorBloc>().add(GenerateContext(questionText, _keywords));
   }
 
-  void _saveQuestion() {
-    context.read<ContextGeneratorBloc>().add(SaveQuestion(widget.id, widget.type, _contextController.text));
+  String _getQuestionText() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        return (widget.questionObject as MCQ).question;
+      case MSQ:
+        return (widget.questionObject as MSQ).question;
+      case NAT:
+        return (widget.questionObject as NAT).question;
+      case Subjective:
+        return (widget.questionObject as Subjective).question;
+      default:
+        return widget.questionObject.toString();
+    }
+  }
+
+  void _overrideQuestion() {
+    if (_contextController.text.isNotEmpty) {
+      context.read<ContextGeneratorBloc>().add(
+        OverrideQuestionWithContext(
+          questionId: widget.id,
+          questionType: widget.type,
+          contextualizedQuestion: _contextController.text,
+        ),
+      );
+    }
+  }
+
+  void _saveAsNewQuestion() {
+    if (_contextController.text.isNotEmpty) {
+      Map<String, dynamic> questionData = _getQuestionDataWithOriginalOptions();
+      String bankId = _getBankIdFromOriginalQuestion();
+      
+      context.read<ContextGeneratorBloc>().add(
+        SaveAsNewQuestionWithContext(
+          questionType: widget.type,
+          bankId: bankId,
+          contextualizedQuestion: _contextController.text,
+          questionData: questionData,
+        ),
+      );
+    }
+  }
+
+  Map<String, dynamic> _getQuestionDataWithOriginalOptions() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        final mcq = widget.questionObject as MCQ;
+        return {
+          'variableIds': mcq.variableIds,
+          'points': mcq.points,
+          'options': mcq.options, // Use original options
+          'answerIndex': mcq.answerIndex,
+        };
+      case MSQ:
+        final msq = widget.questionObject as MSQ;
+        return {
+          'variableIds': msq.variableIds,
+          'points': msq.points,
+          'options': msq.options, // Use original options
+          'answerIndices': msq.answerIndices,
+        };
+      case NAT:
+        final nat = widget.questionObject as NAT;
+        return {
+          'variableIds': nat.variableIds,
+          'points': nat.points,
+          'answer': nat.answer,
+        };
+      case Subjective:
+        final subjective = widget.questionObject as Subjective;
+        return {
+          'variableIds': subjective.variableIds,
+          'points': subjective.points,
+          'idealAnswer': subjective.idealAnswer,
+          'gradingCriteria': subjective.gradingCriteria,
+        };
+      default:
+        return {
+          'points': 5,
+          'variableIds': [],
+        };
+    }
+  }
+
+  String _getBankIdFromOriginalQuestion() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        return (widget.questionObject as MCQ).bankId;
+      case MSQ:
+        return (widget.questionObject as MSQ).bankId;
+      case NAT:
+        return (widget.questionObject as NAT).bankId;
+      case Subjective:
+        return (widget.questionObject as Subjective).bankId;
+      default:
+        return ''; // Fallback, though this should not happen
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.all(12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: SingleChildScrollView(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: MediaQuery.of(context).size.height * 0.8,
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('Context Generation', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'Context Generation',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
-            Text(widget.question),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                _getQuestionText(),
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
             const SizedBox(height: 16),
             Form(
               key: _formKey,
@@ -71,75 +185,211 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                   labelText: 'Enter keyword',
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: Icon(Icons.add),
                     onPressed: () => _addKeyword(_keywordController.text),
                   ),
                 ),
-                validator: (value) =>
-                (value == null || value.trim().isEmpty) ? 'Keyword cannot be empty' : null,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Keyword cannot be empty';
+                  }
+                  return null;
+                },
                 onFieldSubmitted: (value) => _addKeyword(value),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Wrap(
-              spacing: 8,
-              children: _keywords
-                  .map((k) => Chip(label: Text(k), onDeleted: () => _removeKeyword(k)))
-                  .toList(),
+              spacing: 6.0,
+              children: _keywords.map((keyword) => Chip(
+                label: Text(keyword, style: TextStyle(fontSize: 12)),
+                onDeleted: () => _removeKeyword(keyword),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              )).toList(),
             ),
             const SizedBox(height: 16),
-            BlocConsumer<ContextGeneratorBloc, ContextGeneratorState>(
-              listener: (context, state) {
-                if (state is ContextGeneratorSuccess) {
-                  setState(() {
-                    _generatedContext = state.response;
-                    _contextController.text = _generatedContext;
-                  });
-                  if (state.response == 'Question updated successfully') {
-                    Navigator.of(context).pop();
+            Expanded(
+              child: BlocConsumer<ContextGeneratorBloc, ContextGeneratorState>(
+                listener: (context, state) {
+                  if (state is ContextGeneratorSuccess && state.response != 'Question updated successfully') {
+                    setState(() {
+                      _generatedContext = state.response;
+                      _contextController.text = _generatedContext;
+                    });
+                  } else if (state is ContextOverrideSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Question updated successfully')),
+                      SnackBar(content: Text(state.message), backgroundColor: Colors.green),
                     );
-                    context.go('/teacher-dashboard_page/questions_page');
+                    // Refresh questions list
+                    context.read<QuestionsBloc>().add(const LoadQuestions());
+                    Navigator.of(context).pop();
+                  } else if (state is ContextOverrideFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Override failed: ${state.error}'), backgroundColor: Colors.red),
+                    );
+                  } else if (state is ContextSaveAsNewSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+                    );
+                    // Refresh questions list
+                    context.read<QuestionsBloc>().add(const LoadQuestions());
+                    Navigator.of(context).pop();
+                  } else if (state is ContextSaveAsNewFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Save failed: ${state.error}'), backgroundColor: Colors.red),
+                    );
+                  } else if (state is ContextGeneratorFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: ${state.error}'), backgroundColor: Colors.red),
+                    );
                   }
-                } else if (state is ContextGeneratorFailure) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: ${state.error}')),
-                  );
-                }
-              },
-              builder: (context, state) {
-                if (state is ContextGeneratorLoading) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return TextField(
-                  maxLines: 6,
-                  controller: _contextController,
-                  decoration: const InputDecoration(
-                    labelText: 'Generated Context',
-                    border: OutlineInputBorder(),
-                  ),
-                );
-              },
+                },
+                builder: (context, state) {
+                  if (state is ContextGeneratorLoading) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        const SizedBox(height: 8),
+                        Text('Generating context...', style: TextStyle(fontSize: 12)),
+                      ],
+                    );
+                  } else if (state is ContextOverrideLoading) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        const SizedBox(height: 8),
+                        Text('Overriding question...', style: TextStyle(fontSize: 12)),
+                      ],
+                    );
+                  } else if (state is ContextSaveAsNewLoading) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        const SizedBox(height: 8),
+                        Text('Saving new question...', style: TextStyle(fontSize: 12)),
+                      ],
+                    );
+                  } else if (_generatedContext.isNotEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Generated Context:',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: TextField(
+                            maxLines: null,
+                            expands: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.all(8),
+                            ),
+                            controller: _contextController,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey[300]!),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.lightbulb_outline, size: 40, color: Colors.grey[400]),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Add keywords and tap "Generate Context"',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
-            const SizedBox(height: 20),
-            Row(
+            const SizedBox(height: 16),
+            Column(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _generateContext,
-                    child: const Text('Generate'),
-                  ),
+                // Main generation button
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _generateContext,
+                        icon: Icon(Icons.lightbulb_outline, size: 18),
+                        label: Text('Generate Context', style: TextStyle(fontSize: 14)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _saveQuestion,
-                    child: const Text('Save'),
+                
+                // Action buttons (shown only when context is generated)
+                if (_generatedContext.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _overrideQuestion,
+                          icon: Icon(Icons.edit, size: 16),
+                          label: Text('Override', style: TextStyle(fontSize: 12)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _saveAsNewQuestion,
+                          icon: Icon(Icons.add, size: 16),
+                          label: Text('Save as New', style: TextStyle(fontSize: 12)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                ],
+                
+                const SizedBox(height: 12),
+                // Close button
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text('Close', style: TextStyle(fontSize: 14)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

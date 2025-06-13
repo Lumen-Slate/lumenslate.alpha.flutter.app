@@ -89,7 +89,7 @@ class MCQTile extends StatelessWidget {
                         await showDialog(
                           context: context,
                           builder: (context) => ContextGenerationDialog(
-                            question: mcq.question,
+                            questionObject: mcq,
                             type: mcq.runtimeType.toString(),
                             id: mcq.id,
                           ),

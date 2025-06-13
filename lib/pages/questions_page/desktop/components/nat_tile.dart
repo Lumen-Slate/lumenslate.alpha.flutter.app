@@ -85,7 +85,7 @@ class NATTile extends StatelessWidget {
                         await showDialog(
                             context: context,
                             builder: (context) => ContextGenerationDialog(
-                                  question: nat.question,
+                                  questionObject: nat,
                                   type: nat.runtimeType.toString(),
                                   id: nat.id,
                                 ));
