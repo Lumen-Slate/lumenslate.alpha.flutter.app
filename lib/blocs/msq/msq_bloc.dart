@@ -83,7 +83,7 @@ class MSQBloc extends Bloc<MSQEvent, MSQState> {
           throw StateError(response.data['error'] ?? 'Failed to save bulk MSQs.');
         }
 
-        final msqs = (response.data['msqs'] as List)
+        final msqs = (response.data as List)
             .map((item) => MSQ.fromJson(item as Map<String, dynamic>))
             .toList();
 

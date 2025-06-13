@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/msq/msq_bloc.dart';
 import '../../../../blocs/msq_variation_generation/msq_variation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/msq.dart';
 
 class MSQVariationDialog extends StatefulWidget {
@@ -33,13 +34,21 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
     return BlocListener<MSQBloc, MSQState>(
       listener: (context, state) {
         if (state is MSQLoaded) {
+          // Refresh the main questions list
+          context.read<QuestionsBloc>().add(const LoadQuestions());
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('MSQ variants saved successfully')),
+            SnackBar(
+              content: Text('MSQ variants saved successfully'),
+              backgroundColor: Colors.green,
+            ),
           );
         } else if (state is MSQError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.message}')),
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
@@ -47,25 +56,26 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: SizedBox(
           width: 800,
+          height: MediaQuery.of(context).size.height * 0.8,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'Generate MSQ Variations',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
-                BlocConsumer<MSQVariationBloc, MSQVariationState>(
-                  listener: (context, state) {
-                    if (state is MSQVariationFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: ${state.error}')),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
+                Expanded(
+                  child: BlocConsumer<MSQVariationBloc, MSQVariationState>(
+                    listener: (context, state) {
+                      if (state is MSQVariationFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${state.error}')),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
                     if (state is MSQVariationSuccess) {
                       List<CheckboxListTile> checkboxes = [];
 
@@ -96,12 +106,28 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
 
                       return Column(
                         children: [
-                          ...checkboxes,
-                          ElevatedButton(
-                            onPressed: _selectedVariations.isNotEmpty
-                                ? () => context.read<MSQBloc>().add(SaveBulkMSQs(_selectedVariations))
-                                : null,
-                            child: Text('Add Selected Questions'),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                spacing: 20,
+                                children: checkboxes,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          BlocBuilder<MSQBloc, MSQState>(
+                            builder: (context, state) {
+                              if (state is MSQLoading) {
+                                return Center(child: CircularProgressIndicator());
+                              } else {
+                                return ElevatedButton(
+                                  onPressed: _selectedVariations.isNotEmpty
+                                      ? () => context.read<MSQBloc>().add(SaveBulkMSQs(_selectedVariations))
+                                      : null,
+                                  child: Text('Save Selected Questions'),
+                                );
+                              }
+                            },
                           ),
                         ],
                       );
@@ -122,9 +148,10 @@ class MSQVariationDialogState extends State<MSQVariationDialog> {
                         ],
                       );
                     } else {
-                      return CircularProgressIndicator();
+                      return Center(child: CircularProgressIndicator());
                     }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),

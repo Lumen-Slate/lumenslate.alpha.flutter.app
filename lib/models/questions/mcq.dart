@@ -6,6 +6,9 @@ class MCQ {
   int points;
   List<String> options;
   int answerIndex;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  bool? isActive;
 
   MCQ({
     required this.id,
@@ -15,11 +18,13 @@ class MCQ {
     required this.points,
     required this.options,
     required this.answerIndex,
+    this.createdAt,
+    this.updatedAt,
+    this.isActive,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+  Map<String, dynamic> toJson({bool forCreation = false}) {
+    Map<String, dynamic> json = {
       'bankId': bankId,
       'question': question,
       'variableIds': variableIds,
@@ -27,17 +32,27 @@ class MCQ {
       'options': options,
       'answerIndex': answerIndex,
     };
+    
+    // Only include id if not for creation (backend generates its own IDs)
+    if (!forCreation) {
+      json['id'] = id;
+    }
+    
+    return json;
   }
 
   factory MCQ.fromJson(Map<String, dynamic> json) {
     return MCQ(
-      id: json['id'],
-      bankId: json['bankId'],
-      question: json['question'],
-      variableIds: List<String>.from(json['variableIds']),
-      points: json['points'],
-      options: List<String>.from(json['options']),
-      answerIndex: json['answerIndex'],
+      id: json['id'] ?? '',
+      bankId: json['bankId'] ?? '',
+      question: json['question'] ?? '',
+      variableIds: List<String>.from(json['variableIds'] ?? []),
+      points: json['points'] ?? 0,
+      options: List<String>.from(json['options'] ?? []),
+      answerIndex: json['answerIndex'] ?? 0,
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
+      isActive: json['isActive'],
     );
   }
 
@@ -49,6 +64,9 @@ class MCQ {
     int? points,
     List<String>? options,
     int? answerIndex,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    bool? isActive,
   }) {
     return MCQ(
       id: id ?? this.id,
@@ -58,6 +76,9 @@ class MCQ {
       points: points ?? this.points,
       options: options ?? this.options,
       answerIndex: answerIndex ?? this.answerIndex,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isActive: isActive ?? this.isActive,
     );
   }
 }

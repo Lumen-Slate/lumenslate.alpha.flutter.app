@@ -14,7 +14,7 @@ class MCQRepository {
 
   Future<Response> createMCQ(MCQ mcq) async {
     try {
-      return await _client.post('/mcqs', data: mcq.toJson());
+      return await _client.post('/mcqs', data: mcq.toJson(forCreation: true));
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating MCQ: Status code ${dioError.response?.statusCode}',
@@ -88,7 +88,7 @@ class MCQRepository {
     try {
       return await _client.post(
         '/mcqs/bulk',
-        data: mcqs.map((mcq) => mcq.toJson()).toList(),
+        data: mcqs.map((mcq) => mcq.toJson(forCreation: true)).toList(),
       );
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
