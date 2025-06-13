@@ -4,15 +4,19 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/context_generation/context_generation_bloc.dart';
 import '../../../../blocs/questions/questions_bloc.dart';
+import '../../../../models/questions/mcq.dart';
+import '../../../../models/questions/msq.dart';
+import '../../../../models/questions/nat.dart';
+import '../../../../models/questions/subjective.dart';
 
 class ContextGenerationDialog extends StatefulWidget {
-  final String question;
+  final dynamic questionObject;
   final String id;
   final String type;
 
   const ContextGenerationDialog({
     super.key,
-    required this.question,
+    required this.questionObject,
     required this.id,
     required this.type,
   });
@@ -44,7 +48,23 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
   }
 
   void _generateContext() {
-    context.read<ContextGeneratorBloc>().add(GenerateContext(widget.question, _keywords));
+    String questionText = _getQuestionText();
+    context.read<ContextGeneratorBloc>().add(GenerateContext(questionText, _keywords));
+  }
+
+  String _getQuestionText() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        return (widget.questionObject as MCQ).question;
+      case MSQ:
+        return (widget.questionObject as MSQ).question;
+      case NAT:
+        return (widget.questionObject as NAT).question;
+      case Subjective:
+        return (widget.questionObject as Subjective).question;
+      default:
+        return widget.questionObject.toString();
+    }
   }
 
   void _overrideQuestion() {
@@ -61,12 +81,13 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
 
   void _saveAsNewQuestion() {
     if (_contextController.text.isNotEmpty) {
-      Map<String, dynamic> questionData = _getDefaultQuestionData();
+      Map<String, dynamic> questionData = _getQuestionDataWithOriginalOptions();
+      String bankId = _getBankIdFromOriginalQuestion();
       
       context.read<ContextGeneratorBloc>().add(
         SaveAsNewQuestionWithContext(
           questionType: widget.type,
-          bankId: "6aa0c742-2920-4556-9c24-8d41c8be1ffb", // Valid bank ID from API examples
+          bankId: bankId,
           contextualizedQuestion: _contextController.text,
           questionData: questionData,
         ),
@@ -74,40 +95,59 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
     }
   }
 
-  Map<String, dynamic> _getDefaultQuestionData() {
-    switch (widget.type.toLowerCase()) {
-      case 'mcq':
+  Map<String, dynamic> _getQuestionDataWithOriginalOptions() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        final mcq = widget.questionObject as MCQ;
         return {
-          'variableIds': [],
-          'points': 5,
-          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'answerIndex': 0,
+          'variableIds': mcq.variableIds,
+          'points': mcq.points,
+          'options': mcq.options, // Use original options
+          'answerIndex': mcq.answerIndex,
         };
-      case 'msq':
+      case MSQ:
+        final msq = widget.questionObject as MSQ;
         return {
-          'variableIds': [],
-          'points': 5,
-          'options': ['Option A', 'Option B', 'Option C', 'Option D'],
-          'answerIndices': [0],
+          'variableIds': msq.variableIds,
+          'points': msq.points,
+          'options': msq.options, // Use original options
+          'answerIndices': msq.answerIndices,
         };
-      case 'nat':
+      case NAT:
+        final nat = widget.questionObject as NAT;
         return {
-          'variableIds': [],
-          'points': 5,
-          'answer': 0.0,
+          'variableIds': nat.variableIds,
+          'points': nat.points,
+          'answer': nat.answer,
         };
-      case 'subjective':
+      case Subjective:
+        final subjective = widget.questionObject as Subjective;
         return {
-          'variableIds': [],
-          'points': 10,
-          'idealAnswer': 'Default ideal answer',
-          'gradingCriteria': ['Default grading criteria'],
+          'variableIds': subjective.variableIds,
+          'points': subjective.points,
+          'idealAnswer': subjective.idealAnswer,
+          'gradingCriteria': subjective.gradingCriteria,
         };
       default:
         return {
           'points': 5,
           'variableIds': [],
         };
+    }
+  }
+
+  String _getBankIdFromOriginalQuestion() {
+    switch (widget.questionObject.runtimeType) {
+      case MCQ:
+        return (widget.questionObject as MCQ).bankId;
+      case MSQ:
+        return (widget.questionObject as MSQ).bankId;
+      case NAT:
+        return (widget.questionObject as NAT).bankId;
+      case Subjective:
+        return (widget.questionObject as Subjective).bankId;
+      default:
+        return ''; // Fallback, though this should not happen
     }
   }
 
@@ -134,7 +174,7 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  widget.question,
+                  _getQuestionText(),
                   style: TextStyle(fontSize: 16),
                 ),
               ),

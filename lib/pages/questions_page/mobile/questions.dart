@@ -188,7 +188,7 @@ class _QuestionsMobileState extends State<QuestionsMobile> {
                               await showDialog(
                                 context: context,
                                 builder: (_) => ContextGenerationDialogMobile(
-                                  question: question.mcq,
+                                  questionObject: question,
                                   type: question.runtimeType.toString(),
                                   id: question.id,
                                 ),

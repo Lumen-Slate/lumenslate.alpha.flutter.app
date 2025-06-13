@@ -94,7 +94,7 @@ class MSQTile extends StatelessWidget {
                         await showDialog(
                           context: context,
                           builder: (context) => ContextGenerationDialog(
-                            question: msq.question,
+                            questionObject: msq,
                             type: msq.runtimeType.toString(),
                             id: msq.id,
                           ),
