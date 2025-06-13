@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/mcq/mcq_bloc.dart';
 import '../../../../blocs/mcq_variation_generation/mcq_variation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/mcq.dart';
 
 
@@ -34,13 +35,21 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
     return BlocListener<MCQBloc, MCQState>(
       listener: (context, state) {
         if (state is MCQLoaded) {
+          // Refresh the main questions list
+          context.read<QuestionsBloc>().add(const LoadQuestions());
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('MCQ variants saved successfully')),
+            SnackBar(
+              content: Text('MCQ variants saved successfully'),
+              backgroundColor: Colors.green,
+            ),
           );
         } else if (state is MCQError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.message}')),
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
@@ -48,25 +57,26 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: SizedBox(
           width: 800,
+          height: MediaQuery.of(context).size.height * 0.8,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'Generate MCQ Variations',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
-                BlocConsumer<MCQVariationBloc, MCQVariationState>(
-                  listener: (context, state) {
-                    if (state is MCQVariationFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: ${state.error}')),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
+                Expanded(
+                  child: BlocConsumer<MCQVariationBloc, MCQVariationState>(
+                    listener: (context, state) {
+                      if (state is MCQVariationFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${state.error}')),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
                     if (state is MCQVariationSuccess) {
                       List<CheckboxListTile> checkboxes = [];
 
@@ -94,9 +104,16 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
                       }
 
                       return Column(
-                        spacing: 30,
                         children: [
-                          ...checkboxes,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                spacing: 20,
+                                children: checkboxes,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                           BlocBuilder<MCQBloc, MCQState>(
                             builder: (context, state) {
                               if (state is MCQLoading) {
@@ -130,9 +147,10 @@ class MCQVariationDialogState extends State<MCQVariationDialog> {
                         ],
                       );
                     } else {
-                      return CircularProgressIndicator();
+                      return Center(child: CircularProgressIndicator());
                     }
-                  },
+                    },
+                  ),
                 ),
               ],
             ),

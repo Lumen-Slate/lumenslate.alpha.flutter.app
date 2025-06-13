@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../models/questions/nat.dart';
 import 'context_generation_dialog.dart';
-import 'question_segmentation_dialog.dart';
 
 class NATTile extends StatelessWidget {
   final NAT nat;
@@ -90,20 +89,6 @@ class NATTile extends StatelessWidget {
                                   type: nat.runtimeType.toString(),
                                   id: nat.id,
                                 ));
-                      },
-                      iconSize: 21,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.auto_fix_high, color: Colors.green[700]),
-                      onPressed: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (context) => QuestionSegmentationDialog(
-                            question: nat.question,
-                            type: "NAT",
-                            id: nat.id,
-                          ),
-                        );
                       },
                       iconSize: 21,
                     ),
