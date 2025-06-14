@@ -20,15 +20,21 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
   @override
   void initState() {
     super.initState();
-    questionController = TextEditingController(text: widget.subjective.question);
-    pointsController = TextEditingController(text: widget.subjective.points.toString());
-    idealAnswerController = TextEditingController(text: widget.subjective.idealAnswer ?? '');
-    
+    questionController = TextEditingController(
+      text: widget.subjective.question,
+    );
+    pointsController = TextEditingController(
+      text: widget.subjective.points.toString(),
+    );
+    idealAnswerController = TextEditingController(
+      text: widget.subjective.idealAnswer ?? '',
+    );
+
     // Initialize criteria controllers
     criteriaControllers = (widget.subjective.gradingCriteria ?? [])
         .map((criteria) => TextEditingController(text: criteria))
         .toList();
-    
+
     // Ensure we have at least one criteria field
     if (criteriaControllers.isEmpty) {
       criteriaControllers.add(TextEditingController());
@@ -65,8 +71,8 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
     return widget.subjective.copyWith(
       question: questionController.text.trim(),
       points: int.tryParse(pointsController.text) ?? widget.subjective.points,
-      idealAnswer: idealAnswerController.text.trim().isEmpty 
-          ? null 
+      idealAnswer: idealAnswerController.text.trim().isEmpty
+          ? null
           : idealAnswerController.text.trim(),
       gradingCriteria: criteriaControllers
           .map((controller) => controller.text.trim())
@@ -113,7 +119,7 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // Form content
             Expanded(
               child: SingleChildScrollView(
@@ -140,7 +146,7 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Points field
                     Row(
                       children: [
@@ -178,7 +184,7 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Ideal Answer field
                     Text(
                       'Ideal Answer (Optional)',
@@ -199,7 +205,7 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Grading Criteria
                     Text(
                       'Grading Criteria',
@@ -228,7 +234,7 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
                     ...criteriaControllers.asMap().entries.map((entry) {
                       int index = entry.key;
                       TextEditingController controller = entry.value;
-                      
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
@@ -269,17 +275,20 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
                             if (criteriaControllers.length > 1)
                               IconButton(
                                 onPressed: () => _removeCriteria(index),
-                                icon: const Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
                               ),
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
             ),
-            
+
             // Action buttons
             const SizedBox(height: 20),
             Row(
@@ -292,7 +301,8 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
                 const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: _isValid()
-                      ? () => Navigator.of(context).pop(_buildUpdatedSubjective())
+                      ? () =>
+                            Navigator.of(context).pop(_buildUpdatedSubjective())
                       : null,
                   child: Text('Save Changes', style: GoogleFonts.poppins()),
                 ),
@@ -303,4 +313,4 @@ class _EditSubjectiveDialogState extends State<EditSubjectiveDialog> {
       ),
     );
   }
-} 
+}

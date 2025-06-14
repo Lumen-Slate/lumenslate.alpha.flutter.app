@@ -41,8 +41,9 @@ class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
           builder: (context, state) {
             if (state is AssignmentSingleExtendedSuccess) {
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(26),
+                padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 16),
                 child: Column(
+                  spacing: 30,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
@@ -92,8 +93,6 @@ class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 24),
                     if (state.assignment.mcqs != null && state.assignment.mcqs!.isNotEmpty)
                       buildQuestionSection(
                         title: "Multiple Choice Questions",
@@ -270,7 +269,7 @@ Widget buildQuestionSection({
         padding: const EdgeInsets.all(38),
         decoration: BoxDecoration(
           color: backgroundColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

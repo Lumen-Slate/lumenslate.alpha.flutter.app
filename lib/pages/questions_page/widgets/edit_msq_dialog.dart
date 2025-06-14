@@ -21,14 +21,16 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
   void initState() {
     super.initState();
     questionController = TextEditingController(text: widget.msq.question);
-    pointsController = TextEditingController(text: widget.msq.points.toString());
+    pointsController = TextEditingController(
+      text: widget.msq.points.toString(),
+    );
     selectedAnswerIndices = Set<int>.from(widget.msq.answerIndices);
-    
+
     // Initialize option controllers
     optionControllers = widget.msq.options
         .map((option) => TextEditingController(text: option))
         .toList();
-    
+
     // Ensure we have at least 2 options
     while (optionControllers.length < 2) {
       optionControllers.add(TextEditingController());
@@ -56,7 +58,7 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
       setState(() {
         optionControllers[index].dispose();
         optionControllers.removeAt(index);
-        
+
         // Adjust answer indices
         selectedAnswerIndices.remove(index);
         Set<int> adjustedIndices = {};
@@ -131,7 +133,7 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // Form content
             Expanded(
               child: SingleChildScrollView(
@@ -158,7 +160,7 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Points field
                     Row(
                       children: [
@@ -196,7 +198,7 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Options
                     Text(
                       'Options (Select all correct answers)',
@@ -226,7 +228,7 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                       int index = entry.key;
                       TextEditingController controller = entry.value;
                       bool isSelected = selectedAnswerIndices.contains(index);
-                      
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
@@ -249,18 +251,20 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                               width: 30,
                               height: 30,
                               decoration: BoxDecoration(
-                                color: isSelected 
-                                    ? Colors.green[100] 
+                                color: isSelected
+                                    ? Colors.green[100]
                                     : Colors.grey[200],
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Center(
                                 child: Text(
-                                  String.fromCharCode(65 + index), // A, B, C, D...
+                                  String.fromCharCode(
+                                    65 + index,
+                                  ), // A, B, C, D...
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
-                                    color: isSelected 
-                                        ? Colors.green[800] 
+                                    color: isSelected
+                                        ? Colors.green[800]
                                         : Colors.grey[600],
                                   ),
                                 ),
@@ -272,7 +276,8 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                               child: TextField(
                                 controller: controller,
                                 decoration: InputDecoration(
-                                  hintText: 'Option ${String.fromCharCode(65 + index)}',
+                                  hintText:
+                                      'Option ${String.fromCharCode(65 + index)}',
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -283,13 +288,16 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                             if (optionControllers.length > 2)
                               IconButton(
                                 onPressed: () => _removeOption(index),
-                                icon: const Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
                               ),
                           ],
                         ),
                       );
-                    }).toList(),
-                    
+                    }),
+
                     // Selected answers summary
                     if (selectedAnswerIndices.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -321,7 +329,9 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                                     style: GoogleFonts.poppins(fontSize: 12),
                                   ),
                                   backgroundColor: Colors.green.shade100,
-                                  side: BorderSide(color: Colors.green.shade300),
+                                  side: BorderSide(
+                                    color: Colors.green.shade300,
+                                  ),
                                 );
                               }).toList(),
                             ),
@@ -333,7 +343,7 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
                 ),
               ),
             ),
-            
+
             // Action buttons
             const SizedBox(height: 20),
             Row(
@@ -357,4 +367,4 @@ class _EditMSQDialogState extends State<EditMSQDialog> {
       ),
     );
   }
-} 
+}

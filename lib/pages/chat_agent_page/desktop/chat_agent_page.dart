@@ -11,6 +11,7 @@ import '../../../blocs/chat_agent/chat_agent_bloc.dart';
 import 'components/message_tile.dart';
 
 class ChatAgentPageDesktop extends StatefulWidget {
+  /// TODO - Replace with actual teacher ID
   final String teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
 
   const ChatAgentPageDesktop({super.key});
@@ -61,17 +62,13 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
       final file = result.files.first;
       final ext = file.extension?.toLowerCase();
       if (!allowedExtensions.contains(ext)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unsupported file type selected.')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported file type selected.')));
         return;
       }
       setState(() {
         _selectedFile = file;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selected: ${file.name}')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Selected: ${file.name}')));
     }
   }
 
@@ -88,8 +85,15 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
               children: [
                 Align(
                   alignment: Alignment.topLeft,
-                  child: Hero(tag: 'agent',
-                  child: AutoSizeText("Agent", maxLines: 2, minFontSize: 80, style: GoogleFonts.poppins(fontSize: 80, color: Colors.black))),
+                  child: Hero(
+                    tag: 'agent',
+                    child: AutoSizeText(
+                      "Agent",
+                      maxLines: 2,
+                      minFontSize: 80,
+                      style: GoogleFonts.poppins(fontSize: 80, color: Colors.black),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 50),
 
@@ -114,7 +118,12 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                 },
                                 builderDelegate: PagedChildBuilderDelegate(
                                   itemBuilder: (context, item, index) => MessageTile(message: item),
-                                  noItemsFoundIndicatorBuilder: (context) => Center(child: Text('No messages')),
+                                  noItemsFoundIndicatorBuilder: (context) => Center(
+                                    child: Text(
+                                      'Start Your Chat',
+                                      style: GoogleFonts.poppins(fontSize: 38, color: Colors.grey[500]),
+                                    ),
+                                  ),
                                   firstPageErrorIndicatorBuilder: (context) =>
                                       Center(child: Text('Error loading messages')),
                                 ),
@@ -166,7 +175,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                   borderRadius: BorderRadius.circular(30),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withValues(alpha: 0.9),
+                                      color: Colors.grey.withValues(alpha: 0.4),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),
@@ -191,21 +200,15 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                             ),
                             IconButton(
                               padding: const EdgeInsets.all(20.0),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.blue[100],
-                                shape: CircleBorder(),
-                              ),
-                              icon: const Icon(Icons.attach_file),
+                              style: IconButton.styleFrom(backgroundColor: Colors.blue[100], shape: CircleBorder()),
+                              icon: const Icon(Icons.attach_file, color: Colors.blue),
                               tooltip: 'Attach file',
                               onPressed: _pickSupportedFile,
                             ),
                             IconButton(
                               padding: const EdgeInsets.all(20.0),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.green[100],
-                                shape: CircleBorder(),
-                              ),
-                              icon: const Icon(Icons.send),
+                              style: IconButton.styleFrom(backgroundColor: Colors.green[100], shape: CircleBorder()),
+                              icon: const Icon(Icons.send, color: Colors.green),
                               onPressed: () => _sendMessage(context),
                             ),
                           ],

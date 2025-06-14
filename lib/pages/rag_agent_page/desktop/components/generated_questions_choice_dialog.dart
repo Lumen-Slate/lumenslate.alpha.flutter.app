@@ -7,8 +7,6 @@ import '../../../../models/questions/nat.dart';
 import '../../../../models/questions/subjective.dart';
 import '../../../../blocs/mcq/mcq_bloc.dart';
 import '../../../../blocs/msq/msq_bloc.dart';
-import '../../../../blocs/nat/nat_bloc.dart';
-import '../../../../blocs/subjective/subjective_bloc.dart';
 
 class GeneratedQuestionsChoiceDialog extends StatefulWidget {
   final RagGeneratedQuestionsSerializer serializer;
@@ -21,10 +19,12 @@ class GeneratedQuestionsChoiceDialog extends StatefulWidget {
   });
 
   @override
-  State<GeneratedQuestionsChoiceDialog> createState() => _GeneratedQuestionsChoiceDialogState();
+  State<GeneratedQuestionsChoiceDialog> createState() =>
+      _GeneratedQuestionsChoiceDialogState();
 }
 
-class _GeneratedQuestionsChoiceDialogState extends State<GeneratedQuestionsChoiceDialog> {
+class _GeneratedQuestionsChoiceDialogState
+    extends State<GeneratedQuestionsChoiceDialog> {
   late List<bool> mcqSelected;
   late List<bool> msqSelected;
   late List<bool> natSelected;
@@ -36,7 +36,10 @@ class _GeneratedQuestionsChoiceDialogState extends State<GeneratedQuestionsChoic
     mcqSelected = List.filled(widget.serializer.mcqs.length, true);
     msqSelected = List.filled(widget.serializer.msqs.length, true);
     natSelected = List.filled(widget.serializer.nats.length, true);
-    subjectiveSelected = List.filled(widget.serializer.subjectives.length, true);
+    subjectiveSelected = List.filled(
+      widget.serializer.subjectives.length,
+      true,
+    );
   }
 
   void _saveSelectedQuestions() {
@@ -55,7 +58,8 @@ class _GeneratedQuestionsChoiceDialogState extends State<GeneratedQuestionsChoic
       if (natSelected[i]) selectedNats.add(widget.serializer.nats[i]);
     }
     for (int i = 0; i < subjectiveSelected.length; i++) {
-      if (subjectiveSelected[i]) selectedSubjectives.add(widget.serializer.subjectives[i]);
+      if (subjectiveSelected[i])
+        selectedSubjectives.add(widget.serializer.subjectives[i]);
     }
 
     if (selectedMcqs.isNotEmpty) {
@@ -91,7 +95,11 @@ class _GeneratedQuestionsChoiceDialogState extends State<GeneratedQuestionsChoic
               _buildSection('MCQs', widget.serializer.mcqs, mcqSelected),
               _buildSection('MSQs', widget.serializer.msqs, msqSelected),
               _buildSection('NATs', widget.serializer.nats, natSelected),
-              _buildSection('Subjectives', widget.serializer.subjectives, subjectiveSelected),
+              _buildSection(
+                'Subjectives',
+                widget.serializer.subjectives,
+                subjectiveSelected,
+              ),
             ],
           ),
         ),
@@ -115,7 +123,10 @@ class _GeneratedQuestionsChoiceDialogState extends State<GeneratedQuestionsChoic
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         ...List.generate(questions.length, (i) {
           final q = questions[i];
           return CheckboxListTile(
@@ -125,15 +136,17 @@ class _GeneratedQuestionsChoiceDialogState extends State<GeneratedQuestionsChoic
                 selected[i] = val ?? false;
               });
             },
-            title: Text(q is MCQ
-                ? q.question
-                : q is MSQ
-                    ? q.question
-                    : q is NAT
-                        ? q.question
-                        : q is Subjective
-                            ? q.question
-                            : q.toString()),
+            title: Text(
+              q is MCQ
+                  ? q.question
+                  : q is MSQ
+                  ? q.question
+                  : q is NAT
+                  ? q.question
+                  : q is Subjective
+                  ? q.question
+                  : q.toString(),
+            ),
             dense: true,
             controlAffinity: ListTileControlAffinity.leading,
           );
@@ -143,4 +156,3 @@ class _GeneratedQuestionsChoiceDialogState extends State<GeneratedQuestionsChoic
     );
   }
 }
-

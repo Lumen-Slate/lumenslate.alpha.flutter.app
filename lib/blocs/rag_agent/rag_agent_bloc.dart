@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:lumen_slate/serializers/rag_agent_serializers/reg_agent_response.dart';
-import '../../models/chat_message.dart';
 import '../../repositories/ai/rag_agent_repository.dart';
 import '../../serializers/rag_agent_serializers/rag_agent_payload.dart';
 
@@ -35,19 +34,33 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
         feedback: 'neutral',
       );
 
-      final List<List<RagAgentResponse>> updatedPages = List.from(pagingState.pages ?? []);
+      final List<List<RagAgentResponse>> updatedPages = List.from(
+        pagingState.pages ?? [],
+      );
       if (updatedPages.isNotEmpty) {
-        updatedPages[updatedPages.length - 1] = [userMessage, ...updatedPages.last];
+        updatedPages[updatedPages.length - 1] = [
+          userMessage,
+          ...updatedPages.last,
+        ];
       } else {
         updatedPages.add([userMessage]);
       }
 
-      emit(RagAgentSuccess(pagingState.copyWith(pages: updatedPages, isLoading: true, error: null)));
+      emit(
+        RagAgentSuccess(
+          pagingState.copyWith(
+            pages: updatedPages,
+            isLoading: true,
+            error: null,
+          ),
+        ),
+      );
 
       try {
         final response = await repository.callRagAgent(
           payload: RAGAgentPayload(
             message: event.messageString,
+
             /// TODO: Hardcoded data
             teacherId: 'my_test_corpus',
             role: 'user',
@@ -57,16 +70,27 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
           ),
         );
         if (response != null && response.statusCode == 200) {
-          final RagAgentResponse agentMessage = RagAgentResponse.fromJson(response.data);
+          final RagAgentResponse agentMessage = RagAgentResponse.fromJson(
+            response.data,
+          );
 
-          final List<List<RagAgentResponse>> replyPages = List.from(updatedPages);
+          final List<List<RagAgentResponse>> replyPages = List.from(
+            updatedPages,
+          );
           if (replyPages.isNotEmpty) {
-            replyPages[replyPages.length - 1] = [agentMessage, ...replyPages.last];
+            replyPages[replyPages.length - 1] = [
+              agentMessage,
+              ...replyPages.last,
+            ];
           } else {
             replyPages.add([agentMessage]);
           }
 
-          emit(RagAgentSuccess(pagingState.copyWith(pages: replyPages, isLoading: false)));
+          emit(
+            RagAgentSuccess(
+              pagingState.copyWith(pages: replyPages, isLoading: false),
+            ),
+          );
         } else {
           emit(RagAgentFailure('Failed to get agent response'));
         }
@@ -88,7 +112,9 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
       emit(RagAgentSuccess(pagingState.copyWith(isLoading: true, error: null)));
 
       try {
-        final int nextOffset = (pagingState.keys?.last ?? 0) + (pagingState.pages?.lastOrNull?.length ?? 0);
+        final int nextOffset =
+            (pagingState.keys?.last ?? 0) +
+            (pagingState.pages?.lastOrNull?.length ?? 0);
         final response = await repository.fetchRagChatHistory(
           teacherId: event.teacherId,
           limit: event.pageSize,
@@ -96,7 +122,10 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
         );
         if (response != null && response.statusCode == 200) {
           final List data = response.data;
-          final messages = data.map((e) => RagAgentResponse.fromJson(e)).toList().cast<RagAgentResponse>();
+          final messages = data
+              .map((e) => RagAgentResponse.fromJson(e))
+              .toList()
+              .cast<RagAgentResponse>();
           final isLastPage = messages.length < event.pageSize;
 
           final newPagingState = pagingState.copyWith(
