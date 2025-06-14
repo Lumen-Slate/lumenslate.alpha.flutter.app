@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../../../models/assignments.dart';
-import '../each_assignment.dart';
 
 class AssignmentTile extends StatelessWidget {
   final Assignment assignment;
@@ -11,21 +12,16 @@ class AssignmentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AssignmentDetailPage(assignmentId: assignment.id),
-          ),
-        );
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    return Container(
+      margin: EdgeInsets.only(bottom: 14),
+      child: FilledButton.tonal(
+        onPressed: () {
+          context.go('/teacher-dashboard/assignments/${assignment.id}');
+        },
+        style: FilledButton.styleFrom(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        elevation: 3,
-        margin: const EdgeInsets.only(bottom: 16),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -38,21 +34,9 @@ class AssignmentTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          assignment.title,
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Text(assignment.title, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 6),
-                        Text(
-                          assignment.body,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                          ),
-                        ),
+                        Text(assignment.body, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700])),
                       ],
                     ),
                   ),
@@ -69,24 +53,16 @@ class AssignmentTile extends StatelessWidget {
                   Icon(Icons.calendar_today, size: 16, color: Colors.red[400]),
                   const SizedBox(width: 6),
                   Text(
-                    "Due: ${assignment.dueDate.toLocal().toString().split(' ')[0]}",
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: Colors.red[400],
-                    ),
+                    // Format due date as dd-MM-yyyy
+                    "Due: ${DateFormat('dd-MM-yyyy').format(assignment.dueDate)}",
+                    style: GoogleFonts.poppins(fontSize: 13, color: Colors.red[400]),
                   ),
                   const Spacer(),
                   Icon(Icons.star, size: 16, color: Colors.orange[400]),
                   const SizedBox(width: 4),
-                  Text(
-                    "${assignment.points} pts",
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: Colors.black87,
-                    ),
-                  ),
+                  Text("${assignment.points} pts", style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87)),
                 ],
-              )
+              ),
             ],
           ),
         ),

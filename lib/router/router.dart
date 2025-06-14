@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../pages/add_question_page/add_question_page.dart';
 import '../pages/assignments_page/assignments.dart';
+import '../pages/assignments_page/each_assignment.dart';
 import '../pages/chat_agent_page/desktop/chat_agent_page.dart';
 import '../pages/classrooms_page/classrooms.dart';
 import '../pages/dashboard_page/dashboard.dart';
@@ -16,7 +17,10 @@ import '../pages/pdf_generator_page.dart';
 final GoRouter router = GoRouter(
   // initialLocation: '/teacher-dashboard',
   routes: [
-    GoRoute(path: '/', pageBuilder: (context, state) => const MaterialPage(child: LoadingPage())),
+    GoRoute(
+      path: '/',
+      pageBuilder: (context, state) => const MaterialPage(child: LoadingPage()),
+    ),
     GoRoute(
       path: '/sign-in',
       pageBuilder: (context, state) => const MaterialPage(child: SignInDesktop()),
@@ -25,15 +29,50 @@ final GoRouter router = GoRouter(
       path: '/teacher-dashboard',
       pageBuilder: (context, state) => MaterialPage(child: DashboardPage()),
       routes: [
-        GoRoute(path: '/question-banks', pageBuilder: (context, state) => MaterialPage(child: QuestionBankPage())),
-        GoRoute(path: '/questions', pageBuilder: (context, state) => MaterialPage(child: Questions())),
-        GoRoute(path: '/classrooms', pageBuilder: (context, state) => MaterialPage(child: ClassroomsPage())),
-        GoRoute(path: '/assignments', pageBuilder: (context, state) => MaterialPage(child: AssignmentsPage())),
-        GoRoute(path: '/pdf-generator', pageBuilder: (context, state) => MaterialPage(child: PdfGeneratorPage())),
-        GoRoute(path: '/agent', pageBuilder: (context, state) => MaterialPage(child: ChatAgentPageDesktop())),
-        GoRoute(path: '/rag-agent', pageBuilder: (context, state) => MaterialPage(child: RagAgentPageDesktop())),
+        GoRoute(
+          path: '/question-banks',
+          pageBuilder: (context, state) => MaterialPage(child: QuestionBankPage()),
+        ),
+        GoRoute(
+          path: '/questions',
+          pageBuilder: (context, state) => MaterialPage(child: Questions()),
+        ),
+        GoRoute(
+          path: '/classrooms',
+          pageBuilder: (context, state) => MaterialPage(child: ClassroomsPage()),
+        ),
+        GoRoute(
+          path: '/assignments',
+          pageBuilder: (context, state) => MaterialPage(child: AssignmentsPage()),
+          routes: [
+            GoRoute(
+              path: '/:assignmentId',
+              pageBuilder: (context, state) {
+                final assignmentId = state.pathParameters['assignmentId'];
+                return MaterialPage(
+                  child: AssignmentDetailPage(assignmentId: assignmentId!),
+                );
+              },
+            )
+          ],
+        ),
+        GoRoute(
+          path: '/pdf-generator',
+          pageBuilder: (context, state) => MaterialPage(child: PdfGeneratorPage()),
+        ),
+        GoRoute(
+          path: '/agent',
+          pageBuilder: (context, state) => MaterialPage(child: ChatAgentPageDesktop()),
+        ),
+        GoRoute(
+          path: '/rag-agent',
+          pageBuilder: (context, state) => MaterialPage(child: RagAgentPageDesktop()),
+        ),
       ],
     ),
-    GoRoute(path: '/add-question', pageBuilder: (context, state) => MaterialPage(child: AddQuestion())),
+    GoRoute(
+      path: '/add-question',
+      pageBuilder: (context, state) => MaterialPage(child: AddQuestion()),
+    ),
   ],
 );

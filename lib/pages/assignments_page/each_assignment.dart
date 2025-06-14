@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
 import 'package:lumen_slate/pages/assignments_page/widget/question_tile.dart';
 import '../../blocs/assignment/assignment_bloc.dart';
@@ -24,121 +25,136 @@ class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: BlocBuilder<AssignmentBloc, AssignmentState>(
-        builder: (context, state) {
-          if (state is AssignmentSingleExtendedSuccess) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              state.assignment.title,
-                              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(state.assignment.body, style: GoogleFonts.poppins()),
-                            const SizedBox(height: 16),
-                            Text(
-                              "Due: ${state.assignment.dueDate.toLocal().toString().split(' ')[0]}",
-                              style: GoogleFonts.poppins(color: Colors.red[400]),
-                            ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () => _exportAssignment(context, state.assignment),
-                        icon: const Icon(Icons.download),
-                        label: const Text('Export'),
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  if (state.assignment.mcqs != null && state.assignment.mcqs!.isNotEmpty)
-                    buildQuestionSection(
-                      title: "Multiple Choice Questions",
-                      description: "Choose the correct option. Only one answer is correct.",
-                      backgroundColor: Colors.blue,
-                      children: state.assignment.mcqs!
-                          .map((q) => QuestionTile(question: q.question, options: q.options, points: q.points))
-                          .toList(),
-                    ),
-                  if (state.assignment.msqs != null && state.assignment.msqs!.isNotEmpty)
-                    buildQuestionSection(
-                      title: "Multiple Select Questions",
-                      description: "Select all correct options. More than one may apply.",
-                      backgroundColor: Colors.green,
-                      children: state.assignment.msqs!
-                          .map((q) => QuestionTile(question: q.question, options: q.options, points: q.points))
-                          .toList(),
-                    ),
-                  if (state.assignment.nats != null && state.assignment.nats!.isNotEmpty)
-                    buildQuestionSection(
-                      title: "Numerical Answer Type",
-                      description: "Type the numerical answer without options.",
-                      backgroundColor: Colors.orange,
-                      children: state.assignment.nats!
-                          .map((q) => QuestionTile(question: q.question, points: q.points))
-                          .toList(),
-                    ),
-                  if (state.assignment.subjectives != null && state.assignment.subjectives!.isNotEmpty)
-                    buildQuestionSection(
-                      title: "Subjective Questions",
-                      description: "Write descriptive answers in your own words.",
-                      backgroundColor: Colors.purple,
-                      children: state.assignment.subjectives!
-                          .map((q) => QuestionTile(question: q.question, points: q.points))
-                          .toList(),
-                    ),
-
-                  /// Comments Section
-                  if (state.assignment.comments != null && state.assignment.comments!.isNotEmpty)
-                    buildQuestionSection(
-                      title: "Comments",
-                      description: "Remarks or feedback related to this assignment.",
-                      backgroundColor: Colors.grey,
-                      isLast: true,
-                      children: state.assignment.comments!.map((comment) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[300]!),
-                          ),
-                          child: Row(
+    return PopScope(
+      onPopInvokedWithResult: (result, __) {
+        if (result) {
+          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(),
+        body: BlocBuilder<AssignmentBloc, AssignmentState>(
+          builder: (context, state) {
+            if (state is AssignmentSingleExtendedSuccess) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
-                              const SizedBox(width: 12),
-                              Expanded(child: Text(comment.commentBody, style: GoogleFonts.poppins(fontSize: 14))),
+                              Text(
+                                state.assignment.title,
+                                style: GoogleFonts.poppins(fontSize: 58, fontWeight: FontWeight.w400),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(state.assignment.body, style: GoogleFonts.poppins(fontSize: 22)),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(color: Colors.black),
+                                ),
+                                child: Text(
+                                  "Due: ${DateFormat('dd-MM-yyyy').format(state.assignment.dueDate)}",
+                                  style: GoogleFonts.poppins(color: Colors.red[400]),
+                                ),
+                              ),
                             ],
                           ),
-                        );
-                      }).toList(),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () => _exportAssignment(context, state.assignment),
+                          icon: const Icon(Icons.download),
+                          label: const Text('Export'),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+                        ),
+                      ],
                     ),
-                ],
-              ),
-            );
-          } else if (state is AssignmentSingleFailure) {
-            return Center(
-              child: Text('Failed to load assignment: ${state.error}', style: GoogleFonts.poppins(color: Colors.red)),
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+                    const SizedBox(height: 24),
+                    if (state.assignment.mcqs != null && state.assignment.mcqs!.isNotEmpty)
+                      buildQuestionSection(
+                        title: "Multiple Choice Questions",
+                        description: "Choose the correct option. Only one answer is correct.",
+                        backgroundColor: Colors.blue,
+                        children: state.assignment.mcqs!
+                            .map((q) => QuestionTile(question: q.question, options: q.options, points: q.points))
+                            .toList(),
+                      ),
+                    if (state.assignment.msqs != null && state.assignment.msqs!.isNotEmpty)
+                      buildQuestionSection(
+                        title: "Multiple Select Questions",
+                        description: "Select all correct options. More than one may apply.",
+                        backgroundColor: Colors.green,
+                        children: state.assignment.msqs!
+                            .map((q) => QuestionTile(question: q.question, options: q.options, points: q.points))
+                            .toList(),
+                      ),
+                    if (state.assignment.nats != null && state.assignment.nats!.isNotEmpty)
+                      buildQuestionSection(
+                        title: "Numerical Answer Type",
+                        description: "Type the numerical answer without options.",
+                        backgroundColor: Colors.orange,
+                        children: state.assignment.nats!
+                            .map((q) => QuestionTile(question: q.question, points: q.points))
+                            .toList(),
+                      ),
+                    if (state.assignment.subjectives != null && state.assignment.subjectives!.isNotEmpty)
+                      buildQuestionSection(
+                        title: "Subjective Questions",
+                        description: "Write descriptive answers in your own words.",
+                        backgroundColor: Colors.purple,
+                        children: state.assignment.subjectives!
+                            .map((q) => QuestionTile(question: q.question, points: q.points))
+                            .toList(),
+                      ),
+
+                    /// Comments Section
+                    if (state.assignment.comments != null && state.assignment.comments!.isNotEmpty)
+                      buildQuestionSection(
+                        title: "Comments",
+                        description: "Remarks or feedback related to this assignment.",
+                        backgroundColor: Colors.grey,
+                        isLast: true,
+                        children: state.assignment.comments!.map((comment) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
+                                const SizedBox(width: 12),
+                                Expanded(child: Text(comment.commentBody, style: GoogleFonts.poppins(fontSize: 14))),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                  ],
+                ),
+              );
+            } else if (state is AssignmentSingleFailure) {
+              return Center(
+                child: Text('Failed to load assignment: ${state.error}', style: GoogleFonts.poppins(color: Colors.red)),
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
       ),
     );
   }
