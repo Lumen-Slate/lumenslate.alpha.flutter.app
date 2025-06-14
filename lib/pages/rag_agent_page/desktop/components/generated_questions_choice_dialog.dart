@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lumen_slate/lib.dart';
 import '../../../../serializers/rag_agent_serializers/rag_generated_questions_serializer.dart';
 import '../../../../models/questions/mcq.dart';
 import '../../../../models/questions/msq.dart';
 import '../../../../models/questions/nat.dart';
 import '../../../../models/questions/subjective.dart';
-import '../../../../blocs/mcq/mcq_bloc.dart';
-import '../../../../blocs/msq/msq_bloc.dart';
 
 class GeneratedQuestionsChoiceDialog extends StatefulWidget {
   final RagGeneratedQuestionsSerializer serializer;
@@ -83,38 +80,41 @@ class _GeneratedQuestionsChoiceDialogState
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Select Questions to Save'),
-      content: SizedBox(
-        width: 500,
-        height: 400,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSection('MCQs', widget.serializer.mcqs, mcqSelected),
-              _buildSection('MSQs', widget.serializer.msqs, msqSelected),
-              _buildSection('NATs', widget.serializer.nats, natSelected),
-              _buildSection(
-                'Subjectives',
-                widget.serializer.subjectives,
-                subjectiveSelected,
-              ),
-            ],
+    return ResponsiveScaledBox(
+      width: AppConstants.desktopScaleWidth,
+      child: AlertDialog(
+        title: const Text('Select Questions to Save'),
+        content: SizedBox(
+          width: 500,
+          height: 400,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSection('MCQs', widget.serializer.mcqs, mcqSelected),
+                _buildSection('MSQs', widget.serializer.msqs, msqSelected),
+                _buildSection('NATs', widget.serializer.nats, natSelected),
+                _buildSection(
+                  'Subjectives',
+                  widget.serializer.subjectives,
+                  subjectiveSelected,
+                ),
+              ],
+            ),
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.save),
+            label: const Text('Save Selected'),
+            onPressed: _saveSelectedQuestions,
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton.icon(
-          icon: const Icon(Icons.save),
-          label: const Text('Save Selected'),
-          onPressed: _saveSelectedQuestions,
-        ),
-      ],
     );
   }
 

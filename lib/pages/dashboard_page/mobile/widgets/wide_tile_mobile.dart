@@ -19,7 +19,7 @@ class WideTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 700,
-      height: 300,
+      height: 350,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(15),
