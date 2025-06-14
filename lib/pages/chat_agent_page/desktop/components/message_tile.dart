@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:lumen_slate/serializers/agent_serializers/agent_response.dart';
 import '../../../../serializers/agent_serializers/assignment_generator_general_serializer.dart';
 import 'assignment_generator_general_tile.dart';
+import 'assessor_agent_tile.dart';
+import '../../../../serializers/agent_serializers/assessor_agent_serializer.dart';
 
 class MessageTile extends StatelessWidget {
   final AgentResponse message;
@@ -49,6 +51,11 @@ class MessageTile extends StatelessWidget {
                   msqCount: message.data.msqCount,
                   subjectiveCount: message.data.subjectiveCount,
                 ),
+              ),
+
+            if (message.agentName == 'assessor_agent')
+              AssessorAgentTile(
+                serializer: AssessorAgentSerializer.fromJson(message.data.toJson()),
               ),
 
             Text(_formatTime(message.createdAt), style: TextStyle(fontSize: 10, color: Colors.grey[600])),
