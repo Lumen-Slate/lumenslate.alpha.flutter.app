@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/subjective.dart';
+import '../../../../services/question_api_service.dart';
+import '../widgets/edit_subjective_dialog.dart';
 import 'context_generation_dialog.dart';
 import 'question_segmentation_dialog.dart';
 
@@ -89,6 +93,87 @@ class SubjectiveTile extends StatelessWidget {
                             id: subjective.id,
                           ),
                         );
+                      },
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Colors.blue[700]),
+                      onPressed: () async {
+                        final updatedSubjective = await showDialog<Subjective>(
+                          context: context,
+                          builder: (context) => EditSubjectiveDialog(subjective: subjective),
+                        );
+                        
+                        if (updatedSubjective != null) {
+                          try {
+                            await QuestionApiService.updateSubjective(updatedSubjective);
+                            if (context.mounted) {
+                              context.read<QuestionsBloc>().add(LoadQuestions());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Subjective question updated successfully'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to update question: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red[700]),
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Delete Subjective Question'),
+                            content: Text('Are you sure you want to delete this subjective question? This action cannot be undone.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: Text('Delete', style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                        
+                        if (confirmed == true) {
+                          try {
+                            await QuestionApiService.deleteSubjective(subjective.id);
+                            if (context.mounted) {
+                              context.read<QuestionsBloc>().add(LoadQuestions());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Subjective question deleted successfully'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to delete question: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
                       },
                       iconSize: 21,
                     ),

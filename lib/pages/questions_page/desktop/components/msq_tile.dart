@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../blocs/msq_variation_generation/msq_variation_bloc.dart';
+import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/msq.dart';
+import '../../../../services/question_api_service.dart';
+import '../widgets/edit_msq_dialog.dart';
 import 'context_generation_dialog.dart';
 import 'msq_variation_dialog.dart';
 
@@ -116,6 +119,87 @@ class MSQTile extends StatelessWidget {
                             child: MSQVariationDialog(msq: msq),
                           ),
                         );
+                      },
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Colors.blue[700]),
+                      onPressed: () async {
+                        final updatedMSQ = await showDialog<MSQ>(
+                          context: context,
+                          builder: (context) => EditMSQDialog(msq: msq),
+                        );
+                        
+                        if (updatedMSQ != null) {
+                          try {
+                            await QuestionApiService.updateMSQ(updatedMSQ);
+                            if (context.mounted) {
+                              context.read<QuestionsBloc>().add(LoadQuestions());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('MSQ updated successfully'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to update MSQ: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red[700]),
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Delete MSQ Question'),
+                            content: Text('Are you sure you want to delete this MSQ question? This action cannot be undone.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: Text('Delete', style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                        
+                        if (confirmed == true) {
+                          try {
+                            await QuestionApiService.deleteMSQ(msq.id);
+                            if (context.mounted) {
+                              context.read<QuestionsBloc>().add(LoadQuestions());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('MSQ deleted successfully'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to delete MSQ: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        }
                       },
                       iconSize: 21,
                     ),
