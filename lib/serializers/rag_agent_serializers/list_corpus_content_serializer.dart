@@ -1,4 +1,3 @@
-// lib/serializers/rag_agent_serializers/list_corpus_content_serializer.dart
 class ListCorpusContentSerializer {
   final String corpusName;
   final String displayName;
@@ -45,6 +44,7 @@ class RagFileItem {
   final String createTime;
   final String description;
   final String displayName;
+  final String id;
   final String name;
   final String updateTime;
 
@@ -52,6 +52,7 @@ class RagFileItem {
     required this.createTime,
     required this.description,
     required this.displayName,
+    required this.id,
     required this.name,
     required this.updateTime,
   });
@@ -61,6 +62,7 @@ class RagFileItem {
       createTime: json['createTime'],
       description: json['description'],
       displayName: json['displayName'],
+      id: json['id'],
       name: json['name'],
       updateTime: json['updateTime'],
     );
@@ -71,6 +73,7 @@ class RagFileItem {
       'createTime': createTime,
       'description': description,
       'displayName': displayName,
+      'id': id,
       'name': name,
       'updateTime': updateTime,
     };
