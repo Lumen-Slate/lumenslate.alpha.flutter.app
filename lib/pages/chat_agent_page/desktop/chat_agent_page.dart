@@ -10,6 +10,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../blocs/chat_agent/chat_agent_bloc.dart';
+import '../../../constants/app_constants.dart';
 import '../../../models/assignments.dart';
 import '../../../models/students.dart';
 import 'components/message_tile.dart';
@@ -45,17 +46,38 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
   }
 
   void _sendMessage(BuildContext context) {
-    final text = _textController.text.trim();
+    String text = _textController.text.trim();
+    String? attachments;
+
+    if (_selectedAssignment != null || _selectedStudent != null) {
+      attachments = """
+      \n\nHere are the extra attachments attached by user, use them if needed:
+      """;
+      if (_selectedAssignment != null) {
+        attachments += "Assignment ID: ${_selectedAssignment!.id}\n";
+      }
+      if (_selectedStudent != null) {
+        attachments += "Student ID: ${_selectedStudent!.id}\n";
+      }
+    }
+
+
     if (text.isNotEmpty) {
-      context.read<ChatAgentBloc>().add(CallAgent(teacherId: widget.teacherId, messageString: text));
+      context.read<ChatAgentBloc>().add(CallAgent(teacherId: widget.teacherId, messageString: text, file: _selectedFile, attachments: attachments));
       _textController.clear();
     }
+
+    setState(() {
+      _selectedFile = null;
+      _selectedStudent = null;
+      _selectedAssignment = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
-      width: 1920,
+      width: AppConstants.desktopScaleWidth,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
@@ -68,7 +90,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                   child: Hero(
                     tag: 'agent',
                     child: AutoSizeText(
-                      "Agent",
+                      "Lumen Agent",
                       maxLines: 2,
                       minFontSize: 80,
                       style: GoogleFonts.poppins(fontSize: 80, color: Colors.black),

@@ -7,11 +7,13 @@ final class CallAgent extends ChatAgentEvent {
   final String teacherId;
   final String messageString;
   final PlatformFile? file;
+  final String? attachments;
 
   CallAgent({
     required this.teacherId,
     required this.messageString,
     this.file,
+    this.attachments,
   });
 }
 

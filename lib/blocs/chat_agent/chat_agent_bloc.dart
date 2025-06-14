@@ -7,7 +7,6 @@ import '../../repositories/ai/agent_repository.dart';
 import '../../serializers/agent_serializers/agent_payload.dart';
 
 part 'chat_agent_event.dart';
-
 part 'chat_agent_state.dart';
 
 class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
@@ -36,7 +35,6 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
         feedback: 'neutral',
       );
 
-      // Append the user message to the last page or create a new page if none exist
       final List<List<AgentResponse>> updatedPages = List.from(pagingState.pages ?? []);
       if (updatedPages.isNotEmpty) {
         updatedPages[updatedPages.length - 1] = [userMessage, ...updatedPages.last];
@@ -50,7 +48,7 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
         final response = await repository.callAgent(
           payload: AgentPayload(
             teacherId: event.teacherId,
-            message: event.messageString,
+            message: event.messageString + (event.attachments ?? ''),
             file: event.file,
             role: 'user',
             createdAt: DateTime.now(),
