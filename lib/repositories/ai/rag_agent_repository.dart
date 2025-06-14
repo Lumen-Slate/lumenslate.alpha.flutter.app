@@ -4,6 +4,7 @@ import 'package:lumen_slate/constants/app_constants.dart';
 import '../../serializers/rag_agent_serializers/add_corpus_document_serializer.dart';
 import '../../serializers/rag_agent_serializers/delete_corpus_document_serializer.dart';
 import '../../serializers/rag_agent_serializers/list_corpus_content_serializer.dart';
+import '../../serializers/rag_agent_serializers/rag_agent_payload.dart';
 
 class RagAgentRepository {
   final Dio _client = Dio(
@@ -15,23 +16,18 @@ class RagAgentRepository {
   final Logger _logger = Logger();
 
   Future<Response?> callRagAgent({
-    required String teacherId,
-    required String message,
+    required RAGAgentPayload payload,
   }) async {
-    // Dummy response for testing
-    await Future.delayed(const Duration(milliseconds: 300));
-    return Response(
-      requestOptions: RequestOptions(path: '/ai/rag_agent'),
-      statusCode: 200,
-      data: {
-        'id': 'dummy_id',
-        'message': 'Dummy RAG agent reply to: $message',
-        'data': null,
-        'agentName': 'rag_agent',
-        'createdAt': DateTime.now().toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
-      },
-    );
+    try {
+      final response = await _client.post(
+        '/ai/rag-agent',
+        data: payload.toJson(),
+      );
+      return response;
+    } catch (e) {
+      _logger.e('Error calling rag agent: $e');
+      return null;
+    }
   }
 
   Future<Response?> fetchRagChatHistory({

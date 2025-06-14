@@ -1,17 +1,17 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:logger/logger.dart';
+import 'package:lumen_slate/serializers/rag_agent_serializers/reg_agent_response.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../../blocs/rag_agent/rag_agent_bloc.dart';
 import '../../../blocs/rag_document/rag_document_bloc.dart';
-import '../../../models/chat_message.dart';
-import '../../chat_agent_page/desktop/components/message_tile.dart';
+import 'components/rag_message_tile.dart';
 
 class RagAgentPageDesktop extends StatefulWidget {
+  /// TODO: Replace with actual teacher ID
   final String teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
 
   const RagAgentPageDesktop({super.key});
@@ -24,6 +24,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
   final TextEditingController _textController = TextEditingController();
   String? _selectedFileUrl;
   String? _selectedFileName;
+  /// TODO : Hardcoded data
   String corpusName = 'my_test_corpus';
 
   @override
@@ -51,37 +52,62 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
     final urlController = TextEditingController();
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Enter PDF File URL'),
-        content: TextField(
-          controller: urlController,
-          decoration: const InputDecoration(
-            hintText: 'https://example.com/file.pdf',
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        child: Container(
+          width: 900,
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter Google Drive PDF File URL', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: urlController,
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+                decoration: const InputDecoration(
+                  hintText: 'https://example.com/file.pdf',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderSide: BorderSide.none,
+                  ),
+                  fillColor: Colors.white,
+                  filled: true,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: () {
+                      final url = urlController.text.trim();
+                      if (url.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please enter a valid PDF file URL.')),
+                        );
+                        return;
+                      }
+                      setState(() {
+                        _selectedFileUrl = url;
+                        _selectedFileName = url.split('/').last;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Select'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              final url = urlController.text.trim();
-              if (url.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please enter a valid PDF file URL.')),
-                );
-                return;
-              }
-              setState(() {
-                _selectedFileUrl = url;
-                _selectedFileName = url.split('/').last;
-              });
-              Navigator.of(context).pop();
-            },
-            child: const Text('Select'),
-          ),
-        ],
       ),
     );
   }
@@ -141,7 +167,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                               child: BlocBuilder<RagAgentBloc, RagAgentState>(
                                 builder: (context, state) {
                                   if (state is RagAgentSuccess) {
-                                    return PagedListView<int, ChatMessage>(
+                                    return PagedListView<int, RagAgentResponse>(
                                       state: state.state,
                                       reverse: true,
                                       fetchNextPage: () {
@@ -150,7 +176,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                         );
                                       },
                                       builderDelegate: PagedChildBuilderDelegate(
-                                        itemBuilder: (context, item, index) => MessageTile(message: item),
+                                        itemBuilder: (context, item, index) => RagMessageTile(message: item),
                                         noItemsFoundIndicatorBuilder: (context) => Center(child: Text('No messages')),
                                         firstPageErrorIndicatorBuilder: (context) =>
                                             Center(child: Text('Error loading messages')),
@@ -200,23 +226,54 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                             Padding(
                               padding: const EdgeInsets.only(top: 16.0),
                               child: Row(
+                                spacing: 15,
                                 children: [
                                   Expanded(
-                                    child: TextField(
-                                      controller: _textController,
-                                      decoration: const InputDecoration(
-                                        hintText: 'Type your message...',
-                                        border: OutlineInputBorder(),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(30),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withValues(alpha: 0.9),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
                                       ),
-                                      onSubmitted: (_) => _sendMessage(context),
+                                      child: TextField(
+                                        controller: _textController,
+                                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+                                        decoration: const InputDecoration(
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                                          fillColor: Colors.white,
+                                          filled: true,
+                                          hintText: 'Type your message...',
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                        ),
+                                        onSubmitted: (_) => _sendMessage(context),
+                                      ),
                                     ),
                                   ),
                                   IconButton(
+                                    padding: const EdgeInsets.all(20.0),
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Colors.blue[100],
+                                      shape: const CircleBorder(),
+                                    ),
                                     icon: const Icon(Icons.attach_file),
                                     tooltip: 'Attach PDF URL',
                                     onPressed: _showFileUrlDialog,
                                   ),
                                   IconButton(
+                                    padding: const EdgeInsets.all(20.0),
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Colors.green[100],
+                                      shape: const CircleBorder(),
+                                    ),
                                     icon: const Icon(Icons.send),
                                     onPressed: () => _sendMessage(context),
                                   ),

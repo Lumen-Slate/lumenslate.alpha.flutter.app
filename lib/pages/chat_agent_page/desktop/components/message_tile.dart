@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../../../models/chat_message.dart';
+import 'package:lumen_slate/serializers/agent_serializers/agent_response.dart';
+import '../../../../serializers/agent_serializers/assignment_generator_general_serializer.dart';
+import 'assignment_generator_general_tile.dart';
 
 class MessageTile extends StatelessWidget {
-  final ChatMessage message;
+  final AgentResponse message;
 
   const MessageTile({super.key, required this.message});
 
@@ -25,19 +28,30 @@ class MessageTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
+          spacing: 4,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              message.agentName,
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[700]),
+              message.agentName == 'user' ? 'User' : 'Agent',
+              style: GoogleFonts.jost(fontWeight: FontWeight.w700, color: Colors.grey[700]),
             ),
-            const SizedBox(height: 4),
-            Text(message.message),
-            const SizedBox(height: 4),
-            Text(
-              _formatTime(message.createdAt),
-              style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-            ),
+            Text(message.message, style: GoogleFonts.jost(fontSize: 14, color: Colors.black87)),
+
+            if (message.agentName == 'assignment_generator_general' ||
+                message.agentName == 'assignment_generator_tailored')
+              AssignmentGeneratorTile(
+                serializer: AssignmentGeneratorSerializer(
+                  assignmentId: message.data.assignmentId,
+                  title: message.data.title,
+                  body: message.data.body,
+                  mcqCount: message.data.mcqCount,
+                  natCount: message.data.natCount,
+                  msqCount: message.data.msqCount,
+                  subjectiveCount: message.data.subjectiveCount,
+                ),
+              ),
+
+            Text(_formatTime(message.createdAt), style: TextStyle(fontSize: 10, color: Colors.grey[600])),
           ],
         ),
       ),

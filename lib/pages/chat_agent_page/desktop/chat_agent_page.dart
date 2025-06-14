@@ -1,13 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lumen_slate/serializers/agent_serializers/agent_response.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../blocs/chat_agent/chat_agent_bloc.dart';
-import '../../../models/chat_message.dart';
 import 'components/message_tile.dart';
 
 class ChatAgentPageDesktop extends StatefulWidget {
@@ -104,7 +104,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                         child: BlocBuilder<ChatAgentBloc, ChatAgentState>(
                           builder: (context, state) {
                             if (state is ChatAgentSuccess) {
-                              return PagedListView<int, ChatMessage>(
+                              return PagedListView<int, AgentResponse>(
                                 state: state.state,
                                 reverse: true,
                                 fetchNextPage: () {
@@ -157,23 +157,54 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Row(
+                          spacing: 15,
                           children: [
                             Expanded(
-                              child: TextField(
-                                controller: _textController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Type your message...',
-                                  border: OutlineInputBorder(),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withValues(alpha: 0.9),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                                onSubmitted: (_) => _sendMessage(context),
+                                child: TextField(
+                                  controller: _textController,
+                                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    hintText: 'Type your message...',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                  onSubmitted: (_) => _sendMessage(context),
+                                ),
                               ),
                             ),
                             IconButton(
+                              padding: const EdgeInsets.all(20.0),
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.blue[100],
+                                shape: CircleBorder(),
+                              ),
                               icon: const Icon(Icons.attach_file),
                               tooltip: 'Attach file',
                               onPressed: _pickSupportedFile,
                             ),
                             IconButton(
+                              padding: const EdgeInsets.all(20.0),
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.green[100],
+                                shape: CircleBorder(),
+                              ),
                               icon: const Icon(Icons.send),
                               onPressed: () => _sendMessage(context),
                             ),

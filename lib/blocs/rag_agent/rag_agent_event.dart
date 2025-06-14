@@ -6,10 +6,12 @@ sealed class RagAgentEvent {}
 final class CallRagAgent extends RagAgentEvent {
   final String teacherId;
   final String messageString;
+  final String? file;
 
   CallRagAgent({
     required this.teacherId,
     required this.messageString,
+    this.file,
   });
 }
 

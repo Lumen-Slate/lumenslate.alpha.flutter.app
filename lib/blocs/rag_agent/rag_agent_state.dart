@@ -6,7 +6,7 @@ sealed class RagAgentState {}
 final class RagAgentInitial extends RagAgentState {}
 
 final class RagAgentSuccess extends RagAgentState {
-  final PagingState<int, ChatMessage> state;
+  final PagingState<int, RagAgentResponse> state;
 
   RagAgentSuccess(this.state);
 }

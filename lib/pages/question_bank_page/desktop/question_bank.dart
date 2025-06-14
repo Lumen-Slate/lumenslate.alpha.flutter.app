@@ -133,7 +133,8 @@ class QuestionBankPageDesktopState extends State<QuestionBankPageDesktop> {
                           children: [
                             Text('Info Card', style: GoogleFonts.jost(fontSize: 42, fontWeight: FontWeight.w400)),
                             // You may want to update this to show total from API
-                            // Text('Total Banks: ...'),
+                            SizedBox(height: 20),
+                            Text('Total Banks: 6', style: GoogleFonts.jost(fontSize: 24, fontWeight: FontWeight.w400)),
                           ],
                         ),
                       ),

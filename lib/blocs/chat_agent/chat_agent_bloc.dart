@@ -1,10 +1,13 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import '../../models/chat_message.dart';
+import 'package:lumen_slate/serializers/agent_serializers/agent_response.dart';
 import '../../repositories/ai/agent_repository.dart';
+import '../../serializers/agent_serializers/agent_payload.dart';
 
 part 'chat_agent_event.dart';
+
 part 'chat_agent_state.dart';
 
 class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
@@ -12,30 +15,31 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
 
   ChatAgentBloc({required this.repository}) : super(ChatAgentInitial()) {
     on<CallAgent>((event, emit) async {
-      PagingState<int, ChatMessage> pagingState;
+      PagingState<int, AgentResponse> pagingState;
       if (state is ChatAgentSuccess) {
         pagingState = (state as ChatAgentSuccess).state;
       } else {
-        pagingState = PagingState<int, ChatMessage>();
+        pagingState = PagingState<int, AgentResponse>();
       }
 
       // Create user message
-      final userMessage = ChatMessage(
-        id: UniqueKey().toString(),
+      final userMessage = AgentResponse(
         message: event.messageString,
         data: null,
         agentName: 'user',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        teacherId: event.teacherId,
+        sessionId: '',
+        responseTime: 0,
+        role: 'user',
+        feedback: 'neutral',
       );
 
       // Append the user message to the last page or create a new page if none exist
-      final List<List<ChatMessage>> updatedPages = List.from(pagingState.pages ?? []);
+      final List<List<AgentResponse>> updatedPages = List.from(pagingState.pages ?? []);
       if (updatedPages.isNotEmpty) {
-        updatedPages[updatedPages.length - 1] = [
-          userMessage,
-          ...updatedPages.last,
-        ];
+        updatedPages[updatedPages.length - 1] = [userMessage, ...updatedPages.last];
       } else {
         updatedPages.add([userMessage]);
       }
@@ -43,17 +47,22 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
       emit(ChatAgentSuccess(pagingState.copyWith(pages: updatedPages, isLoading: true, error: null)));
 
       try {
-        final response = await repository.callAgent(teacherId: event.teacherId, message: event.messageString);
+        final response = await repository.callAgent(
+          payload: AgentPayload(
+            teacherId: event.teacherId,
+            message: event.messageString,
+            file: event.file,
+            role: 'user',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+        );
         if (response != null && response.statusCode == 200) {
-          final ChatMessage agentMessage = ChatMessage.fromJson(response.data);
-
+          final AgentResponse agentMessage = AgentResponse.fromJson(response.data);
           // Append the agent reply to the last page
-          final List<List<ChatMessage>> replyPages = List.from(updatedPages);
+          final List<List<AgentResponse>> replyPages = List.from(updatedPages);
           if (replyPages.isNotEmpty) {
-            replyPages[replyPages.length - 1] = [
-              agentMessage,
-              ...replyPages.last,
-            ];
+            replyPages[replyPages.length - 1] = [agentMessage, ...replyPages.last];
           } else {
             replyPages.add([agentMessage]);
           }
@@ -68,11 +77,11 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
     });
 
     on<FetchAgentChatHistory>((event, emit) async {
-      PagingState<int, ChatMessage> pagingState;
+      PagingState<int, AgentResponse> pagingState;
       if (state is ChatAgentSuccess) {
         pagingState = (state as ChatAgentSuccess).state;
       } else {
-        pagingState = PagingState<int, ChatMessage>();
+        pagingState = PagingState<int, AgentResponse>();
       }
 
       if (pagingState.isLoading || !pagingState.hasNextPage) return;
@@ -88,7 +97,7 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
         );
         if (response != null && response.statusCode == 200) {
           final List data = response.data;
-          final messages = data.map((e) => ChatMessage.fromJson(e)).toList().cast<ChatMessage>();
+          final messages = data.map((e) => AgentResponse.fromJson(e)).toList().cast<AgentResponse>();
           final isLastPage = messages.length < event.pageSize;
 
           final newPagingState = pagingState.copyWith(

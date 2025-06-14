@@ -20,7 +20,8 @@ class AgentPayload {
 
   FormData toFormData() {
     return FormData.fromMap({
-      'file': file != null ? MultipartFile.fromBytes(file!.bytes!, filename: file!.name) : null,
+      if (file != null)
+        'file': MultipartFile.fromBytes(file!.bytes!, filename: file!.name),
       'teacherId': teacherId,
       'role': role,
       'message': message,

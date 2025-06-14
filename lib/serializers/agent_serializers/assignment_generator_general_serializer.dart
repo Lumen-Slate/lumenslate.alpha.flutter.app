@@ -1,4 +1,4 @@
-class AssignmentGeneratorGeneralSerializer {
+class AssignmentGeneratorSerializer {
   final String assignmentId;
   final String title;
   final String body;
@@ -7,7 +7,7 @@ class AssignmentGeneratorGeneralSerializer {
   final int msqCount;
   final int subjectiveCount;
 
-  AssignmentGeneratorGeneralSerializer({
+  AssignmentGeneratorSerializer({
     required this.assignmentId,
     required this.title,
     required this.body,
@@ -17,8 +17,8 @@ class AssignmentGeneratorGeneralSerializer {
     required this.subjectiveCount,
   });
 
-  factory AssignmentGeneratorGeneralSerializer.fromJson(Map<String, dynamic> json) {
-    return AssignmentGeneratorGeneralSerializer(
+  factory AssignmentGeneratorSerializer.fromJson(Map<String, dynamic> json) {
+    return AssignmentGeneratorSerializer(
       assignmentId: json['assignmentId'] as String,
       title: json['title'] as String,
       body: json['body'] as String,
