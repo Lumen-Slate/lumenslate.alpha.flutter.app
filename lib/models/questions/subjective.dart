@@ -40,10 +40,10 @@ class Subjective {
       id: json['id'],
       bankId: json['bankId'],
       question: json['question'],
-      variableIds: List<String>.from(json['variableIds']),
+      variableIds: List<String>.from(json['variableIds'] ?? []),
       points: json['points'],
       idealAnswer: json['idealAnswer'],
-      gradingCriteria: List<String>.from(json['gradingCriteria']),
+      gradingCriteria: List<String>.from(json['gradingCriteria'] ?? []),
       subject: json['subject'] ?? '',
       difficulty: json['difficulty'] ?? '',
     );
