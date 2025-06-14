@@ -5,10 +5,10 @@ class AssessorAgentSerializer {
   final int totalPointsAwarded;
   final int totalMaxPoints;
   final double percentageScore;
-  final List<MCQResult> mcqResults;
-  final List<MSQResult> msqResults;
-  final List<NATResult> natResults;
-  final List<SubjectiveResult> subjectiveResults;
+  final List<MCQResult>? mcqResults;
+  final List<MSQResult>? msqResults;
+  final List<NATResult>? natResults;
+  final List<SubjectiveResult>? subjectiveResults;
   final String createdAt;
   final String updatedAt;
 
@@ -35,18 +35,26 @@ class AssessorAgentSerializer {
       totalPointsAwarded: json['totalPointsAwarded'],
       totalMaxPoints: json['totalMaxPoints'],
       percentageScore: (json['percentageScore'] as num).toDouble(),
-      mcqResults: (json['mcqResults'] as List)
-          .map((e) => MCQResult.fromJson(e))
-          .toList(),
-      msqResults: (json['msqResults'] as List)
-          .map((e) => MSQResult.fromJson(e))
-          .toList(),
-      natResults: (json['natResults'] as List)
-          .map((e) => NATResult.fromJson(e))
-          .toList(),
-      subjectiveResults: (json['subjectiveResults'] as List)
-          .map((e) => SubjectiveResult.fromJson(e))
-          .toList(),
+      mcqResults: json['mcqResults'] == null
+          ? null
+          : (json['mcqResults'] as List)
+              .map((e) => MCQResult.fromJson(e))
+              .toList(),
+      msqResults: json['msqResults'] == null
+          ? null
+          : (json['msqResults'] as List)
+              .map((e) => MSQResult.fromJson(e))
+              .toList(),
+      natResults: json['natResults'] == null
+          ? null
+          : (json['natResults'] as List)
+              .map((e) => NATResult.fromJson(e))
+              .toList(),
+      subjectiveResults: json['subjectiveResults'] == null
+          ? null
+          : (json['subjectiveResults'] as List)
+              .map((e) => SubjectiveResult.fromJson(e))
+              .toList(),
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
@@ -60,10 +68,10 @@ class AssessorAgentSerializer {
       'totalPointsAwarded': totalPointsAwarded,
       'totalMaxPoints': totalMaxPoints,
       'percentageScore': percentageScore,
-      'mcqResults': mcqResults.map((e) => e.toJson()).toList(),
-      'msqResults': msqResults.map((e) => e.toJson()).toList(),
-      'natResults': natResults.map((e) => e.toJson()).toList(),
-      'subjectiveResults': subjectiveResults.map((e) => e.toJson()).toList(),
+      'mcqResults': mcqResults?.map((e) => e.toJson()).toList(),
+      'msqResults': msqResults?.map((e) => e.toJson()).toList(),
+      'natResults': natResults?.map((e) => e.toJson()).toList(),
+      'subjectiveResults': subjectiveResults?.map((e) => e.toJson()).toList(),
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
