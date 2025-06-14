@@ -40,7 +40,7 @@ class MCQTile extends StatelessWidget {
           ),
         );
 
-        await QuestionApiService.updateMCQ(result);
+        await QuestionApiService.updateMCQ(mcq, result);
         
         // Refresh questions list
         context.read<QuestionsBloc>().add(const LoadQuestions());

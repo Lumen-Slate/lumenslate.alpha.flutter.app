@@ -8,12 +8,36 @@ import '../models/questions/subjective.dart';
 class QuestionApiService {
   static const String baseUrl = 'http://localhost:8080'; // Update with your server URL
   
+  // Helper function to compare lists
+  static bool _listEquals<T>(List<T>? a, List<T>? b) {
+    if (a == null) return b == null;
+    if (b == null || a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+  
   // MCQ operations
-  static Future<MCQ> updateMCQ(MCQ mcq) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/mcqs/${mcq.id}'),
+  static Future<MCQ> updateMCQ(MCQ original, MCQ updated) async {
+    // Build PATCH payload with only changed fields
+    final Map<String, dynamic> changes = {};
+    
+    if (original.question != updated.question) changes['question'] = updated.question;
+    if (original.points != updated.points) changes['points'] = updated.points;
+    if (!_listEquals(original.options, updated.options)) changes['options'] = updated.options;
+    if (original.answerIndex != updated.answerIndex) changes['answerIndex'] = updated.answerIndex;
+    if (original.bankId != updated.bankId) changes['bankId'] = updated.bankId;
+    if (!_listEquals(original.variableIds, updated.variableIds)) changes['variableIds'] = updated.variableIds;
+    
+    if (changes.isEmpty) {
+      return updated; // No changes to apply
+    }
+    
+    final response = await http.patch(
+      Uri.parse('$baseUrl/mcqs/${updated.id}'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(mcq.toJson()),
+      body: jsonEncode(changes),
     );
 
     if (response.statusCode == 200) {
@@ -34,11 +58,25 @@ class QuestionApiService {
   }
 
   // MSQ operations
-  static Future<MSQ> updateMSQ(MSQ msq) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/msqs/${msq.id}'),
+  static Future<MSQ> updateMSQ(MSQ original, MSQ updated) async {
+    // Build PATCH payload with only changed fields
+    final Map<String, dynamic> changes = {};
+    
+    if (original.question != updated.question) changes['question'] = updated.question;
+    if (original.points != updated.points) changes['points'] = updated.points;
+    if (!_listEquals(original.options, updated.options)) changes['options'] = updated.options;
+    if (!_listEquals(original.answerIndices, updated.answerIndices)) changes['answerIndices'] = updated.answerIndices;
+    if (original.bankId != updated.bankId) changes['bankId'] = updated.bankId;
+    if (!_listEquals(original.variableIds, updated.variableIds)) changes['variableIds'] = updated.variableIds;
+    
+    if (changes.isEmpty) {
+      return updated; // No changes to apply
+    }
+    
+    final response = await http.patch(
+      Uri.parse('$baseUrl/msqs/${updated.id}'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(msq.toJson()),
+      body: jsonEncode(changes),
     );
 
     if (response.statusCode == 200) {
@@ -59,11 +97,24 @@ class QuestionApiService {
   }
 
   // NAT operations
-  static Future<NAT> updateNAT(NAT nat) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/nats/${nat.id}'),
+  static Future<NAT> updateNAT(NAT original, NAT updated) async {
+    // Build PATCH payload with only changed fields
+    final Map<String, dynamic> changes = {};
+    
+    if (original.question != updated.question) changes['question'] = updated.question;
+    if (original.points != updated.points) changes['points'] = updated.points;
+    if (original.answer != updated.answer) changes['answer'] = updated.answer;
+    if (original.bankId != updated.bankId) changes['bankId'] = updated.bankId;
+    if (!_listEquals(original.variableIds, updated.variableIds)) changes['variableIds'] = updated.variableIds;
+    
+    if (changes.isEmpty) {
+      return updated; // No changes to apply
+    }
+    
+    final response = await http.patch(
+      Uri.parse('$baseUrl/nats/${updated.id}'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(nat.toJson()),
+      body: jsonEncode(changes),
     );
 
     if (response.statusCode == 200) {
@@ -84,11 +135,25 @@ class QuestionApiService {
   }
 
   // Subjective operations
-  static Future<Subjective> updateSubjective(Subjective subjective) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/subjectives/${subjective.id}'),
+  static Future<Subjective> updateSubjective(Subjective original, Subjective updated) async {
+    // Build PATCH payload with only changed fields
+    final Map<String, dynamic> changes = {};
+    
+    if (original.question != updated.question) changes['question'] = updated.question;
+    if (original.points != updated.points) changes['points'] = updated.points;
+    if (original.idealAnswer != updated.idealAnswer) changes['idealAnswer'] = updated.idealAnswer;
+    if (!_listEquals(original.gradingCriteria, updated.gradingCriteria)) changes['gradingCriteria'] = updated.gradingCriteria;
+    if (original.bankId != updated.bankId) changes['bankId'] = updated.bankId;
+    if (!_listEquals(original.variableIds, updated.variableIds)) changes['variableIds'] = updated.variableIds;
+    
+    if (changes.isEmpty) {
+      return updated; // No changes to apply
+    }
+    
+    final response = await http.patch(
+      Uri.parse('$baseUrl/subjectives/${updated.id}'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(subjective.toJson()),
+      body: jsonEncode(changes),
     );
 
     if (response.statusCode == 200) {

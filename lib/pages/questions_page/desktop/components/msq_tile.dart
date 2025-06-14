@@ -132,7 +132,7 @@ class MSQTile extends StatelessWidget {
                         
                         if (updatedMSQ != null) {
                           try {
-                            await QuestionApiService.updateMSQ(updatedMSQ);
+                            await QuestionApiService.updateMSQ(msq, updatedMSQ);
                             if (context.mounted) {
                               context.read<QuestionsBloc>().add(LoadQuestions());
                               ScaffoldMessenger.of(context).showSnackBar(

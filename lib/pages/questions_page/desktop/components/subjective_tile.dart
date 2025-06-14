@@ -106,7 +106,7 @@ class SubjectiveTile extends StatelessWidget {
                         
                         if (updatedSubjective != null) {
                           try {
-                            await QuestionApiService.updateSubjective(updatedSubjective);
+                            await QuestionApiService.updateSubjective(subjective, updatedSubjective);
                             if (context.mounted) {
                               context.read<QuestionsBloc>().add(LoadQuestions());
                               ScaffoldMessenger.of(context).showSnackBar(

@@ -39,7 +39,7 @@ class NATTile extends StatelessWidget {
           ),
         );
 
-        await QuestionApiService.updateNAT(result);
+        await QuestionApiService.updateNAT(nat, result);
         
         // Refresh questions list
         context.read<QuestionsBloc>().add(const LoadQuestions());
