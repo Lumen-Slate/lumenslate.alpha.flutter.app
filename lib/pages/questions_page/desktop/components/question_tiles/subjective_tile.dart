@@ -44,7 +44,7 @@ class SubjectiveTile extends StatelessWidget {
                 decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Text(
-                  subjective.runtimeType.toString(),
+                  'Subjective',
                   style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800),
                 ),
               ),

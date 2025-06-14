@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../models/questions/nat.dart';
 import '../../../../../blocs/questions/questions_bloc.dart';
 import '../../../../../services/question_api_service.dart';
@@ -161,7 +159,7 @@ class NATTile extends StatelessWidget {
                 decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Text(
-                  nat.runtimeType.toString(),
+                  'NAT',
                   style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800),
                 ),
               ),

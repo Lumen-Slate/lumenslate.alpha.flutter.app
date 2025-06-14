@@ -37,7 +37,7 @@ class NAT {
       id: json['id'],
       bankId: json['bankId'],
       question: json['question'],
-      variableIds: List<String>.from(json['variableIds']),
+      variableIds: List<String>.from(json['variableIds'] ?? []),
       points: json['points'],
       answer: json['answer'].toDouble(),
       subject: json['subject'] ?? '',
