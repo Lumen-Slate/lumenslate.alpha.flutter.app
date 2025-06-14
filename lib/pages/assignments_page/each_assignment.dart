@@ -1,179 +1,149 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lumen_slate/models/extended/assignment_extended.dart';
 import 'package:lumen_slate/pages/assignments_page/widget/question_tile.dart';
-import '../../../../models/comments.dart';
-import '../../constants/dummy_data/comments.dart';
-import '../../constants/dummy_data/questions/mcq.dart';
-import '../../constants/dummy_data/questions/msq.dart';
-import '../../constants/dummy_data/questions/nat.dart';
-import '../../constants/dummy_data/questions/subjective.dart';
-import '../../models/assignments.dart';
+import '../../blocs/assignment/assignment_bloc.dart';
 import '../../services/assignment_export_service.dart';
 
-class AssignmentDetailPage extends StatelessWidget {
-  final Assignment assignment;
+class AssignmentDetailPage extends StatefulWidget {
+  final String assignmentId;
 
-  const AssignmentDetailPage({super.key, required this.assignment});
+  const AssignmentDetailPage({super.key, required this.assignmentId});
+
+  @override
+  State<AssignmentDetailPage> createState() => _AssignmentDetailPageState();
+}
+
+class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
+  @override
+  void initState() {
+    context.read<AssignmentBloc>().add(FetchAssignmentById(id: widget.assignmentId, extended: true));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final mcqs = dummyMCQs
-        .where((q) => (assignment.mcqIds ?? []).contains(q.id))
-        .toList();
-    final msqs = dummyMSQs
-        .where((q) => (assignment.msqIds ?? []).contains(q.id))
-        .toList();
-    final nats = dummyNATs
-        .where((q) => (assignment.natIds ?? []).contains(q.id))
-        .toList();
-    final subjectives = dummySubjectives
-        .where((q) => (assignment.subjectiveIds ?? []).contains(q.id))
-        .toList();
-
     return Scaffold(
-        appBar: AppBar(
-          title: Text(assignment.title, style: GoogleFonts.poppins()),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      appBar: AppBar(),
+      body: BlocBuilder<AssignmentBloc, AssignmentState>(
+        builder: (context, state) {
+          if (state is AssignmentSingleExtendedSuccess) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(assignment.title,
-                            style: GoogleFonts.poppins(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Text(assignment.body, style: GoogleFonts.poppins()),
-                        const SizedBox(height: 16),
-                        Text(
-                            "Due: ${assignment.dueDate.toLocal().toString().split(' ')[0]}",
-                            style: GoogleFonts.poppins(color: Colors.red[400])),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              state.assignment.title,
+                              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(state.assignment.body, style: GoogleFonts.poppins()),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Due: ${state.assignment.dueDate.toLocal().toString().split(' ')[0]}",
+                              style: GoogleFonts.poppins(color: Colors.red[400]),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () => _exportAssignment(context, state.assignment),
+                        icon: const Icon(Icons.download),
+                        label: const Text('Export'),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+                      ),
+                    ],
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () => _exportAssignment(context),
-                    icon: const Icon(Icons.download),
-                    label: const Text('Export'),
-                    style: ElevatedButton.styleFrom(
+                  const SizedBox(height: 24),
+                  if (state.assignment.mcqs != null && state.assignment.mcqs!.isNotEmpty)
+                    buildQuestionSection(
+                      title: "Multiple Choice Questions",
+                      description: "Choose the correct option. Only one answer is correct.",
                       backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
+                      children: state.assignment.mcqs!
+                          .map((q) => QuestionTile(question: q.question, options: q.options, points: q.points))
+                          .toList(),
                     ),
-                  ),
+                  if (state.assignment.msqs != null && state.assignment.msqs!.isNotEmpty)
+                    buildQuestionSection(
+                      title: "Multiple Select Questions",
+                      description: "Select all correct options. More than one may apply.",
+                      backgroundColor: Colors.green,
+                      children: state.assignment.msqs!
+                          .map((q) => QuestionTile(question: q.question, options: q.options, points: q.points))
+                          .toList(),
+                    ),
+                  if (state.assignment.nats != null && state.assignment.nats!.isNotEmpty)
+                    buildQuestionSection(
+                      title: "Numerical Answer Type",
+                      description: "Type the numerical answer without options.",
+                      backgroundColor: Colors.orange,
+                      children: state.assignment.nats!
+                          .map((q) => QuestionTile(question: q.question, points: q.points))
+                          .toList(),
+                    ),
+                  if (state.assignment.subjectives != null && state.assignment.subjectives!.isNotEmpty)
+                    buildQuestionSection(
+                      title: "Subjective Questions",
+                      description: "Write descriptive answers in your own words.",
+                      backgroundColor: Colors.purple,
+                      children: state.assignment.subjectives!
+                          .map((q) => QuestionTile(question: q.question, points: q.points))
+                          .toList(),
+                    ),
+
+                  /// Comments Section
+                  if (state.assignment.comments != null && state.assignment.comments!.isNotEmpty)
+                    buildQuestionSection(
+                      title: "Comments",
+                      description: "Remarks or feedback related to this assignment.",
+                      backgroundColor: Colors.grey,
+                      isLast: true,
+                      children: state.assignment.comments!.map((comment) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey[300]!),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
+                              const SizedBox(width: 12),
+                              Expanded(child: Text(comment.commentBody, style: GoogleFonts.poppins(fontSize: 14))),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
                 ],
               ),
-              const SizedBox(height: 24),
-              if (mcqs.isNotEmpty)
-                buildQuestionSection(
-                  title: "Multiple Choice Questions",
-                  description:
-                      "Choose the correct option. Only one answer is correct.",
-                  backgroundColor: Colors.blue,
-                  children: mcqs
-                      .map((q) => QuestionTile(
-                            question: q.question,
-                            options: q.options,
-                            points: q.points,
-                          ))
-                      .toList(),
-                ),
-              if (msqs.isNotEmpty)
-                buildQuestionSection(
-                  title: "Multiple Select Questions",
-                  description:
-                      "Select all correct options. More than one may apply.",
-                  backgroundColor: Colors.green,
-                  children: msqs
-                      .map((q) => QuestionTile(
-                            question: q.question,
-                            options: q.options,
-                            points: q.points,
-                          ))
-                      .toList(),
-                ),
-              if (nats.isNotEmpty)
-                buildQuestionSection(
-                  title: "Numerical Answer Type",
-                  description: "Type the numerical answer without options.",
-                  backgroundColor: Colors.orange,
-                  children: nats
-                      .map((q) => QuestionTile(
-                            question: q.question,
-                            points: q.points,
-                          ))
-                      .toList(),
-                ),
-              if (subjectives.isNotEmpty)
-                buildQuestionSection(
-                  title: "Subjective Questions",
-                  description: "Write descriptive answers in your own words.",
-                  backgroundColor: Colors.purple,
-                  children: subjectives
-                      .map((q) => QuestionTile(
-                            question: q.question,
-                            points: q.points,
-                          ))
-                      .toList(),
-                ),
-
-              /// Comments Section
-              if (assignment.commentIds != null && assignment.commentIds!.isNotEmpty)
-                buildQuestionSection(
-                  title: "Comments",
-                  description:
-                      "Remarks or feedback related to this assignment.",
-                  backgroundColor: Colors.grey,
-                  isLast: true,
-                  children: assignment.commentIds!.map((id) {
-                    final comment = dummyComments.firstWhere(
-                      (c) => c.id == id,
-                      orElse: () => Comments(id: '', commentBody: ''),
-                    );
-
-                    if (comment.commentBody.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CircleAvatar(
-                            radius: 16,
-                            child: Icon(Icons.person, size: 16),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              comment.commentBody,
-                              style: GoogleFonts.poppins(fontSize: 14),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-            ],
-          ),
-        ));
+            );
+          } else if (state is AssignmentSingleFailure) {
+            return Center(
+              child: Text('Failed to load assignment: ${state.error}', style: GoogleFonts.poppins(color: Colors.red)),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
   }
 
-  Future<void> _exportAssignment(BuildContext context) async {
+  Future<void> _exportAssignment(BuildContext context, AssignmentExtended assignment) async {
     // Show export options dialog
     showDialog(
       context: context,
@@ -184,7 +154,7 @@ class AssignmentDetailPage extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _performExport(context, 'PDF');
+              _performExport(context, 'PDF', assignment);
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -198,7 +168,7 @@ class AssignmentDetailPage extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _performExport(context, 'CSV');
+              _performExport(context, 'CSV', assignment);
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -218,7 +188,7 @@ class AssignmentDetailPage extends StatelessWidget {
     );
   }
 
-  Future<void> _performExport(BuildContext context, String format) async {
+  Future<void> _performExport(BuildContext context, String format, AssignmentExtended assignment) async {
     try {
       // Show loading indicator
       showDialog(
@@ -240,9 +210,9 @@ class AssignmentDetailPage extends StatelessWidget {
       } else {
         await AssignmentExportService.exportAssignmentCSV(assignment);
       }
-      
+
       Navigator.of(context).pop(); // Close loading dialog
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Assignment "${assignment.title}" exported as $format successfully!'),
@@ -251,13 +221,10 @@ class AssignmentDetailPage extends StatelessWidget {
       );
     } catch (e) {
       Navigator.of(context).pop(); // Close loading dialog
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to export assignment: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to export assignment: $e'), backgroundColor: Colors.red));
     }
   }
 }
@@ -283,21 +250,9 @@ Widget buildQuestionSection({
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(title, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text(
-              description,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                color: Colors.grey[600],
-              ),
-            ),
+            Text(description, style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600])),
             const SizedBox(height: 12),
             ...children,
           ],

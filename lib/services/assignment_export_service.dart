@@ -1,15 +1,10 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:lumen_slate/models/extended/assignment_extended.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import "package:universal_html/html.dart" as html;
 import 'package:path_provider/path_provider.dart';
-import '../constants/dummy_data/questions/mcq.dart';
-import '../constants/dummy_data/questions/msq.dart';
-import '../constants/dummy_data/questions/nat.dart';
-import '../constants/dummy_data/questions/subjective.dart';
-import '../constants/dummy_data/comments.dart';
-import '../models/assignments.dart';
 import '../models/questions/mcq.dart';
 import '../models/questions/msq.dart';
 import '../models/questions/nat.dart';
@@ -19,25 +14,18 @@ class AssignmentExportService {
   static const String _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   /// Export assignment questions to PDF
-  static Future<File> exportAssignmentPDF(Assignment assignment) async {
+  static Future<File> exportAssignmentPDF(AssignmentExtended assignment) async {
     // Get questions for this assignment
-    final mcqs = dummyMCQs
-        .where((q) => (assignment.mcqIds ?? []).contains(q.id))
-        .toList();
-    final msqs = dummyMSQs
-        .where((q) => (assignment.msqIds ?? []).contains(q.id))
-        .toList();
-    final nats = dummyNATs
-        .where((q) => (assignment.natIds ?? []).contains(q.id))
-        .toList();
-    final subjectives = dummySubjectives
-        .where((q) => (assignment.subjectiveIds ?? []).contains(q.id))
-        .toList();
+    final mcqs = assignment.mcqs ?? [];
+    final msqs = assignment.msqs ?? [];
+    final nats = assignment.nats ?? [];
+    final subjectives = assignment.subjectives ?? [];
 
     final pdf = pw.Document();
 
     // Calculate total points
-    final totalPoints = mcqs.fold<int>(0, (sum, q) => sum + q.points) +
+    final totalPoints =
+        mcqs.fold<int>(0, (sum, q) => sum + q.points) +
         msqs.fold<int>(0, (sum, q) => sum + q.points) +
         nats.fold<int>(0, (sum, q) => sum + q.points) +
         subjectives.fold<int>(0, (sum, q) => sum + q.points);
@@ -61,10 +49,12 @@ class AssignmentExportService {
 
           // MCQ Section
           if (mcqs.isNotEmpty) {
-            content.add(_buildSectionHeader(
-              "SECTION A: Multiple Choice Questions", 
-              "Choose the correct option. Each question carries varying marks."
-            ));
+            content.add(
+              _buildSectionHeader(
+                "SECTION A: Multiple Choice Questions",
+                "Choose the correct option. Each question carries varying marks.",
+              ),
+            );
             content.add(pw.SizedBox(height: 15));
 
             for (final mcq in mcqs) {
@@ -77,10 +67,12 @@ class AssignmentExportService {
 
           // MSQ Section
           if (msqs.isNotEmpty) {
-            content.add(_buildSectionHeader(
-              "SECTION B: Multiple Select Questions", 
-              "Select all correct options. Each question carries varying marks."
-            ));
+            content.add(
+              _buildSectionHeader(
+                "SECTION B: Multiple Select Questions",
+                "Select all correct options. Each question carries varying marks.",
+              ),
+            );
             content.add(pw.SizedBox(height: 15));
 
             for (final msq in msqs) {
@@ -93,10 +85,12 @@ class AssignmentExportService {
 
           // NAT Section
           if (nats.isNotEmpty) {
-            content.add(_buildSectionHeader(
-              "SECTION C: Numerical Answer Type", 
-              "Enter the numerical value as your answer. Each question carries varying marks."
-            ));
+            content.add(
+              _buildSectionHeader(
+                "SECTION C: Numerical Answer Type",
+                "Enter the numerical value as your answer. Each question carries varying marks.",
+              ),
+            );
             content.add(pw.SizedBox(height: 15));
 
             for (final nat in nats) {
@@ -109,10 +103,12 @@ class AssignmentExportService {
 
           // Subjective Section
           if (subjectives.isNotEmpty) {
-            content.add(_buildSectionHeader(
-              "SECTION D: Subjective Questions", 
-              "Write detailed answers. Each question carries varying marks."
-            ));
+            content.add(
+              _buildSectionHeader(
+                "SECTION D: Subjective Questions",
+                "Write detailed answers. Each question carries varying marks.",
+              ),
+            );
             content.add(pw.SizedBox(height: 15));
 
             for (final subjective in subjectives) {
@@ -139,22 +135,13 @@ class AssignmentExportService {
   }
 
   /// Build assignment header
-  static pw.Widget _buildAssignmentHeader(Assignment assignment, int totalPoints) {
+  static pw.Widget _buildAssignmentHeader(AssignmentExtended assignment, int totalPoints) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(
-          assignment.title.toUpperCase(),
-          style: pw.TextStyle(
-            fontSize: 24,
-            fontWeight: pw.FontWeight.bold,
-          ),
-        ),
+        pw.Text(assignment.title.toUpperCase(), style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 8),
-        pw.Text(
-          assignment.body,
-          style: const pw.TextStyle(fontSize: 14),
-        ),
+        pw.Text(assignment.body, style: const pw.TextStyle(fontSize: 14)),
         pw.SizedBox(height: 12),
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -163,10 +150,7 @@ class AssignmentExportService {
               "Due Date: ${assignment.dueDate.toLocal().toString().split(' ')[0]}",
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
-            pw.Text(
-              "Total Points: $totalPoints",
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-            ),
+            pw.Text("Total Points: $totalPoints", style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
           ],
         ),
         pw.Divider(thickness: 2),
@@ -178,17 +162,11 @@ class AssignmentExportService {
   static pw.Widget _buildInstructions() {
     return pw.Container(
       padding: const pw.EdgeInsets.all(15),
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(),
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
+      decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(5)),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text(
-            "INSTRUCTIONS:",
-            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14),
-          ),
+          pw.Text("INSTRUCTIONS:", style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
           pw.SizedBox(height: 8),
           pw.Text("1. Read all questions carefully before answering"),
           pw.Text("2. Answer all questions to the best of your ability"),
@@ -206,17 +184,11 @@ class AssignmentExportService {
     return pw.Container(
       width: double.infinity,
       padding: const pw.EdgeInsets.all(10),
-      decoration: pw.BoxDecoration(
-        color: PdfColors.grey300,
-        borderRadius: pw.BorderRadius.circular(5),
-      ),
+      decoration: pw.BoxDecoration(color: PdfColors.grey300, borderRadius: pw.BorderRadius.circular(5)),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text(
-            title,
-            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
-          ),
+          pw.Text(title, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16)),
           pw.SizedBox(height: 4),
           pw.Text(description, style: const pw.TextStyle(fontSize: 12)),
         ],
@@ -243,10 +215,7 @@ class AssignmentExportService {
         pw.SizedBox(height: 10),
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(),
-            borderRadius: pw.BorderRadius.circular(3),
-          ),
+          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
           child: pw.Text("Answer: ___________"),
         ),
       ],
@@ -272,10 +241,7 @@ class AssignmentExportService {
         pw.SizedBox(height: 10),
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(),
-            borderRadius: pw.BorderRadius.circular(3),
-          ),
+          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
           child: pw.Text("Selected Options: ___________"),
         ),
       ],
@@ -295,10 +261,7 @@ class AssignmentExportService {
         pw.Container(
           width: 200,
           padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(),
-            borderRadius: pw.BorderRadius.circular(3),
-          ),
+          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
           child: pw.Text("Answer: ___________"),
         ),
       ],
@@ -318,10 +281,7 @@ class AssignmentExportService {
         pw.Container(
           width: double.infinity,
           height: 150,
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(),
-            borderRadius: pw.BorderRadius.circular(3),
-          ),
+          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
           child: pw.Padding(
             padding: const pw.EdgeInsets.all(8),
             child: pw.Column(
@@ -330,10 +290,10 @@ class AssignmentExportService {
                 pw.Text("Answer:"),
                 pw.SizedBox(height: 10),
                 // Lines for writing
-                ...List.generate(6, (index) => pw.Padding(
-                  padding: const pw.EdgeInsets.only(bottom: 15),
-                  child: pw.Divider(),
-                )),
+                ...List.generate(
+                  6,
+                  (index) => pw.Padding(padding: const pw.EdgeInsets.only(bottom: 15), child: pw.Divider()),
+                ),
               ],
             ),
           ),
@@ -388,7 +348,7 @@ class AssignmentExportService {
       anchor.click();
       html.document.body?.children.remove(anchor);
       html.Url.revokeObjectUrl(url);
-      
+
       // Return a dummy file for web
       return File(fileName);
     } else {
@@ -401,23 +361,15 @@ class AssignmentExportService {
   }
 
   /// Export assignment to CSV format
-  static Future<File> exportAssignmentCSV(Assignment assignment) async {
+  static Future<File> exportAssignmentCSV(AssignmentExtended assignment) async {
     // Get questions for this assignment
-    final mcqs = dummyMCQs
-        .where((q) => (assignment.mcqIds ?? []).contains(q.id))
-        .toList();
-    final msqs = dummyMSQs
-        .where((q) => (assignment.msqIds ?? []).contains(q.id))
-        .toList();
-    final nats = dummyNATs
-        .where((q) => (assignment.natIds ?? []).contains(q.id))
-        .toList();
-    final subjectives = dummySubjectives
-        .where((q) => (assignment.subjectiveIds ?? []).contains(q.id))
-        .toList();
+    final mcqs = assignment.mcqs ?? [];
+    final msqs = assignment.msqs ?? [];
+    final nats = assignment.nats ?? [];
+    final subjectives = assignment.subjectives ?? [];
 
     final StringBuffer csvContent = StringBuffer();
-    
+
     // CSV Headers
     csvContent.writeln('Assignment Title,${assignment.title}');
     csvContent.writeln('Assignment Description,${assignment.body}');
@@ -452,13 +404,15 @@ class AssignmentExportService {
 
     // Add Subjectives
     for (final subjective in subjectives) {
-      csvContent.writeln('Subjective,$questionNumber,"${subjective.question}","N/A",${subjective.points},"${subjective.idealAnswer}"');
+      csvContent.writeln(
+        'Subjective,$questionNumber,"${subjective.question}","N/A",${subjective.points},"${subjective.idealAnswer}"',
+      );
       questionNumber++;
     }
 
     // Save CSV to file
     final fileName = '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
-    
+
     if (kIsWeb) {
       // For web platform
       final blob = html.Blob([csvContent.toString()], 'text/csv');
@@ -471,7 +425,7 @@ class AssignmentExportService {
       anchor.click();
       html.document.body?.children.remove(anchor);
       html.Url.revokeObjectUrl(url);
-      
+
       return File(fileName);
     } else {
       // For mobile/desktop platforms
@@ -481,4 +435,4 @@ class AssignmentExportService {
       return file;
     }
   }
-} 
+}
