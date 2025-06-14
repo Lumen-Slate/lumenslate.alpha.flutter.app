@@ -6,7 +6,7 @@ import '../../../../blocs/msq_variation_generation/msq_variation_bloc.dart';
 import '../../../../blocs/questions/questions_bloc.dart';
 import '../../../../models/questions/msq.dart';
 import '../../../../services/question_api_service.dart';
-import '../widgets/edit_msq_dialog.dart';
+import '../../widgets/edit_msq_dialog.dart';
 import 'context_generation_dialog.dart';
 import 'msq_variation_dialog.dart';
 

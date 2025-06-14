@@ -225,6 +225,8 @@ class NATTile extends StatelessWidget {
                     context: context,
                     builder: (context) => ContextGenerationDialog(
                       questionObject: nat,
+                      type: nat.runtimeType.toString(),
+                      id: nat.id,
                     ),
                   );
                 },

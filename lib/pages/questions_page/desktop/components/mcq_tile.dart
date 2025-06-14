@@ -217,6 +217,8 @@ class MCQTile extends StatelessWidget {
                     context: context,
                     builder: (context) => ContextGenerationDialog(
                       questionObject: mcq,
+                      type: mcq.runtimeType.toString(),
+                      id: mcq.id,
                     ),
                   );
                 },
