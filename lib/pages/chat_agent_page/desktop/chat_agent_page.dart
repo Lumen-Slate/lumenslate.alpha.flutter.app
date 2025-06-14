@@ -1,6 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_popup/flutter_popup.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lumen_slate/pages/chat_agent_page/desktop/components/attachment_popup.dart';
 import 'package:lumen_slate/serializers/agent_serializers/agent_response.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +10,8 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../blocs/chat_agent/chat_agent_bloc.dart';
+import '../../../models/assignments.dart';
+import '../../../models/students.dart';
 import 'components/message_tile.dart';
 
 class ChatAgentPageDesktop extends StatefulWidget {
@@ -23,6 +27,10 @@ class ChatAgentPageDesktop extends StatefulWidget {
 class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
   final TextEditingController _textController = TextEditingController();
   PlatformFile? _selectedFile;
+  Student? _selectedStudent;
+  Assignment? _selectedAssignment;
+
+  final popupKey = GlobalKey<CustomPopupState>();
 
   @override
   void initState() {
@@ -41,34 +49,6 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
     if (text.isNotEmpty) {
       context.read<ChatAgentBloc>().add(CallAgent(teacherId: widget.teacherId, messageString: text));
       _textController.clear();
-    }
-  }
-
-  Future<void> _pickSupportedFile() async {
-    final allowedExtensions = [
-      // Images
-      'jpg', 'jpeg', 'png', 'webp',
-      // Audio
-      'wav', 'mp3', 'aiff', 'aac', 'ogg', 'flac',
-      // Text
-      'pdf',
-    ];
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: allowedExtensions,
-      allowMultiple: false,
-    );
-    if (result != null && result.files.isNotEmpty) {
-      final file = result.files.first;
-      final ext = file.extension?.toLowerCase();
-      if (!allowedExtensions.contains(ext)) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unsupported file type selected.')));
-        return;
-      }
-      setState(() {
-        _selectedFile = file;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Selected: ${file.name}')));
     }
   }
 
@@ -101,8 +81,8 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(30)),
                   child: Column(
+                    spacing: 14,
                     children: [
-                      // Paginated Chat Messages List
                       SizedBox(
                         height: 580,
                         child: BlocBuilder<ChatAgentBloc, ChatAgentState>(
@@ -135,23 +115,28 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                           },
                         ),
                       ),
-                      // Show selected file and unselect button if a file is selected
+
                       if (_selectedFile != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                        Container(
+                          decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(30)),
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 21),
                           child: Row(
+                            spacing: 20,
                             children: [
-                              const Icon(Icons.attach_file, color: Colors.blue),
-                              const SizedBox(width: 8),
+                              const Icon(Icons.file_copy, color: Colors.blue),
                               Expanded(
                                 child: Text(
                                   _selectedFile!.name,
-                                  style: const TextStyle(fontSize: 14),
+                                  style: GoogleFonts.jost(fontSize: 16, color: Colors.blue[800]),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.close, size: 20),
+                                icon: const Icon(Icons.close, color: Colors.blue),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.blue.shade100,
+                                  shape: CircleBorder(),
+                                ),
                                 tooltip: 'Unselect file',
                                 onPressed: () {
                                   setState(() {
@@ -162,7 +147,72 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                             ],
                           ),
                         ),
-                      // Message Input
+
+                      if(_selectedStudent != null)
+                        Container(
+                          decoration: BoxDecoration(color: Colors.green[50], borderRadius: BorderRadius.circular(30)),
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 21),
+                          child: Row(
+                            spacing: 20,
+                            children: [
+                              const Icon(Icons.school_outlined, color: Colors.green),
+                              Expanded(
+                                child: Text(
+                                  _selectedStudent!.name,
+                                  style: GoogleFonts.jost(fontSize: 16, color: Colors.green[800]),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.green),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.green.shade100,
+                                  shape: CircleBorder(),
+                                ),
+                                tooltip: 'Unselect student',
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedStudent = null;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      if(_selectedAssignment != null)
+                        Container(
+                          decoration: BoxDecoration(color: Colors.orange[50], borderRadius: BorderRadius.circular(30)),
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 21),
+                          child: Row(
+                            spacing: 20,
+                            children: [
+                              const Icon(Icons.assignment_outlined, color: Colors.orange),
+                              Expanded(
+                                child: Text(
+                                  _selectedAssignment!.title ?? 'Untitled Assignment',
+                                  style: GoogleFonts.jost(fontSize: 16, color: Colors.orange[800]),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.orange),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.orange.shade100,
+                                  shape: CircleBorder(),
+                                ),
+                                tooltip: 'Unselect assignment',
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedAssignment = null;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
+
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Row(
@@ -198,13 +248,25 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                 ),
                               ),
                             ),
-                            IconButton(
-                              padding: const EdgeInsets.all(20.0),
-                              style: IconButton.styleFrom(backgroundColor: Colors.blue[100], shape: CircleBorder()),
-                              icon: const Icon(Icons.attach_file, color: Colors.blue),
-                              tooltip: 'Attach file',
-                              onPressed: _pickSupportedFile,
+                            AttachmentPopUp(
+                              popupKey: popupKey,
+                              onFileSelected: (file) {
+                                setState(() {
+                                  _selectedFile = file;
+                                });
+                              },
+                              onStudentSelected: (student) {
+                                setState(() {
+                                  _selectedStudent = student;
+                                });
+                              },
+                              onAssignmentSelected: (assignment) {
+                                setState(() {
+                                  _selectedAssignment = assignment;
+                                });
+                              },
                             ),
+
                             BlocBuilder<ChatAgentBloc, ChatAgentState>(
                               builder: (context, state) {
                                 return IconButton(
@@ -214,7 +276,13 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                     shape: CircleBorder(),
                                   ),
                                   icon: (state is ChatAgentStateUpdate && state.state.isLoading)
-                                      ? Center(child: SizedBox(width: 24, height: 24,child: CircularProgressIndicator(color: Colors.green, strokeWidth: 1.7)))
+                                      ? Center(
+                                          child: SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(color: Colors.green, strokeWidth: 1.7),
+                                          ),
+                                        )
                                       : const Icon(Icons.send, color: Colors.green),
                                   onPressed: (state is! ChatAgentStateUpdate || (state.state.isLoading))
                                       ? () {}

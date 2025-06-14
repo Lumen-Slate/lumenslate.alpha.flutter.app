@@ -64,7 +64,7 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
             /// TODO: Hardcoded data
             teacherId: 'my_test_corpus',
             role: 'user',
-            file: event.file ?? '',
+            file: event.file,
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),

@@ -4,11 +4,13 @@ import 'package:lumen_slate/repositories/ai/rag_agent_repository.dart';
 import 'package:lumen_slate/repositories/classroom_repository.dart';
 import 'package:lumen_slate/repositories/assignment_repository.dart';
 import 'package:lumen_slate/repositories/question_bank_repository.dart';
+import 'package:lumen_slate/repositories/student_repository.dart';
 import 'blocs/assignment/assignment_bloc.dart';
 import 'blocs/chat_agent/chat_agent_bloc.dart';
 import 'blocs/classroom/classroom_bloc.dart';
 import 'blocs/question_bank/question_bank_bloc.dart';
 import 'blocs/rag_agent/rag_agent_bloc.dart';
+import 'blocs/student/student_bloc.dart';
 import 'lib.dart';
 
 Future<void> main() async {
@@ -40,6 +42,7 @@ class LumenSlate extends StatelessWidget {
         RepositoryProvider(create: (context) => ClassroomRepository()),
         RepositoryProvider(create: (context) => AssignmentRepository()),
         RepositoryProvider(create: (context) => RagAgentRepository()),
+        RepositoryProvider(create: (context) => StudentRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -89,7 +92,11 @@ class LumenSlate extends StatelessWidget {
           BlocProvider(
             create: (context) => AssignmentBloc(repository: RepositoryProvider.of<AssignmentRepository>(context)),
           ),
-          BlocProvider(create: (context) => RagDocumentBloc(ragAgentRepository: RepositoryProvider.of<RagAgentRepository>(context))),
+          BlocProvider(
+            create: (context) =>
+                RagDocumentBloc(ragAgentRepository: RepositoryProvider.of<RagAgentRepository>(context)),
+          ),
+          BlocProvider(create: (context) => StudentBloc(repository: RepositoryProvider.of<StudentRepository>(context))),
         ],
         child: MaterialApp.router(
           title: AppConstants.appName,
