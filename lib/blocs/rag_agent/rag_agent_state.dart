@@ -5,10 +5,10 @@ sealed class RagAgentState {}
 
 final class RagAgentInitial extends RagAgentState {}
 
-final class RagAgentSuccess extends RagAgentState {
+final class RagAgentStateUpdate extends RagAgentState {
   final PagingState<int, RagAgentResponse> state;
 
-  RagAgentSuccess(this.state);
+  RagAgentStateUpdate(this.state);
 }
 
 final class RagAgentFailure extends RagAgentState {

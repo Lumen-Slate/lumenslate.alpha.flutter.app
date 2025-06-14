@@ -5,10 +5,10 @@ sealed class ChatAgentState {}
 
 final class ChatAgentInitial extends ChatAgentState {}
 
-final class ChatAgentSuccess extends ChatAgentState {
+final class ChatAgentStateUpdate extends ChatAgentState {
   final PagingState<int, AgentResponse> state;
 
-  ChatAgentSuccess(this.state);
+  ChatAgentStateUpdate(this.state);
 }
 
 final class ChatAgentFailure extends ChatAgentState {

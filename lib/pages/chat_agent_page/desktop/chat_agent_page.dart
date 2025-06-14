@@ -107,7 +107,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                         height: 580,
                         child: BlocBuilder<ChatAgentBloc, ChatAgentState>(
                           builder: (context, state) {
-                            if (state is ChatAgentSuccess) {
+                            if (state is ChatAgentStateUpdate) {
                               return PagedListView<int, AgentResponse>(
                                 state: state.state,
                                 reverse: true,
@@ -205,11 +205,22 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                               tooltip: 'Attach file',
                               onPressed: _pickSupportedFile,
                             ),
-                            IconButton(
-                              padding: const EdgeInsets.all(20.0),
-                              style: IconButton.styleFrom(backgroundColor: Colors.green[100], shape: CircleBorder()),
-                              icon: const Icon(Icons.send, color: Colors.green),
-                              onPressed: () => _sendMessage(context),
+                            BlocBuilder<ChatAgentBloc, ChatAgentState>(
+                              builder: (context, state) {
+                                return IconButton(
+                                  padding: const EdgeInsets.all(20.0),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.green[100],
+                                    shape: CircleBorder(),
+                                  ),
+                                  icon: (state is ChatAgentStateUpdate && state.state.isLoading)
+                                      ? Center(child: SizedBox(width: 24, height: 24,child: CircularProgressIndicator(color: Colors.green, strokeWidth: 1.7)))
+                                      : const Icon(Icons.send, color: Colors.green),
+                                  onPressed: (state is! ChatAgentStateUpdate || (state.state.isLoading))
+                                      ? () {}
+                                      : () => _sendMessage(context),
+                                );
+                              },
                             ),
                           ],
                         ),
