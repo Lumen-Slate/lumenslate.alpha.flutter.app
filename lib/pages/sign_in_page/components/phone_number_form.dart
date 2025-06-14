@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logger/logger.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../../cubit/phone_form/phone_number_form_cubit.dart';
@@ -148,7 +149,7 @@ class _PhoneNumberFormDesktopState extends State<PhoneNumberFormDesktop> {
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 500),
                       child: Pinput(
-                        onCompleted: (pin) => print(pin),
+                        onCompleted: (pin) => Logger().i('OTP entered: $pin'),
                       ),
                     ),
                     const SizedBox(height: 40),

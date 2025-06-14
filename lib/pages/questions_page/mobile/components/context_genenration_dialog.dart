@@ -381,12 +381,12 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Close', style: TextStyle(fontSize: 14)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(vertical: 10),
                         ),
+                        child: Text('Close', style: TextStyle(fontSize: 14)),
                       ),
                     ),
                   ],

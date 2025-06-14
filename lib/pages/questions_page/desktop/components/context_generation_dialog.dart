@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../blocs/context_generation/context_generation_bloc.dart';
 import '../../../../blocs/questions/questions_bloc.dart';
@@ -374,12 +373,12 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                     children: [
                       ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Close'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                         ),
+                        child: Text('Close'),
                       ),
                     ],
                   ),
