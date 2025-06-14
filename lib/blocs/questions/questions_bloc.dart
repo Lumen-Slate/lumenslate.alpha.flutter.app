@@ -31,50 +31,29 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     on<QuestionsReset>(_onQuestionsReset);
   }
 
-  Future<void> _onLoadQuestions(
-    LoadQuestions event,
-    Emitter<QuestionsState> emit,
-  ) async {
+  Future<void> _onLoadQuestions(LoadQuestions event, Emitter<QuestionsState> emit) async {
     emit(QuestionsLoading());
     try {
       List<dynamic> allQuestions = [];
 
       // Load MCQs
-      final mcqResponse = await mcqRepository.getMCQs(
-        bankId: event.bankId,
-        limit: event.limit,
-        offset: event.offset,
-      );
+      final mcqResponse = await mcqRepository.getMCQs(bankId: event.bankId, limit: event.limit, offset: event.offset);
       if (mcqResponse.statusCode! < 400) {
-        final mcqList = (mcqResponse.data as List)
-            .map((item) => MCQ.fromJson(item as Map<String, dynamic>))
-            .toList();
+        final mcqList = (mcqResponse.data as List).map((item) => MCQ.fromJson(item as Map<String, dynamic>)).toList();
         allQuestions.addAll(mcqList);
       }
 
       // Load MSQs
-      final msqResponse = await msqRepository.getMSQs(
-        bankId: event.bankId,
-        limit: event.limit,
-        offset: event.offset,
-      );
+      final msqResponse = await msqRepository.getMSQs(bankId: event.bankId, limit: event.limit, offset: event.offset);
       if (msqResponse.statusCode! < 400) {
-        final msqList = (msqResponse.data as List)
-            .map((item) => MSQ.fromJson(item as Map<String, dynamic>))
-            .toList();
+        final msqList = (msqResponse.data as List).map((item) => MSQ.fromJson(item as Map<String, dynamic>)).toList();
         allQuestions.addAll(msqList);
       }
 
       // Load NATs
-      final natResponse = await natRepository.getNATs(
-        bankId: event.bankId,
-        limit: event.limit,
-        offset: event.offset,
-      );
+      final natResponse = await natRepository.getNATs(bankId: event.bankId, limit: event.limit, offset: event.offset);
       if (natResponse.statusCode! < 400) {
-        final natList = (natResponse.data as List)
-            .map((item) => NAT.fromJson(item as Map<String, dynamic>))
-            .toList();
+        final natList = (natResponse.data as List).map((item) => NAT.fromJson(item as Map<String, dynamic>)).toList();
         allQuestions.addAll(natList);
       }
 
@@ -100,10 +79,7 @@ class QuestionsBloc extends Bloc<QuestionsEvent, QuestionsState> {
     }
   }
 
-  Future<void> _onQuestionsReset(
-    QuestionsReset event,
-    Emitter<QuestionsState> emit,
-  ) async {
+  Future<void> _onQuestionsReset(QuestionsReset event, Emitter<QuestionsState> emit) async {
     emit(QuestionsInitial());
   }
-} 
+}

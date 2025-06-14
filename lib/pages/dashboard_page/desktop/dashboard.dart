@@ -29,6 +29,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
         child: ResponsiveScaledBox(
           width: 1920,
           child: Scaffold(
+            backgroundColor: Colors.white,
             floatingActionButtonLocation: ExpandableFab.location,
             floatingActionButton: Container(
               margin: const EdgeInsets.only(bottom: 20, right: 28),
@@ -202,7 +203,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                 child: WideTile(
                                   title: AutoSizeText("Questions", style: GoogleFonts.poppins(fontSize: 46)),
                                   subTitle: AutoSizeText(
-                                    "Add a new question",
+                                    "Browse your questions",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   description: AutoSizeText(
@@ -247,20 +248,36 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => context.go('/teacher-dashboard/pdf-generator'),
+                                onTap: () => context.go('/teacher-dashboard/rag-agent'),
                                 child: WideTile(
-                                  title: AutoSizeText("PDF Generator", style: GoogleFonts.poppins(fontSize: 46)),
-                                  subTitle: AutoSizeText(
-                                    "Generate question paper PDFs",
-                                    style: GoogleFonts.poppins(fontSize: 16),
-                                  ),
+                                  title: AutoSizeText("RAG agent", style: GoogleFonts.poppins(fontSize: 46)),
+                                  subTitle: AutoSizeText("Generate questions", style: GoogleFonts.poppins(fontSize: 16)),
                                   description: AutoSizeText(
-                                    "Create professional question papers in PDF format with various question types and subjects.",
+                                    "Manage your curriculum and generate questions based on it.",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
-                                  backgroundColor: Colors.blueAccent[100]!,
+                                  backgroundColor: Colors.lightBlueAccent[100]!,
                                 ),
                               ),
+
+
+
+
+                              // GestureDetector(
+                              //   onTap: () => context.go('/teacher-dashboard/pdf-generator'),
+                              //   child: WideTile(
+                              //     title: AutoSizeText("PDF Generator", style: GoogleFonts.poppins(fontSize: 46)),
+                              //     subTitle: AutoSizeText(
+                              //       "Generate question paper PDFs",
+                              //       style: GoogleFonts.poppins(fontSize: 16),
+                              //     ),
+                              //     description: AutoSizeText(
+                              //       "Create professional question papers in PDF format with various question types and subjects.",
+                              //       style: GoogleFonts.poppins(fontSize: 16),
+                              //     ),
+                              //     backgroundColor: Colors.blueAccent[100]!,
+                              //   ),
+                              // ),
                             ],
                           ),
                         ],
