@@ -13,16 +13,18 @@ import '../msq_variation_dialog.dart';
 
 class MSQTile extends StatelessWidget {
   final MSQ msq;
+  final bool viewOnly;
 
-  const MSQTile({super.key, required this.msq});
+  const MSQTile({super.key, required this.msq, this.viewOnly = false});
 
   @override
   Widget build(BuildContext context) {
     return FilledButton.tonal(
-      onPressed: () {},
+      onPressed: viewOnly ? null : () {},
       style: FilledButton.styleFrom(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black12,
+        disabledBackgroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
@@ -73,7 +75,7 @@ class MSQTile extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  color: (msq.answerIndices.contains(index)) ? Colors.greenAccent.shade100 : Colors.grey[100],
+                  color: (msq.answerIndices.contains(index) && !viewOnly) ? Colors.greenAccent.shade100 : Colors.grey[100],
                 ),
                 child: Text(
                   msq.options[index],
@@ -83,6 +85,7 @@ class MSQTile extends StatelessWidget {
               );
             },
           ),
+          if(!viewOnly)
           Row(
             children: [
               Spacer(),

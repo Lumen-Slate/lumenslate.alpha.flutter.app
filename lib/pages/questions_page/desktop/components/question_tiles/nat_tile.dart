@@ -9,8 +9,9 @@ import '../context_generation_dialog.dart';
 
 class NATTile extends StatelessWidget {
   final NAT nat;
+  final bool viewOnly;
 
-  const NATTile({super.key, required this.nat});
+  const NATTile({super.key, required this.nat, this.viewOnly = false});
 
 
   Future<void> _editQuestion(BuildContext context) async {
@@ -133,10 +134,11 @@ class NATTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledButton.tonal(
-      onPressed: () {},
+      onPressed: viewOnly ? null : () {},
       style: FilledButton.styleFrom(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black12,
+        disabledBackgroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -173,6 +175,7 @@ class NATTile extends StatelessWidget {
               ),
             ],
           ),
+          if(!viewOnly)
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
@@ -188,6 +191,7 @@ class NATTile extends StatelessWidget {
               ),
             ),
           ),
+          if(!viewOnly)
           Row(
             children: [
               Spacer(),

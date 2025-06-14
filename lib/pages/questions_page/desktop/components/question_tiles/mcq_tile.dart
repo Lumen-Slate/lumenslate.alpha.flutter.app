@@ -12,8 +12,9 @@ import '../mcq_variation_dialog.dart';
 
 class MCQTile extends StatelessWidget {
   final MCQ mcq;
+  final bool viewOnly;
 
-  const MCQTile({super.key, required this.mcq});
+  const MCQTile({super.key, required this.mcq, this.viewOnly = false});
 
   Future<void> _editQuestion(BuildContext context) async {
     final result = await showDialog<MCQ>(
@@ -28,11 +29,7 @@ class MCQTile extends StatelessWidget {
           SnackBar(
             content: Row(
               children: [
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
                 const SizedBox(width: 12),
                 Text('Updating question...', style: GoogleFonts.poppins()),
               ],
@@ -42,10 +39,10 @@ class MCQTile extends StatelessWidget {
         );
 
         await QuestionApiService.updateMCQ(mcq, result);
-        
+
         // Refresh questions list
         context.read<QuestionsBloc>().add(const LoadQuestions());
-        
+
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -95,11 +92,7 @@ class MCQTile extends StatelessWidget {
           SnackBar(
             content: Row(
               children: [
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
                 const SizedBox(width: 12),
                 Text('Deleting question...', style: GoogleFonts.poppins()),
               ],
@@ -109,10 +102,10 @@ class MCQTile extends StatelessWidget {
         );
 
         await QuestionApiService.deleteMCQ(mcq.id);
-        
+
         // Refresh questions list
         context.read<QuestionsBloc>().add(const LoadQuestions());
-        
+
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -135,14 +128,13 @@ class MCQTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledButton.tonal(
-      onPressed: () {},
+      onPressed: viewOnly ? null : () {},
       style: FilledButton.styleFrom(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black12,
+        disabledBackgroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       child: Column(
         spacing: 20,
@@ -157,10 +149,7 @@ class MCQTile extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Text(
-                  'MCQ',
-                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800),
-                ),
+                child: Text('MCQ', style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -188,7 +177,7 @@ class MCQTile extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  color: (mcq.answerIndex == index) ? Colors.greenAccent.shade100 : Colors.grey[100],
+                  color: (mcq.answerIndex == index && !viewOnly) ? Colors.greenAccent.shade100 : Colors.grey[100],
                 ),
                 child: Text(
                   mcq.options[index],
@@ -198,64 +187,62 @@ class MCQTile extends StatelessWidget {
               );
             },
           ),
-          Row(
-            children: [
-              Spacer(),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[100],
+          if (!viewOnly)
+            Row(
+              children: [
+                Spacer(),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.grey[100]),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.orange[700]),
+                        onPressed: () async {
+                          await showDialog(
+                            context: context,
+                            builder: (context) => ContextGenerationDialog(
+                              questionObject: mcq,
+                              type: mcq.runtimeType.toString(),
+                              id: mcq.id,
+                            ),
+                          );
+                        },
+                        iconSize: 21,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.account_tree, color: Colors.blue[700]),
+                        onPressed: () async {
+                          await showDialog(
+                            context: context,
+                            builder: (context) => PopScope(
+                              onPopInvokedWithResult: (didPop, result) {
+                                if (didPop) {
+                                  context.read<MCQVariationBloc>().add(MCQVariationReset());
+                                }
+                              },
+                              child: MCQVariationDialog(mcq: mcq),
+                            ),
+                          );
+                        },
+                        iconSize: 21,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue[700]),
+                        onPressed: () => _editQuestion(context),
+                        iconSize: 21,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red[700]),
+                        onPressed: () => _deleteQuestion(context),
+                        iconSize: 21,
+                      ),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.orange[700]),
-                      onPressed: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (context) => ContextGenerationDialog(
-                            questionObject: mcq,
-                            type: mcq.runtimeType.toString(),
-                            id: mcq.id,
-                          ),
-                        );
-                      },
-                      iconSize: 21,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.account_tree, color: Colors.blue[700]),
-                      onPressed: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (context) => PopScope(
-                            onPopInvokedWithResult: (didPop, result) {
-                              if (didPop) {
-                                context.read<MCQVariationBloc>().add(MCQVariationReset());
-                              }
-                            },
-                            child: MCQVariationDialog(mcq: mcq),
-                          ),
-                        );
-                      },
-                      iconSize: 21,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.blue[700]),
-                      onPressed: () => _editQuestion(context),
-                      iconSize: 21,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red[700]),
-                      onPressed: () => _deleteQuestion(context),
-                      iconSize: 21,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
+              ],
+            ),
         ],
       ),
     );
