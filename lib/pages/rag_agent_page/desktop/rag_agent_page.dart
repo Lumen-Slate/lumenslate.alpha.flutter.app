@@ -5,9 +5,12 @@ import 'package:lumen_slate/serializers/rag_agent_serializers/reg_agent_response
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../blocs/rag_agent/rag_agent_bloc.dart';
 import '../../../blocs/rag_document/rag_document_bloc.dart';
+import '../../../constants/app_constants.dart';
+import '../../../repositories/ai/rag_agent_repository.dart';
 import 'components/rag_message_tile.dart';
 
 class RagAgentPageDesktop extends StatefulWidget {
@@ -128,7 +131,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
-      width: 1920,
+      width: AppConstants.desktopScaleWidth,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
@@ -141,7 +144,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                   child: Hero(
                     tag: 'rag_agent',
                     child: AutoSizeText(
-                      "RAG Agent",
+                      "Knowledge Based Generation",
                       maxLines: 2,
                       minFontSize: 80,
                       style: GoogleFonts.poppins(fontSize: 80, color: Colors.black),
@@ -315,7 +318,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               AutoSizeText(
-                                "RAG Documents",
+                                "Documents",
                                 maxLines: 2,
                                 minFontSize: 40,
                                 style: GoogleFonts.poppins(fontSize: 40, color: Colors.black),
@@ -378,20 +381,58 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                               ],
                                             ),
                                             child: Row(
+                                              spacing: 12,
                                               children: [
                                                 const Icon(Icons.insert_drive_file, color: Colors.blue),
-                                                const SizedBox(width: 12),
                                                 Expanded(
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text(doc.displayName, style: const TextStyle(fontSize: 16)),
+                                                      Text(
+                                                        doc.displayName,
+                                                        style: const TextStyle(fontSize: 16),
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
                                                       Text(
                                                         'Uploaded: ${DateTime.parse(doc.createTime).toLocal().toString()}',
+                                                        overflow: TextOverflow.ellipsis,
                                                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                                                       ),
                                                     ],
                                                   ),
+                                                ),
+                                                // View Document Button
+                                                IconButton(
+                                                  padding: const EdgeInsets.all(14.0),
+                                                  style: IconButton.styleFrom(
+                                                    backgroundColor: Colors.blue[100],
+                                                    shape: const CircleBorder(),
+                                                  ),
+                                                  icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
+                                                  tooltip: 'View Document',
+                                                  onPressed: () async {
+                                                    try {
+                                                      final repo = RagAgentRepository();
+                                                      final response = await repo.getFileUrl(id: doc.id);
+                                                      final url = response.data['url'] as String?;
+                                                      if (url != null) {
+                                                        final _url = Uri.parse(url);
+                                                        if (!await launchUrl(_url)) {
+                                                          throw Exception('Could not launch $_url');
+                                                        }
+                                                      } else {
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          const SnackBar(
+                                                            content: Text('No URL found for this document.'),
+                                                          ),
+                                                        );
+                                                      }
+                                                    } catch (e) {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(content: Text('Failed to open document: $e')),
+                                                      );
+                                                    }
+                                                  },
                                                 ),
                                                 IconButton(
                                                   padding: const EdgeInsets.all(14.0),
