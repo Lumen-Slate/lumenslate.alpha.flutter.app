@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../models/questions/nat.dart';
-import 'context_generation_dialog.dart';
+import '../../../../../models/questions/nat.dart';
+import '../context_generation_dialog.dart';
 
 class NATTile extends StatelessWidget {
   final NAT nat;
