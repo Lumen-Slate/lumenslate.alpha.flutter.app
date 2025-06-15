@@ -1,33 +1,36 @@
 # LumenSlate
 
 > *AI-powered Teaching Assistant for Educators*  
-> Lighten Teachers’ Loads with Smart, Agent-Driven Workflows — Because Teaching Is More Than Paperwork.
+> Lighten Teachers’ Loads with Smart, Agent-Driven Workflows — Because Teaching Is More Than
+> Paperwork.
 
 ---
 
 ## 🔗 Repository & Demo Links
 
 > ⚠️ **Note:** This repository **only contains the Flutter frontend code**.  
-> The backend and AI microservice code are hosted in separate repositories.
+> The backend and AI microservice code are hosted in separate repositories. Links to all those
+> repositories and the live MVP are provided below.
 
-| Link Type | URL |
-|----------|-----|
-| 🧩 Frontend (Flutter Web) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.flutter.app) |
-| ⚙️ Backend (Go + MongoDB) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gin.server) |
+| Link Type                 | URL                                                                            |
+|---------------------------|--------------------------------------------------------------------------------|
+| 🧩 Frontend (Flutter Web) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.flutter.app)          |
+| ⚙️ Backend (Go + MongoDB) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gin.server)           |
 | 🤖 AI Microservice (gRPC) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gRPC.microservice.ai) |
-| 📹 Demo Video (3 min) | [Watch on Vimeo](https://vimeo.com/1094177673/9b0442be5d) |
-| 🌐 Live MVP | [Visit](https://lumen-slate.firebaseapp.com) |
+| 📹 Demo Video (3 min)     | [Watch on Vimeo](https://vimeo.com/1094177673/9b0442be5d)                      |
+| 🌐 Live MVP               | [Visit](https://lumen-slate.firebaseapp.com)                                   |
 
 ---
 
 ## 🧾 About the Project
 
 **LumenSlate** is an AI-first assistant for classrooms and coaching centres.  
-It evaluates MCQ, MSQ, NAT, and Subjective answers, and generates constructive feedback—completely automated.
+It evaluates MCQ, MSQ, NAT, and Subjective answers, and generates constructive feedback—completely
+automated.
 
-- ✅ Teachers save hours  
-- ✅ Students get individual attention  
-- ✅ Plagiarism is reduced  
+- ✅ Teachers save hours
+- ✅ Students get individual attention
+- ✅ Plagiarism is reduced
 - ✅ Learning is gamified and personalised
 
 ---
@@ -35,12 +38,15 @@ It evaluates MCQ, MSQ, NAT, and Subjective answers, and generates constructive f
 ## 🖼️ MVP Snapshots
 
 ### Dashboard
+
 <img src="assets/dashboard.png" width="500px" />
 
 ### Questions Page
+
 <img src="assets/questions.png" width="500px" />
 
 ### Questions Bank Page
+
 <img src="assets/questions-bank.png" width="500px" />
 
 ---
@@ -48,16 +54,19 @@ It evaluates MCQ, MSQ, NAT, and Subjective answers, and generates constructive f
 ## 🧩 Architecture Overview
 
 ### ⚙️ System Architecture
+
 <img src="assets/architecture.png" width="600px" />
 
 ---
 
 ### 🤖 Solo Agents – Powered by Google ADK
+
 <img src="assets/solo-agents.png" width="600px" />
 
 ---
 
 ### 🧠 Orchestrated Agents – Powered by Google ADK
+
 <img src="assets/Orchestrated-agents.png" width="600px" />
 
 ---
@@ -112,10 +121,10 @@ firebase/    → Firebase-related configuration
 ## 🧠 Tech Stack
 
 | Layer               | Tech Stack                                                               |
-| ------------------- | ------------------------------------------------------------------------ |
+|---------------------|--------------------------------------------------------------------------|
 | **Frontend**        | Flutter Web                                                              |
 | **Backend**         | Go (Gin), Firebase                                                       |
-| **AI Microservice** | gRPC, Vertex AI, Gemini                                         |
+| **AI Microservice** | gRPC, Vertex AI, Gemini                                                  |
 | **Database**        | MongoDB                                                                  |
 | **Infra**           | Google Cloud Run (backend & microservice)<br>Firebase Hosting (frontend) |
 | **Other APIs**      | Google Speech-to-Text, Vertex AI RAG                                     |
