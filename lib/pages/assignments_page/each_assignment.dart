@@ -8,6 +8,7 @@ import '../../constants/dummy_data/questions/msq.dart';
 import '../../constants/dummy_data/questions/nat.dart';
 import '../../constants/dummy_data/questions/subjective.dart';
 import '../../models/assignments.dart';
+import '../../services/assignment_export_service.dart';
 
 class AssignmentDetailPage extends StatelessWidget {
   final Assignments assignment;
@@ -30,22 +31,44 @@ class AssignmentDetailPage extends StatelessWidget {
         .toList();
 
     return Scaffold(
-        appBar:
-            AppBar(title: Text(assignment.title, style: GoogleFonts.poppins())),
+        appBar: AppBar(
+          title: Text(assignment.title, style: GoogleFonts.poppins()),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(assignment.title,
-                  style: GoogleFonts.poppins(
-                      fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(assignment.body, style: GoogleFonts.poppins()),
-              const SizedBox(height: 16),
-              Text(
-                  "Due: ${assignment.dueDate.toLocal().toString().split(' ')[0]}",
-                  style: GoogleFonts.poppins(color: Colors.red[400])),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(assignment.title,
+                            style: GoogleFonts.poppins(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Text(assignment.body, style: GoogleFonts.poppins()),
+                        const SizedBox(height: 16),
+                        Text(
+                            "Due: ${assignment.dueDate.toLocal().toString().split(' ')[0]}",
+                            style: GoogleFonts.poppins(color: Colors.red[400])),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _exportAssignment(context),
+                    icon: const Icon(Icons.download),
+                    label: const Text('Export'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 24),
               if (mcqs.isNotEmpty)
                 buildQuestionSection(
@@ -148,6 +171,94 @@ class AssignmentDetailPage extends StatelessWidget {
             ],
           ),
         ));
+  }
+
+  Future<void> _exportAssignment(BuildContext context) async {
+    // Show export options dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Export Assignment', style: GoogleFonts.poppins()),
+        content: Text('Choose export format:', style: GoogleFonts.poppins()),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _performExport(context, 'PDF');
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.picture_as_pdf, color: Colors.red),
+                const SizedBox(width: 8),
+                Text('PDF', style: GoogleFonts.poppins()),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _performExport(context, 'CSV');
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.table_chart, color: Colors.green),
+                const SizedBox(width: 8),
+                Text('CSV', style: GoogleFonts.poppins()),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel', style: GoogleFonts.poppins()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _performExport(BuildContext context, String format) async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          content: Row(
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(width: 16),
+              Text('Exporting assignment as $format...', style: GoogleFonts.poppins()),
+            ],
+          ),
+        ),
+      );
+
+      if (format == 'PDF') {
+        await AssignmentExportService.exportAssignmentPDF(assignment);
+      } else {
+        await AssignmentExportService.exportAssignmentCSV(assignment);
+      }
+      
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Assignment "${assignment.title}" exported as $format successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to export assignment: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
 
