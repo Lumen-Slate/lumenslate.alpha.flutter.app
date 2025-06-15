@@ -33,51 +33,54 @@ class QuestionBankTile extends StatelessWidget {
       chipColors.add(color);
     }
 
-    return FilledButton.tonal(
-      style: FilledButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: FilledButton.tonal(
+        style: FilledButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
-      ),
-      onPressed: () {},
-      child: Container(
-        alignment: Alignment.centerLeft,
-        child: Column(
-          spacing: 14,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              bank.name,
-              style: GoogleFonts.poppins(
-                fontSize: 26,
-                fontWeight: FontWeight.w500,
+        onPressed: () {},
+        child: Container(
+          alignment: Alignment.centerLeft,
+          child: Column(
+            spacing: 14,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                bank.name,
+                style: GoogleFonts.poppins(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            Text(
-              'Topic: ${bank.topic}',
-              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w400),
-            ),
-            Wrap(
-              spacing: 8,
-              children: List.generate(
-                bank.tags.length,
-                (index) => Chip(
-                  label: Text(bank.tags[index], style: GoogleFonts.jost(color: Colors.white)),
-                  backgroundColor: chipColors[index],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    side: BorderSide(
-                      color: chipColors[index],
-                      width: 2,
+              Text(
+                'Topic: ${bank.topic}',
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w400),
+              ),
+              Wrap(
+                spacing: 8,
+                children: List.generate(
+                  bank.tags.length,
+                  (index) => Chip(
+                    label: Text(bank.tags[index], style: GoogleFonts.jost(color: Colors.white)),
+                    backgroundColor: chipColors[index],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      side: BorderSide(
+                        color: Colors.transparent,
+                        width: 0,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
