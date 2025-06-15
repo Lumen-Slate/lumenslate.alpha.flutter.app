@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../models/questions/subjective.dart';
-import 'context_generation_dialog.dart';
-import 'question_segmentation_dialog.dart';
+import '../../../../../models/questions/subjective.dart';
+import '../context_generation_dialog.dart';
+import '../question_segmentation_dialog.dart';
 
 class SubjectiveTile extends StatelessWidget {
   final Subjective subjective;

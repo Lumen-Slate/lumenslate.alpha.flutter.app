@@ -135,7 +135,7 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.85, // 85% of screen width, more responsive
         height: MediaQuery.of(context).size.height * 0.9, // 90% of screen height for more space
         child: Padding(
@@ -366,12 +366,12 @@ class QuestionSegmentationDialogState extends State<QuestionSegmentationDialog> 
                     children: [
                       ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Close'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                           foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                         ),
+                        child: Text('Close'),
                       ),
                     ],
                   ),

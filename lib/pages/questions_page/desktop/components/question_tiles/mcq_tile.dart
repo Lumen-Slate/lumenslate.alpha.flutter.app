@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../blocs/mcq_variation_generation/mcq_variation_bloc.dart';
-import '../../../../models/questions/mcq.dart';
-import 'context_generation_dialog.dart';
-import 'mcq_variation_dialog.dart';
+import '../../../../../blocs/mcq_variation_generation/mcq_variation_bloc.dart';
+import '../../../../../models/questions/mcq.dart';
+import '../context_generation_dialog.dart';
+import '../mcq_variation_dialog.dart';
 
 class MCQTile extends StatelessWidget {
   final MCQ mcq;
