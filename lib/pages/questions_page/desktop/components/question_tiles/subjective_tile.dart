@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../blocs/questions/questions_bloc.dart';
-import '../../../../models/questions/subjective.dart';
-import '../../../../services/question_api_service.dart';
-import '../../widgets/edit_subjective_dialog.dart';
-import 'context_generation_dialog.dart';
-import 'question_segmentation_dialog.dart';
+import '../../../../../blocs/questions/questions_bloc.dart';
+import '../../../../../models/questions/subjective.dart';
+import '../../../../../services/question_api_service.dart';
+import '../../../widgets/edit_subjective_dialog.dart';
+import '../context_generation_dialog.dart';
+import '../question_segmentation_dialog.dart';
 
 class SubjectiveTile extends StatelessWidget {
   final Subjective subjective;

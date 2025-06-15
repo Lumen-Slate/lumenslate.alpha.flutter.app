@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../../../blocs/mcq_variation_generation/mcq_variation_bloc.dart';
+import '../../../../../models/questions/mcq.dart';
+import '../../../../../blocs/questions/questions_bloc.dart';
+import '../../../../../services/question_api_service.dart';
+import '../../../widgets/edit_mcq_dialog.dart';
+import '../context_generation_dialog.dart';
+import '../mcq_variation_dialog.dart';
 
-import '../../../../models/questions/nat.dart';
-import '../../../../blocs/questions/questions_bloc.dart';
-import '../../../../services/question_api_service.dart';
-import '../../widgets/edit_nat_dialog.dart';
-import 'context_generation_dialog.dart';
+class MCQTile extends StatelessWidget {
+  final MCQ mcq;
 
-class NATTile extends StatelessWidget {
-  final NAT nat;
-
-  const NATTile({super.key, required this.nat});
+  const MCQTile({super.key, required this.mcq});
 
   Future<void> _editQuestion(BuildContext context) async {
-    final result = await showDialog<NAT>(
+    final result = await showDialog<MCQ>(
       context: context,
-      builder: (context) => EditNATDialog(nat: nat),
+      builder: (context) => EditMCQDialog(mcq: mcq),
     );
 
     if (result != null) {
@@ -39,7 +40,7 @@ class NATTile extends StatelessWidget {
           ),
         );
 
-        await QuestionApiService.updateNAT(nat, result);
+        await QuestionApiService.updateMCQ(mcq, result);
         
         // Refresh questions list
         context.read<QuestionsBloc>().add(const LoadQuestions());
@@ -106,7 +107,7 @@ class NATTile extends StatelessWidget {
           ),
         );
 
-        await QuestionApiService.deleteNAT(nat.id);
+        await QuestionApiService.deleteMCQ(mcq.id);
         
         // Refresh questions list
         context.read<QuestionsBloc>().add(const LoadQuestions());
@@ -150,16 +151,13 @@ class NATTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  nat.question,
-                  style: GoogleFonts.poppins(fontSize: 24, color: Colors.black),
-                ),
+                child: Text(mcq.question, style: GoogleFonts.poppins(fontSize: 24, color: Colors.black)),
               ),
               Container(
                 decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Text(
-                  nat.runtimeType.toString(),
+                  mcq.runtimeType.toString(),
                   style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue.shade800),
                 ),
               ),
@@ -167,26 +165,37 @@ class NATTile extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(color: Colors.orange.shade100, borderRadius: BorderRadius.circular(8)),
                 child: Text(
-                  '${nat.points} Points',
+                  '${mcq.points} Points',
                   style: GoogleFonts.poppins(fontSize: 18, color: Colors.orange.shade800),
                 ),
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colors.greenAccent.shade100,
-              ),
-              child: Text(
-                "Answer: ${nat.answer.toString()}",
-                textAlign: TextAlign.start,
-                style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
-              ),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 12,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
             ),
+            itemCount: mcq.options.length,
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.all(15),
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: (mcq.answerIndex == index) ? Colors.greenAccent.shade100 : Colors.grey[100],
+                ),
+                child: Text(
+                  mcq.options[index],
+                  textAlign: TextAlign.start,
+                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
+                ),
+              );
+            },
           ),
           Row(
             children: [
@@ -206,9 +215,26 @@ class NATTile extends StatelessWidget {
                         await showDialog(
                           context: context,
                           builder: (context) => ContextGenerationDialog(
-                            questionObject: nat,
-                            type: nat.runtimeType.toString(),
-                            id: nat.id,
+                            questionObject: mcq,
+                            type: mcq.runtimeType.toString(),
+                            id: mcq.id,
+                          ),
+                        );
+                      },
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.account_tree, color: Colors.blue[700]),
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) => PopScope(
+                            onPopInvokedWithResult: (didPop, result) {
+                              if (didPop) {
+                                context.read<MCQVariationBloc>().add(MCQVariationReset());
+                              }
+                            },
+                            child: MCQVariationDialog(mcq: mcq),
                           ),
                         );
                       },
@@ -233,4 +259,4 @@ class NATTile extends StatelessWidget {
       ),
     );
   }
-} 
+}
