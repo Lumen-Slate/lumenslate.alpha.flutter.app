@@ -84,7 +84,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheck>((event, emit) async {
       final userCompleter = Completer<User?>();
 
-      googleAuthServices.getCurrentUser().listen((user) {
+      googleAuthServices.userListener().listen((user) {
         if (user != null && userCompleter.isCompleted == false) {
           userCompleter.complete(user);
         }
