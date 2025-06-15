@@ -1,5 +1,5 @@
-import 'teacher.dart';
-import 'assignments.dart';
+import '../teacher.dart';
+import '../assignments.dart';
 
 class ClassroomExtended {
   String id;

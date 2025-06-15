@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../models/assignments.dart';
-import '../../models/assignment_extended.dart';
+import '../../models/extended/assignment_extended.dart';
 import '../../repositories/assignment_repository.dart';
 
 part 'assignment_event.dart';

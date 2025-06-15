@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../models/classroom.dart';
-import '../../models/classroom_extended.dart';
+import '../../models/extended/classroom_extended.dart';
 import '../../repositories/classroom_repository.dart';
 
 part 'classroom_event.dart';

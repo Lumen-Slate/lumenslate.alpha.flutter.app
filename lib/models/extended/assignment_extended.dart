@@ -1,8 +1,8 @@
-import 'comments.dart';
-import 'questions/mcq.dart';
-import 'questions/msq.dart';
-import 'questions/nat.dart';
-import 'questions/subjective.dart';
+import '../comments.dart';
+import '../questions/mcq.dart';
+import '../questions/msq.dart';
+import '../questions/nat.dart';
+import '../questions/subjective.dart';
 
 class AssignmentExtended {
   String id;
