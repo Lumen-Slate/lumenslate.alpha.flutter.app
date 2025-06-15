@@ -171,18 +171,6 @@ class NATTile extends StatelessWidget {
                   style: GoogleFonts.poppins(fontSize: 18, color: Colors.orange.shade800),
                 ),
               ),
-              // Edit button
-              IconButton(
-                onPressed: () => _editQuestion(context),
-                icon: const Icon(Icons.edit, color: Colors.blue),
-                tooltip: 'Edit Question',
-              ),
-              // Delete button
-              IconButton(
-                onPressed: () => _deleteQuestion(context),
-                icon: const Icon(Icons.delete, color: Colors.red),
-                tooltip: 'Delete Question',
-              ),
             ],
           ),
           Container(
@@ -217,24 +205,43 @@ class NATTile extends StatelessWidget {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FilledButton.tonal(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => ContextGenerationDialog(
-                      questionObject: nat,
-                      type: nat.runtimeType.toString(),
-                      id: nat.id,
-                    ),
-                  );
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.blue.shade100,
-                  foregroundColor: Colors.blue.shade800,
+              Spacer(),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.grey[100],
                 ),
-                child: Text("Generate Context", style: GoogleFonts.poppins()),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.orange[700]),
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (context) => ContextGenerationDialog(
+                            questionObject: nat,
+                            type: nat.runtimeType.toString(),
+                            id: nat.id,
+                          ),
+                        );
+                      },
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Colors.blue[700]),
+                      onPressed: () => _editQuestion(context),
+                      iconSize: 21,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red[700]),
+                      onPressed: () => _deleteQuestion(context),
+                      iconSize: 21,
+                    ),
+                  ],
+                ),
               ),
             ],
           )
