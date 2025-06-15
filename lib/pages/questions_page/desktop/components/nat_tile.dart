@@ -173,35 +173,19 @@ class NATTile extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.orange.shade50,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.orange.shade200),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Correct Answer:',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.orange.shade800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  nat.answer.toString(),
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange.shade900,
-                  ),
-                ),
-              ],
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.greenAccent.shade100,
+              ),
+              child: Text(
+                "Answer: ${nat.answer.toString()}",
+                textAlign: TextAlign.start,
+                style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
+              ),
             ),
           ),
           Row(
