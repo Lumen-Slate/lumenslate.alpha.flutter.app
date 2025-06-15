@@ -40,7 +40,7 @@ class SignInDesktop extends StatelessWidget {
                           //   height: 220,
                           // ),
                           Text(
-                            'Lumen Slate',
+                            AppConstants.appName,
                             style: GoogleFonts.jost(fontSize: 145, fontWeight: FontWeight.w400),
                             textAlign: TextAlign.center,
                           ),

@@ -34,7 +34,7 @@ class SignInOptionsDesktop extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SvgPicture.asset(
-                  "lib/assets/google.svg",
+                  "assets/google.svg",
                   width: 35,
                 ),
                 const SizedBox(width: 10),
@@ -73,7 +73,7 @@ class SignInOptionsDesktop extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SvgPicture.asset(
-                  "lib/assets/phone_sms.svg",
+                  "assets/phone_sms.svg",
                   width: 35,
                 ),
                 const SizedBox(width: 10),

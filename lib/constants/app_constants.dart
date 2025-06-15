@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'Parable Mind';
+  static const String appName = 'Lumen Slate';
   static const double desktopScaleWidth = 1980;
   static const double mobileScaleWidth = 450;
   static const String backendDomain = 'http://localhost:8080';

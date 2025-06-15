@@ -1,3 +1,5 @@
+import 'package:lumen_slate/repositories/question_bank_repository.dart';
+import 'blocs/question_bank/question_bank_bloc.dart';
 import 'lib.dart';
 
 Future<void> main() async {
@@ -24,6 +26,7 @@ class LumenSlate extends StatelessWidget {
         RepositoryProvider(create: (context) => NATRepository()),
         RepositoryProvider(create: (context) => SubjectiveRepository()),
         RepositoryProvider(create: (context) => TeacherRepository()),
+        RepositoryProvider(create: (context) => QuestionBankRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -35,16 +38,21 @@ class LumenSlate extends StatelessWidget {
             ),
           ),
           BlocProvider(create: (context) => PhoneNumberFormCubit()),
-          BlocProvider(create: (context) => ContextGeneratorBloc(
-            RepositoryProvider.of<AIRepository>(context),
-            RepositoryProvider.of<MCQRepository>(context),
-            RepositoryProvider.of<MSQRepository>(context),
-            RepositoryProvider.of<NATRepository>(context),
-            RepositoryProvider.of<SubjectiveRepository>(context),
-          )),
+          BlocProvider(
+            create: (context) => ContextGeneratorBloc(
+              RepositoryProvider.of<AIRepository>(context),
+              RepositoryProvider.of<MCQRepository>(context),
+              RepositoryProvider.of<MSQRepository>(context),
+              RepositoryProvider.of<NATRepository>(context),
+              RepositoryProvider.of<SubjectiveRepository>(context),
+            ),
+          ),
           BlocProvider(create: (context) => MCQVariationBloc(RepositoryProvider.of<VariationRepository>(context))),
           BlocProvider(create: (context) => MSQVariationBloc(RepositoryProvider.of<VariationRepository>(context))),
-          BlocProvider(create: (context) => QuestionSegmentationBloc(RepositoryProvider.of<QuestionSegmentationRepository>(context))),
+          BlocProvider(
+            create: (context) =>
+                QuestionSegmentationBloc(RepositoryProvider.of<QuestionSegmentationRepository>(context)),
+          ),
           BlocProvider(create: (context) => MCQBloc(RepositoryProvider.of<MCQRepository>(context))),
           BlocProvider(create: (context) => MSQBloc(RepositoryProvider.of<MSQRepository>(context))),
           BlocProvider(
@@ -54,6 +62,9 @@ class LumenSlate extends StatelessWidget {
               natRepository: RepositoryProvider.of<NATRepository>(context),
               subjectiveRepository: RepositoryProvider.of<SubjectiveRepository>(context),
             ),
+          ),
+          BlocProvider(
+            create: (context) => QuestionBankBloc(repository: RepositoryProvider.of<QuestionBankRepository>(context)),
           ),
         ],
         child: MaterialApp.router(

@@ -23,7 +23,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
         }
       },
       child: PopScope(
-        onPopInvokedWithResult: (_, __) {
+        onPopInvokedWithResult: (_, _) {
           context.go('/teacher-dashboard');
         },
         child: ResponsiveScaledBox(

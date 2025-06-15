@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../models/questions/nat.dart';
@@ -12,6 +13,7 @@ class NATTile extends StatelessWidget {
   final NAT nat;
 
   const NATTile({super.key, required this.nat});
+
 
   Future<void> _editQuestion(BuildContext context) async {
     final result = await showDialog<NAT>(

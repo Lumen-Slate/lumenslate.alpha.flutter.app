@@ -9,7 +9,7 @@ class HighlightTextEditingController extends TextEditingController {
     this.onTextSelectionChanged,
   }) : super() {
     // Add a listener to detect text selection changes
-    this.addListener(_onSelectionChange);
+    addListener(_onSelectionChange);
   }
 
   // Callback to be triggered when the selection changes
