@@ -5,7 +5,7 @@ import '../../constants/app_constants.dart';
 class AIRepository {
   final Dio _client = Dio(
     BaseOptions(
-      baseUrl: AppConstants.microserviceDomain,
+      baseUrl: AppConstants.backendDomain,
     ),
   );
 
