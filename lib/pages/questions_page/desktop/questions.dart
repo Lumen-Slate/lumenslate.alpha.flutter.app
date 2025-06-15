@@ -11,10 +11,11 @@ import '../../../models/questions/msq.dart';
 import '../../../models/questions/nat.dart';
 import '../../../models/questions/subjective.dart';
 import '../../../common/widgets/search_dropdown.dart';
-import 'components/mcq_tile.dart';
-import 'components/msq_tile.dart';
-import 'components/nat_tile.dart';
-import 'components/subjective_tile.dart';
+
+import 'components/question_tiles/mcq_tile.dart';
+import 'components/question_tiles/msq_tile.dart';
+import 'components/question_tiles/nat_tile.dart';
+import 'components/question_tiles/subjective_tile.dart';
 
 class QuestionsDesktop extends StatefulWidget {
   const QuestionsDesktop({super.key});
