@@ -23,7 +23,6 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
 
   @override
   void initState() {
-    // TODO: implement initState
     context.read<ChatAgentBloc>().add(FetchAgentChatHistory(teacherId: widget.teacherId, pageSize: 20));
     super.initState();
   }
@@ -56,7 +55,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                 Align(
                   alignment: Alignment.topLeft,
                   child: Hero(tag: 'agent',
-                  child: AutoSizeText("Agent", maxLines: 2, minFontSize: 80, style: GoogleFonts.poppins(fontSize: 80))),
+                  child: AutoSizeText("Agent", maxLines: 2, minFontSize: 80, style: GoogleFonts.poppins(fontSize: 80, color: Colors.black))),
                 ),
                 const SizedBox(height: 50),
 

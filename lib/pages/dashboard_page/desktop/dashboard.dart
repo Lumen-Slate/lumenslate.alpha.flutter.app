@@ -101,9 +101,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                             AppConstants.appName,
                             maxLines: 2,
                             minFontSize: 80,
-                            style: GoogleFonts.poppins(
-                              fontSize: 80,
-                            ),
+                            style: GoogleFonts.poppins(fontSize: 80),
                           ),
                         ),
                         Spacer(),
@@ -139,14 +137,48 @@ class TeacherDashboardDesktop extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               GestureDetector(
+                                onTap: () => context.go('/teacher-dashboard/agent'),
+                                child: Container(
+                                  width: 700,
+                                  height: 300,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(color: Colors.black, width: 3),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    spacing: 20,
+                                    children: [
+                                      Hero(
+                                        tag: 'agent',
+                                        child: Text(
+                                          'Agent',
+                                          style: GoogleFonts.poppins(fontSize: 46, color: Colors.black),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.all(26.0),
+                                        child: TextField(
+                                          enabled: false,
+                                          maxLines: 3,
+                                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            hintText: 'I want to create an assignment',
+                                            hintStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
                                 onTap: () {
                                   context.go('/teacher-dashboard/question-banks');
                                 },
                                 child: WideTile(
-                                  title: AutoSizeText(
-                                    "Question Banks",
-                                    style: GoogleFonts.poppins(fontSize: 46),
-                                  ),
+                                  title: AutoSizeText("Question Banks", style: GoogleFonts.poppins(fontSize: 46)),
                                   subTitle: AutoSizeText(
                                     "Manage your questions banks",
                                     style: GoogleFonts.poppins(fontSize: 16),
@@ -158,15 +190,17 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                   backgroundColor: Colors.redAccent[100]!,
                                 ),
                               ),
+
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
                               GestureDetector(
                                 onTap: () => context.go('/teacher-dashboard/questions'),
                                 child: WideTile(
-                                  title: AutoSizeText(
-                                    "Questions",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 46,
-                                    ),
-                                  ),
+                                  title: AutoSizeText("Questions", style: GoogleFonts.poppins(fontSize: 46)),
                                   subTitle: AutoSizeText(
                                     "Add a new question",
                                     style: GoogleFonts.poppins(fontSize: 16),
@@ -178,25 +212,11 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                   backgroundColor: Colors.deepPurpleAccent[100]!,
                                 ),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 50),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
                               GestureDetector(
                                 onTap: () => context.go('/teacher-dashboard/classrooms'),
                                 child: WideTile(
-                                  title: AutoSizeText(
-                                    "Classrooms",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 46,
-                                    ),
-                                  ),
-                                  subTitle: AutoSizeText(
-                                    "Manage classrooms",
-                                    style: GoogleFonts.poppins(fontSize: 16),
-                                  ),
+                                  title: AutoSizeText("Classrooms", style: GoogleFonts.poppins(fontSize: 46)),
+                                  subTitle: AutoSizeText("Manage classrooms", style: GoogleFonts.poppins(fontSize: 16)),
                                   description: AutoSizeText(
                                     "Manager your classrooms, add students, teachers, and assign subjects to them.",
                                     style: GoogleFonts.poppins(fontSize: 16),
@@ -204,15 +224,17 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                   backgroundColor: Colors.orangeAccent[100]!,
                                 ),
                               ),
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 50,
+                            children: [
                               GestureDetector(
                                 onTap: () => context.go('/teacher-dashboard/assignments'),
                                 child: WideTile(
-                                  title: AutoSizeText(
-                                    "Assignments",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 46,
-                                    ),
-                                  ),
+                                  title: AutoSizeText("Assignments", style: GoogleFonts.poppins(fontSize: 46)),
                                   subTitle: AutoSizeText(
                                     "Create and export assignments",
                                     style: GoogleFonts.poppins(fontSize: 16),
@@ -224,21 +246,10 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                   backgroundColor: Colors.greenAccent[200]!,
                                 ),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 50),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
                               GestureDetector(
                                 onTap: () => context.go('/teacher-dashboard/pdf-generator'),
                                 child: WideTile(
-                                  title: AutoSizeText(
-                                    "PDF Generator",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 46,
-                                    ),
-                                  ),
+                                  title: AutoSizeText("PDF Generator", style: GoogleFonts.poppins(fontSize: 46)),
                                   subTitle: AutoSizeText(
                                     "Generate question paper PDFs",
                                     style: GoogleFonts.poppins(fontSize: 16),
