@@ -15,25 +15,20 @@ class AgentRepository {
     required String teacherId,
     required String message,
   }) async {
-    try {
-      return await _client.post(
-        '/ai/agent',
-        data: {
-          'userId': teacherId,
-          'message': message,
-        },
-      );
-    } on DioException catch (dioError, stackTrace) {
-      _logger.e(
-        'Error calling agent: Status code ${dioError.response?.statusCode}',
-        error: dioError,
-        stackTrace: stackTrace,
-      );
-      return dioError.response;
-    } catch (e, stackTrace) {
-      _logger.e('Unexpected error calling agent', error: e, stackTrace: stackTrace);
-      return null;
-    }
+    // Dummy response for testing
+    await Future.delayed(const Duration(milliseconds: 300));
+    return Response(
+      requestOptions: RequestOptions(path: '/ai/agent'),
+      statusCode: 200,
+      data: {
+        'id': 'dummy_id',
+        'message': 'Dummy agent reply to: $message',
+        'data': null,
+        'agentName': 'agent',
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+    );
   }
 
   Future<Response?> fetchChatHistory({
@@ -41,25 +36,22 @@ class AgentRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    try {
-      return await _client.get(
-        '/ai/agent/history',
-        queryParameters: {
-          'userId': teacherId,
-          'limit': limit,
-          'offset': offset,
+    // Dummy response for testing
+    await Future.delayed(const Duration(milliseconds: 300));
+    return Response(
+      requestOptions: RequestOptions(path: '/ai/agent/history'),
+      statusCode: 200,
+      data: List.generate(
+        limit,
+        (i) => {
+          'id': 'dummy_id_${offset + i}',
+          'message': 'Dummy message #${offset + i}',
+          'data': null,
+          'agentName': (i % 2 == 0) ? 'agent' : 'user',
+          'createdAt': DateTime.now().subtract(Duration(minutes: offset + i)).toIso8601String(),
+          'updatedAt': DateTime.now().subtract(Duration(minutes: offset + i)).toIso8601String(),
         },
-      );
-    } on DioException catch (dioError, stackTrace) {
-      _logger.e(
-        'Error fetching chat history: Status code ${dioError.response?.statusCode}',
-        error: dioError,
-        stackTrace: stackTrace,
-      );
-      return dioError.response;
-    } catch (e, stackTrace) {
-      _logger.e('Unexpected error fetching chat history', error: e, stackTrace: stackTrace);
-      return null;
-    }
+      ),
+    );
   }
 }
