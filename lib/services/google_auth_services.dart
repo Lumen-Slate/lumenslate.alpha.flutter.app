@@ -26,8 +26,6 @@ class GoogleAuth{
       userCredentials['photoUrl'] = user.photoUrl;
 
       if (userCredential.user != null) {
-        _logger.i(" ${userCredential.user!.email} signed in successfully.");
-
         return userCredentials;
       } else {
         _logger.e("Failed to sign in with Google.");
