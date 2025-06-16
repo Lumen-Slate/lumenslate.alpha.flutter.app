@@ -5,11 +5,11 @@ sealed class ChatAgentEvent {}
 
 final class CallAgent extends ChatAgentEvent {
   final String teacherId;
-  final String message;
+  final String messageString;
 
   CallAgent({
     required this.teacherId,
-    required this.message,
+    required this.messageString,
   });
 }
 
