@@ -25,6 +25,7 @@ class SignInDesktop extends StatelessWidget {
           }
         },
         child: Scaffold(
+          backgroundColor: Colors.white,
           body: Row(
             children: [
               Expanded(

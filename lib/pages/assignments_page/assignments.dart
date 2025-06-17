@@ -18,15 +18,16 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
   final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
 
   @override
+  void initState() {
+    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implement add assignment navigation
-        },
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.add)),
       body: SingleChildScrollView(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
@@ -60,9 +61,7 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                             ),
                             backgroundColor: WidgetStateProperty.all(Colors.white),
                             hintText: "Search assignments",
-                            hintStyle: WidgetStateProperty.all(
-                              GoogleFonts.poppins(fontSize: 16, color: Colors.black),
-                            ),
+                            hintStyle: WidgetStateProperty.all(GoogleFonts.poppins(fontSize: 16, color: Colors.black)),
                             enabled: false, // Disabled for paginated list
                           ),
                         ),
@@ -72,19 +71,27 @@ class _AssignmentsPageState extends State<AssignmentsPage> {
                     // Paginated Assignments List
                     SizedBox(
                       height: 580,
-                      child: BlocBuilder<AssignmentBloc, PagingState<int, Assignment>>(
-                        builder: (context, state) => PagedListView<int, Assignment>(
-                          state: state,
-                          fetchNextPage: () {
-                            context.read<AssignmentBloc>().add(FetchNextAssignmentPage(teacherId: _teacherId));
-                          },
-                          builderDelegate: PagedChildBuilderDelegate(
-                            itemBuilder: (context, item, index) => AssignmentTile(assignment: item),
-                            noItemsFoundIndicatorBuilder: (context) => Center(child: Text('No assignments found')),
-                            firstPageErrorIndicatorBuilder: (context) =>
-                                Center(child: Text('Error loading assignments')),
-                          ),
-                        ),
+                      child: BlocBuilder<AssignmentBloc, AssignmentState>(
+                        builder: (context, state) {
+                          if (state is AssignmentOriginalSuccess) {
+                            return PagedListView<int, Assignment>(
+                              state: state.pagingState,
+                              fetchNextPage: () {
+                                context.read<AssignmentBloc>().add(
+                                  FetchNextAssignmentPage(teacherId: _teacherId, extended: false),
+                                );
+                              },
+                              builderDelegate: PagedChildBuilderDelegate(
+                                itemBuilder: (context, item, index) => AssignmentTile(assignment: item),
+                                noItemsFoundIndicatorBuilder: (context) => Center(child: Text('No assignments found')),
+                                firstPageErrorIndicatorBuilder: (context) =>
+                                    Center(child: Text('Error loading assignments')),
+                              ),
+                            );
+                          } else {
+                            return SizedBox.shrink();
+                          }
+                        },
                       ),
                     ),
                   ],
