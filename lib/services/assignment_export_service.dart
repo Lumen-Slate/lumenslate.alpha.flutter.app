@@ -19,7 +19,7 @@ class AssignmentExportService {
   static const String _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   /// Export assignment questions to PDF
-  static Future<File> exportAssignmentPDF(Assignments assignment) async {
+  static Future<File> exportAssignmentPDF(Assignment assignment) async {
     // Get questions for this assignment
     final mcqs = dummyMCQs
         .where((q) => (assignment.mcqIds ?? []).contains(q.id))
@@ -123,10 +123,10 @@ class AssignmentExportService {
           }
 
           // Comments Section (if any)
-          if (assignment.commentIds.isNotEmpty) {
-            content.add(pw.SizedBox(height: 30));
-            content.add(_buildCommentsSection(assignment));
-          }
+          // if (assignment.commentIds.isNotEmpty) {
+          //   content.add(pw.SizedBox(height: 30));
+          //   content.add(_buildCommentsSection(assignment));
+          // }
 
           return content;
         },
@@ -139,7 +139,7 @@ class AssignmentExportService {
   }
 
   /// Build assignment header
-  static pw.Widget _buildAssignmentHeader(Assignments assignment, int totalPoints) {
+  static pw.Widget _buildAssignmentHeader(Assignment assignment, int totalPoints) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -343,34 +343,34 @@ class AssignmentExportService {
   }
 
   /// Build comments section
-  static pw.Widget _buildCommentsSection(Assignments assignment) {
-    final comments = dummyComments
-        .where((c) => assignment.commentIds.contains(c.id))
-        .toList();
-
-    if (comments.isEmpty) return pw.SizedBox();
-
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        pw.Text(
-          "COMMENTS & FEEDBACK:",
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
-        ),
-        pw.SizedBox(height: 10),
-        ...comments.map((comment) => pw.Container(
-          margin: const pw.EdgeInsets.only(bottom: 8),
-          padding: const pw.EdgeInsets.all(10),
-          decoration: pw.BoxDecoration(
-            color: PdfColors.grey100,
-            border: pw.Border.all(color: PdfColors.grey300),
-            borderRadius: pw.BorderRadius.circular(5),
-          ),
-          child: pw.Text(comment.commentBody),
-        )),
-      ],
-    );
-  }
+  // static pw.Widget _buildCommentsSection(Assignment assignment) {
+  //   final comments = dummyComments
+  //       .where((c) => assignment.commentIds.contains(c.id))
+  //       .toList();
+  //
+  //   if (comments.isEmpty) return pw.SizedBox();
+  //
+  //   return pw.Column(
+  //     crossAxisAlignment: pw.CrossAxisAlignment.start,
+  //     children: [
+  //       pw.Text(
+  //         "COMMENTS & FEEDBACK:",
+  //         style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+  //       ),
+  //       pw.SizedBox(height: 10),
+  //       ...comments.map((comment) => pw.Container(
+  //         margin: const pw.EdgeInsets.only(bottom: 8),
+  //         padding: const pw.EdgeInsets.all(10),
+  //         decoration: pw.BoxDecoration(
+  //           color: PdfColors.grey100,
+  //           border: pw.Border.all(color: PdfColors.grey300),
+  //           borderRadius: pw.BorderRadius.circular(5),
+  //         ),
+  //         child: pw.Text(comment.commentBody),
+  //       )),
+  //     ],
+  //   );
+  // }
 
   /// Save PDF to file
   static Future<File> _savePdfToFile(pw.Document pdf, String fileName) async {
@@ -401,7 +401,7 @@ class AssignmentExportService {
   }
 
   /// Export assignment to CSV format
-  static Future<File> exportAssignmentCSV(Assignments assignment) async {
+  static Future<File> exportAssignmentCSV(Assignment assignment) async {
     // Get questions for this assignment
     final mcqs = dummyMCQs
         .where((q) => (assignment.mcqIds ?? []).contains(q.id))

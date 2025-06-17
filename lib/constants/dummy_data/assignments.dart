@@ -2,8 +2,8 @@
 
 import '../../models/assignments.dart';
 
-final List<Assignments> dummyAssignments = [
-  Assignments(
+final List<Assignment> dummyAssignments = [
+  Assignment(
     id: '201',
     title: 'Physics - Newton\'s Laws',
     body: 'This assignment covers Newton\'s Laws of Motion and includes a mix of question types.',
@@ -16,7 +16,7 @@ final List<Assignments> dummyAssignments = [
     natIds: ['nat_1', 'nat_6'],
     subjectiveIds: ['sub_1'],
   ),
-  Assignments(
+  Assignment(
     id: '202',
     title: 'Chemistry - Chemical Reactions',
     body: 'This assignment covers various types of chemical reactions and includes a mix of question types.',
@@ -29,7 +29,7 @@ final List<Assignments> dummyAssignments = [
     natIds: ['nat_2', 'nat_7'],
     subjectiveIds: ['sub_2'],
   ),
-  Assignments(
+  Assignment(
     id: '203',
     title: 'Mathematics - Algebra',
     body: 'This assignment covers algebraic expressions and equations and includes a mix of question types.',
@@ -42,7 +42,7 @@ final List<Assignments> dummyAssignments = [
     natIds: ['nat_3', 'nat_8'],
     subjectiveIds: ['sub_3'],
   ),
-  Assignments(
+  Assignment(
     id: '204',
     title: 'Biology - Cell Structure',
     body: 'This assignment covers the structure and function of cells and includes a mix of question types.',
@@ -55,7 +55,7 @@ final List<Assignments> dummyAssignments = [
     natIds: ['nat_4', 'nat_9'],
     subjectiveIds: ['sub_4'],
   ),
-  Assignments(
+  Assignment(
     id: '205',
     title: 'History - World War II',
     body: 'This assignment covers the events and impact of World War II and includes a mix of question types.',
@@ -68,7 +68,7 @@ final List<Assignments> dummyAssignments = [
     natIds: ['nat_5', 'nat_10'],
     subjectiveIds: ['sub_5', 'sub_6', 'sub_7', 'sub_8', 'sub_9', 'sub_10'],
   ),
-  Assignments(
+  Assignment(
     id: '206',
     title: 'Advanced Physics - Quantum Mechanics',
     body: 'This assignment covers the basics of Quantum Mechanics and includes a mix of question types.',
@@ -81,7 +81,7 @@ final List<Assignments> dummyAssignments = [
     natIds: [],
     subjectiveIds: [],
   ),
-  Assignments(
+  Assignment(
     id: '207',
     title: 'Advanced Physics - Relativity',
     body: 'This assignment covers the theory of relativity and includes a mix of question types.',
