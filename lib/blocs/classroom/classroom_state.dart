@@ -15,6 +15,14 @@ class ClassroomLoadSuccess extends ClassroomState {
   });
 }
 
+class ClassroomLoadExtendedSuccess extends ClassroomState {
+  final List<ClassroomExtended> classrooms;
+
+  ClassroomLoadExtendedSuccess({
+    required this.classrooms
+  });
+}
+
 class ClassroomLoadFailure extends ClassroomState {
   final String error;
 

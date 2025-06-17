@@ -7,11 +7,13 @@ class LoadClassrooms extends ClassroomEvent {
   final String teacherId;
   final int limit;
   final int offset;
+  final bool extended;
 
   LoadClassrooms({
     required this.teacherId,
     this.limit = 10,
     this.offset = 0,
+    this.extended = false,
   });
 }
 

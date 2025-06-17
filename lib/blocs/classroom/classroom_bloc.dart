@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:lumen_slate/models/classroom_extended.dart';
 import 'package:meta/meta.dart';
 import '../../models/classroom.dart';
 import '../../repositories/classroom_repository.dart';
@@ -21,6 +22,7 @@ class ClassroomBloc extends Bloc<ClassroomEvent, ClassroomState> {
   ) async {
     final currentState = state;
     List<Classroom> classrooms = [];
+    List<ClassroomExtended> extendedClassrooms = [];
     if (currentState is ClassroomLoadSuccess && event.offset != 0) {
       classrooms = List.from(currentState.classrooms);
     } else {
@@ -31,14 +33,24 @@ class ClassroomBloc extends Bloc<ClassroomEvent, ClassroomState> {
         teacherId: event.teacherId,
         limit: event.limit,
         offset: event.offset,
+        extended: event.extended,
       );
       if (response.statusCode == 200 && response.data is List) {
-        for (final item in response.data) {
-          classrooms.add(Classroom.fromJson(item));
+        if (event.extended) {
+          for (final item in response.data) {
+            extendedClassrooms.add(ClassroomExtended.fromJson(item));
+          }
+          emit(ClassroomLoadExtendedSuccess(
+            classrooms: extendedClassrooms,
+          ));
+        } else {
+          for (final item in response.data) {
+            classrooms.add(Classroom.fromJson(item));
+          }
+          emit(ClassroomLoadSuccess(
+            classrooms: classrooms,
+          ));
         }
-        emit(ClassroomLoadSuccess(
-          classrooms: classrooms
-        ));
       } else {
         emit(ClassroomLoadFailure('Failed to load classrooms'));
       }
