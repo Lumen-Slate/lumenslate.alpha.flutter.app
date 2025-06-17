@@ -1,25 +1,98 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lumen_slate/pages/assignments_page/widget/assignment_tile.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../blocs/assignment/assignment_bloc.dart';
+import 'widget/assignment_tile.dart';
+import '../../models/assignments.dart';
 
-import '../../constants/dummy_data/assignments.dart';
-
-class AssignmentsPage extends StatelessWidget {
+class AssignmentsPage extends StatefulWidget {
   const AssignmentsPage({super.key});
+
+  @override
+  State<AssignmentsPage> createState() => _AssignmentsPageState();
+}
+
+class _AssignmentsPageState extends State<AssignmentsPage> {
+  final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Assignments', style: GoogleFonts.poppins()),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: dummyAssignments.length,
-        itemBuilder: (context, index) {
-          final assignment = dummyAssignments[index];
-          return AssignmentTile(assignment: assignment);
+      backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Implement add assignment navigation
         },
+        child: Icon(Icons.add),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: AutoSizeText(
+                  "Assignments",
+                  maxLines: 2,
+                  minFontSize: 80,
+                  style: GoogleFonts.poppins(fontSize: 80),
+                ),
+              ),
+              const SizedBox(height: 50),
+
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(30)),
+                child: Column(
+                  children: [
+                    // Search Bar (disabled for now, as pagination is server-side)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SearchBar(
+                            onChanged: (_) {},
+                            leading: Padding(
+                              padding: const EdgeInsets.only(left: 12.0),
+                              child: const Icon(Icons.search),
+                            ),
+                            backgroundColor: WidgetStateProperty.all(Colors.white),
+                            hintText: "Search assignments",
+                            hintStyle: WidgetStateProperty.all(
+                              GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                            ),
+                            enabled: false, // Disabled for paginated list
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    // Paginated Assignments List
+                    SizedBox(
+                      height: 580,
+                      child: BlocBuilder<AssignmentBloc, PagingState<int, Assignment>>(
+                        builder: (context, state) => PagedListView<int, Assignment>(
+                          state: state,
+                          fetchNextPage: () {
+                            context.read<AssignmentBloc>().add(FetchNextAssignmentPage(teacherId: _teacherId));
+                          },
+                          builderDelegate: PagedChildBuilderDelegate(
+                            itemBuilder: (context, item, index) => AssignmentTile(assignment: item),
+                            noItemsFoundIndicatorBuilder: (context) => Center(child: Text('No assignments found')),
+                            firstPageErrorIndicatorBuilder: (context) =>
+                                Center(child: Text('Error loading assignments')),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

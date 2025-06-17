@@ -11,7 +11,7 @@ import '../../models/assignments.dart';
 import '../../services/assignment_export_service.dart';
 
 class AssignmentDetailPage extends StatelessWidget {
-  final Assignments assignment;
+  final Assignment assignment;
 
   const AssignmentDetailPage({super.key, required this.assignment});
 
@@ -124,14 +124,14 @@ class AssignmentDetailPage extends StatelessWidget {
                 ),
 
               /// Comments Section
-              if ((assignment.commentIds).isNotEmpty)
+              if (assignment.commentIds != null && assignment.commentIds!.isNotEmpty)
                 buildQuestionSection(
                   title: "Comments",
                   description:
                       "Remarks or feedback related to this assignment.",
                   backgroundColor: Colors.grey,
                   isLast: true,
-                  children: assignment.commentIds.map((id) {
+                  children: assignment.commentIds!.map((id) {
                     final comment = dummyComments.firstWhere(
                       (c) => c.id == id,
                       orElse: () => Comments(id: '', commentBody: ''),
