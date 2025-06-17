@@ -8,6 +8,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 8,
     answer: 5.0,
+    subject: 'Physics',
+    difficulty: 'Medium',
   ),
   NAT(
     id: 'nat_2',
@@ -16,6 +18,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 5,
     answer: 3.14,
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   NAT(
     id: 'nat_3',
@@ -24,6 +28,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 3,
     answer: 100.0,
+    subject: 'Science',
+    difficulty: 'Easy',
   ),
   NAT(
     id: 'nat_4',
@@ -32,6 +38,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 2,
     answer: 56.0,
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   NAT(
     id: 'nat_5',
@@ -40,6 +48,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 4,
     answer: 25.0,
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   NAT(
     id: 'nat_6',
@@ -48,6 +58,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 6,
     answer: 6.67e-11,
+    subject: 'Physics',
+    difficulty: 'Hard',
   ),
   NAT(
     id: 'nat_7',
@@ -56,6 +68,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 5,
     answer: 44.01,
+    subject: 'Chemistry',
+    difficulty: 'Medium',
   ),
   NAT(
     id: 'nat_8',
@@ -64,6 +78,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 4,
     answer: 2.0,
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   NAT(
     id: 'nat_9',
@@ -72,6 +88,8 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 5,
     answer: 7.0,
+    subject: 'Chemistry',
+    difficulty: 'Medium',
   ),
   NAT(
     id: 'nat_10',
@@ -80,5 +98,7 @@ final List<NAT> dummyNATs = [
     variableIds: [],
     points: 4,
     answer: 2.0,
+    subject: 'Physics',
+    difficulty: 'Easy',
   ),
 ];
