@@ -33,7 +33,7 @@ class RagMessageTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Agent',
+              message.agentName == 'user' ? 'User' : 'RAG Agent',
               style: GoogleFonts.jost(fontWeight: FontWeight.w700, color: Colors.grey[700]),
             ),
             Text(message.message, style: GoogleFonts.jost(fontSize: 14, color: Colors.black87)),

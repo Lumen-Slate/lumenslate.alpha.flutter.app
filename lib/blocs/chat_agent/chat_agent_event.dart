@@ -6,10 +6,12 @@ sealed class ChatAgentEvent {}
 final class CallAgent extends ChatAgentEvent {
   final String teacherId;
   final String messageString;
+  final PlatformFile? file;
 
   CallAgent({
     required this.teacherId,
     required this.messageString,
+    this.file,
   });
 }
 

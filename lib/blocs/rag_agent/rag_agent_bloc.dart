@@ -1,10 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:lumen_slate/serializers/rag_agent_serializers/reg_agent_response.dart';
 import '../../models/chat_message.dart';
 import '../../repositories/ai/rag_agent_repository.dart';
+import '../../serializers/rag_agent_serializers/rag_agent_payload.dart';
 
 part 'rag_agent_event.dart';
+
 part 'rag_agent_state.dart';
 
 class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
@@ -12,28 +15,29 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
 
   RagAgentBloc({required this.repository}) : super(RagAgentInitial()) {
     on<CallRagAgent>((event, emit) async {
-      PagingState<int, ChatMessage> pagingState;
+      PagingState<int, RagAgentResponse> pagingState;
       if (state is RagAgentSuccess) {
         pagingState = (state as RagAgentSuccess).state;
       } else {
-        pagingState = PagingState<int, ChatMessage>();
+        pagingState = PagingState<int, RagAgentResponse>();
       }
 
-      final userMessage = ChatMessage(
-        id: UniqueKey().toString(),
+      final userMessage = RagAgentResponse(
         message: event.messageString,
         data: null,
         agentName: 'user',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        teacherId: event.teacherId,
+        sessionId: '',
+        responseTime: 0,
+        role: 'user',
+        feedback: 'neutral',
       );
 
-      final List<List<ChatMessage>> updatedPages = List.from(pagingState.pages ?? []);
+      final List<List<RagAgentResponse>> updatedPages = List.from(pagingState.pages ?? []);
       if (updatedPages.isNotEmpty) {
-        updatedPages[updatedPages.length - 1] = [
-          userMessage,
-          ...updatedPages.last,
-        ];
+        updatedPages[updatedPages.length - 1] = [userMessage, ...updatedPages.last];
       } else {
         updatedPages.add([userMessage]);
       }
@@ -42,18 +46,22 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
 
       try {
         final response = await repository.callRagAgent(
-          teacherId: event.teacherId,
-          message: event.messageString,
+          payload: RAGAgentPayload(
+            message: event.messageString,
+            /// TODO: Hardcoded data
+            teacherId: 'my_test_corpus',
+            role: 'user',
+            file: event.file ?? '',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
         );
         if (response != null && response.statusCode == 200) {
-          final ChatMessage agentMessage = ChatMessage.fromJson(response.data);
+          final RagAgentResponse agentMessage = RagAgentResponse.fromJson(response.data);
 
-          final List<List<ChatMessage>> replyPages = List.from(updatedPages);
+          final List<List<RagAgentResponse>> replyPages = List.from(updatedPages);
           if (replyPages.isNotEmpty) {
-            replyPages[replyPages.length - 1] = [
-              agentMessage,
-              ...replyPages.last,
-            ];
+            replyPages[replyPages.length - 1] = [agentMessage, ...replyPages.last];
           } else {
             replyPages.add([agentMessage]);
           }
@@ -68,11 +76,11 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
     });
 
     on<FetchRagAgentChatHistory>((event, emit) async {
-      PagingState<int, ChatMessage> pagingState;
+      PagingState<int, RagAgentResponse> pagingState;
       if (state is RagAgentSuccess) {
         pagingState = (state as RagAgentSuccess).state;
       } else {
-        pagingState = PagingState<int, ChatMessage>();
+        pagingState = PagingState<int, RagAgentResponse>();
       }
 
       if (pagingState.isLoading || !pagingState.hasNextPage) return;
@@ -88,7 +96,7 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
         );
         if (response != null && response.statusCode == 200) {
           final List data = response.data;
-          final messages = data.map((e) => ChatMessage.fromJson(e)).toList().cast<ChatMessage>();
+          final messages = data.map((e) => RagAgentResponse.fromJson(e)).toList().cast<RagAgentResponse>();
           final isLastPage = messages.length < event.pageSize;
 
           final newPagingState = pagingState.copyWith(

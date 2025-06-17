@@ -26,9 +26,6 @@ class RagAgentResponse {
   });
 
   factory RagAgentResponse.fromJson(Map<String, dynamic> json) {
-    if (json['data'] == null) {
-      throw ArgumentError('Data field cannot be null');
-    }
 
     final Map<String, dynamic>? dataMap = json['data'];
     dynamic data = dataMap;
@@ -36,14 +33,6 @@ class RagAgentResponse {
     if (dataMap != null && dataMap.isNotEmpty) {
       data = RagGeneratedQuestionsSerializer.fromJson(dataMap);
     }
-
-    // if (agentName == 'assignment_generator_general') {
-    //   data = AssignmentGeneratorGeneralSerializer.fromJson(dataMap);
-    // } else if (agentName == 'assignment_generator_tailored') {
-    //   data = AssignmentGeneratorTailoredSerializer.fromJson(dataMap);
-    // } else {
-    //   throw ArgumentError('Unknown agent name: $agentName');
-    // }
 
     return RagAgentResponse(
       message: json['message'] as String,
@@ -53,7 +42,7 @@ class RagAgentResponse {
       sessionId: json['sessionId'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
-      responseTime: (json['responseTime'] as num).toDouble(),
+      responseTime: double.tryParse(json['responseTime'].toString()) ?? 0.0,
       role: json['role'] as String,
       feedback: json['feedback'] as String,
     );

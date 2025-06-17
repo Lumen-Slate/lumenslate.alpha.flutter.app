@@ -6,7 +6,7 @@ sealed class ChatAgentState {}
 final class ChatAgentInitial extends ChatAgentState {}
 
 final class ChatAgentSuccess extends ChatAgentState {
-  final PagingState<int, ChatMessage> state;
+  final PagingState<int, AgentResponse> state;
 
   ChatAgentSuccess(this.state);
 }

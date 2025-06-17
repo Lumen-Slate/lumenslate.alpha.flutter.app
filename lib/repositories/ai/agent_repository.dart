@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:lumen_slate/constants/app_constants.dart';
+import '../../serializers/agent_serializers/agent_payload.dart';
 
 class AgentRepository {
   final Dio _client = Dio(
@@ -12,23 +13,21 @@ class AgentRepository {
   final Logger _logger = Logger();
 
   Future<Response?> callAgent({
-    required String teacherId,
-    required String message,
+    required AgentPayload payload,
   }) async {
-    // Dummy response for testing
-    await Future.delayed(const Duration(milliseconds: 300));
-    return Response(
-      requestOptions: RequestOptions(path: '/ai/agent'),
-      statusCode: 200,
-      data: {
-        'id': 'dummy_id',
-        'message': 'Dummy agent reply to: $message',
-        'data': null,
-        'agentName': 'agent',
-        'createdAt': DateTime.now().toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
-      },
-    );
+    try {
+      final response = await _client.post(
+        '/ai/agent',
+        data: payload.toFormData(),
+        options: Options(
+          contentType: 'multipart/form-data',
+        ),
+      );
+      return response;
+    } catch (e) {
+      _logger.e('Error calling agent: $e');
+      return null;
+    }
   }
 
   Future<Response?> fetchChatHistory({
@@ -41,17 +40,7 @@ class AgentRepository {
     return Response(
       requestOptions: RequestOptions(path: '/ai/agent/history'),
       statusCode: 200,
-      data: List.generate(
-        limit,
-        (i) => {
-          'id': 'dummy_id_${offset + i}',
-          'message': 'Dummy message #${offset + i}',
-          'data': null,
-          'agentName': (i % 2 == 0) ? 'agent' : 'user',
-          'createdAt': DateTime.now().subtract(Duration(minutes: offset + i)).toIso8601String(),
-          'updatedAt': DateTime.now().subtract(Duration(minutes: offset + i)).toIso8601String(),
-        },
-      ),
+      data: [],
     );
   }
 }

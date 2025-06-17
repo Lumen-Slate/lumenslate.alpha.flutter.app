@@ -38,7 +38,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                 childrenAnimation: ExpandableFabAnimation.none,
                 type: ExpandableFabType.up,
                 openButtonBuilder: RotateFloatingActionButtonBuilder(
-                  child: Icon(Icons.dashboard, color: Colors.tealAccent.shade700),
+                  child: Icon(Icons.dashboard, color: Colors.black),
                   fabSize: ExpandableFabSize.regular,
                   foregroundColor: Colors.blue,
                   backgroundColor: Colors.white,
@@ -63,28 +63,28 @@ class TeacherDashboardDesktop extends StatelessWidget {
                     ),
                     onPressed: () => context.go('/add-question'),
                   ),
-                  FloatingActionButton.extended(
-                    heroTag: null,
-                    label: Row(
-                      children: [
-                        const Icon(Icons.book_rounded),
-                        const SizedBox(width: 10),
-                        Text('Create Assignment', style: GoogleFonts.jost(fontSize: 18)),
-                      ],
-                    ),
-                    onPressed: () {},
-                  ),
-                  FloatingActionButton.extended(
-                    heroTag: null,
-                    label: Row(
-                      children: [
-                        const Icon(Icons.business_center_rounded),
-                        const SizedBox(width: 10),
-                        Text('Add Question Bank', style: GoogleFonts.jost(fontSize: 18)),
-                      ],
-                    ),
-                    onPressed: () {},
-                  ),
+                  // FloatingActionButton.extended(
+                  //   heroTag: null,
+                  //   label: Row(
+                  //     children: [
+                  //       const Icon(Icons.book_rounded),
+                  //       const SizedBox(width: 10),
+                  //       Text('Create Assignment', style: GoogleFonts.jost(fontSize: 18)),
+                  //     ],
+                  //   ),
+                  //   onPressed: () {},
+                  // ),
+                  // FloatingActionButton.extended(
+                  //   heroTag: null,
+                  //   label: Row(
+                  //     children: [
+                  //       const Icon(Icons.business_center_rounded),
+                  //       const SizedBox(width: 10),
+                  //       Text('Add Question Bank', style: GoogleFonts.jost(fontSize: 18)),
+                  //     ],
+                  //   ),
+                  //   onPressed: () {},
+                  // ),
                 ],
               ),
             ),

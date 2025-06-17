@@ -30,15 +30,16 @@ class AgentResponse {
     if (json['data'] == null) {
       throw ArgumentError('Data field cannot be null');
     }
-
     final String agentName = json['agentName'] as String;
     final Map<String, dynamic> dataMap = json['data'] as Map<String, dynamic>;
     final dynamic data;
 
     if (agentName == 'assignment_generator_general') {
-      data = AssignmentGeneratorGeneralSerializer.fromJson(dataMap);
+      data = AssignmentGeneratorSerializer.fromJson(dataMap);
     } else if (agentName == 'assignment_generator_tailored') {
       data = AssignmentGeneratorTailoredSerializer.fromJson(dataMap);
+    } else if (agentName == 'general_chat_agent') {
+      data = {};
     } else {
       throw ArgumentError('Unknown agent name: $agentName');
     }
@@ -51,7 +52,7 @@ class AgentResponse {
       sessionId: json['sessionId'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
-      responseTime: (json['responseTime'] as num).toDouble(),
+      responseTime: double.tryParse(json['responseTime'].toString()) ?? 0.0,
       role: json['role'] as String,
       feedback: json['feedback'] as String,
     );
