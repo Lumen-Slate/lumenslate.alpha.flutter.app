@@ -24,8 +24,8 @@ class AIRepository {
     };
 
     try {
-      final response = await _client.post('/generate-context', data: payload);
-      return response.data['response'].toString();
+      final response = await _client.post('/ai/generate-context', data: payload);
+      return response.data['content'].toString();
     } catch (e) {
       _logger.e('Error creating post: $e');
       return 'Error: $e';

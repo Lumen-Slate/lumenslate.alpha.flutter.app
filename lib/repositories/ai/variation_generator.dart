@@ -17,7 +17,7 @@ class VariationRepository {
   Future<Response> generateMCQVariations(MCQ mcq) async {
     try {
       return await _client.post(
-        '/ai/generate-mcq-variations',
+        '/ai/generate-mcq',
         data: {
           'question': mcq.question,
           'options': mcq.options,
@@ -37,7 +37,7 @@ class VariationRepository {
   Future<Response> generateMSQVariations(MSQ msq) async {
     try {
       return await _client.post(
-        '/generate-msq-variations',
+        '/ai/generate-msq',
         data: {
           'question': msq.question,
           'options': msq.options,
