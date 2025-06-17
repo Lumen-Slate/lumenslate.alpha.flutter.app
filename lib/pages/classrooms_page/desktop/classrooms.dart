@@ -1,6 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lumen_slate/pages/classrooms_page/desktop/widget/classroom_card.dart';
+import 'package:lumen_slate/pages/classrooms_page/desktop/widget/classroom_tile.dart';
 import '../../../../../constants/dummy_data/classroom.dart';
 import '../../../../../constants/dummy_data/teacher.dart';
 import '../../../constants/dummy_data/assignments.dart';
@@ -27,44 +28,48 @@ class ClassroomsPageDesktop extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Your Classrooms", style: GoogleFonts.poppins()),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: GridView.builder(
-          itemCount: dummyClassrooms.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
-            childAspectRatio: 1.5,
-          ),
-          itemBuilder: (context, index) {
-            final classroom = dummyClassrooms[index];
-            final teacherNames = _getTeacherNames(classroom.teacherIds);
-            final classroomAssignments = dummyAssignments
-                .where((a) => classroom.assignmentIds.contains(a.id))
-                .toList();
-            return ClassroomCard(
-              classroom: classroom,
-              teacherNames: teacherNames,
-              classroomAssignments: classroomAssignments,
-              index: index,
-            );
-          },
+      backgroundColor: Colors.white,
+      body: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: AutoSizeText(
+                "Classrooms",
+                maxLines: 2,
+                minFontSize: 80,
+                style: GoogleFonts.poppins(fontSize: 80),
+              ),
+            ),
+            const SizedBox(height: 50),
+            Expanded(
+              child: GridView.builder(
+                itemCount: dummyClassrooms.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 20,
+                  crossAxisSpacing: 20,
+                  childAspectRatio: 2.0,
+                ),
+                itemBuilder: (context, index) {
+                  final classroom = dummyClassrooms[index];
+                  final teacherNames = _getTeacherNames(classroom.teacherIds);
+                  final classroomAssignments = dummyAssignments
+                      .where((a) => classroom.assignmentIds.contains(a.id))
+                      .toList();
+                  return ClassroomTile(
+                    classroom: classroom,
+                    teacherNames: teacherNames,
+                    classroomAssignments: classroomAssignments,
+                    index: index,
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Future: Add new classroom
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }
-}
-
-extension FirstOrNullExtension<E> on List<E> {
-  E? get firstOrNull => isEmpty ? null : first;
 }
