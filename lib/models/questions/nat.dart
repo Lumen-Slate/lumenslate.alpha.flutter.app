@@ -5,6 +5,8 @@ class NAT {
   List<String> variableIds;
   int points;
   double answer;
+  String subject;
+  String difficulty;
 
   NAT({
     required this.id,
@@ -13,6 +15,8 @@ class NAT {
     required this.variableIds,
     required this.points,
     required this.answer,
+    required this.subject,
+    required this.difficulty,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +27,8 @@ class NAT {
       'variableIds': variableIds,
       'points': points,
       'answer': answer,
+      'subject': subject,
+      'difficulty': difficulty,
     };
   }
 
@@ -34,6 +40,8 @@ class NAT {
       variableIds: List<String>.from(json['variableIds']),
       points: json['points'],
       answer: json['answer'].toDouble(),
+      subject: json['subject'] ?? '',
+      difficulty: json['difficulty'] ?? '',
     );
   }
 
@@ -44,6 +52,8 @@ class NAT {
     List<String>? variableIds,
     int? points,
     double? answer,
+    String? subject,
+    String? difficulty,
   }) {
     return NAT(
       id: id ?? this.id,
@@ -52,6 +62,8 @@ class NAT {
       variableIds: variableIds ?? this.variableIds,
       points: points ?? this.points,
       answer: answer ?? this.answer,
+      subject: subject ?? this.subject,
+      difficulty: difficulty ?? this.difficulty,
     );
   }
 }

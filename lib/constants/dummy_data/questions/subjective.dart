@@ -13,6 +13,8 @@ final List<Subjective> dummySubjectives = [
       'Provides a clear example',
       'Explanation is coherent and well-structured',
     ],
+    subject: 'Physics',
+    difficulty: 'Medium',
   ),
   Subjective(
     id: 'sub_2',
@@ -26,6 +28,8 @@ final List<Subjective> dummySubjectives = [
       'Includes a discussion on CO2 levels and their dual impact',
       'Provides examples or statistics to support the argument',
     ],
+    subject: 'Geography',
+    difficulty: 'Hard',
   ),
   Subjective(
     id: 'sub_3',
@@ -39,6 +43,8 @@ final List<Subjective> dummySubjectives = [
       'Mentions at least three specific examples or benefits',
       'Demonstrates understanding of ecosystem balance',
     ],
+    subject: 'Biology',
+    difficulty: 'Medium',
   ),
   Subjective(
     id: 'sub_4',
@@ -52,6 +58,8 @@ final List<Subjective> dummySubjectives = [
       'Details the inputs (sunlight, CO2, water) and outputs (glucose, oxygen)',
       'Mentions its importance for oxygen production and food chains',
     ],
+    subject: 'Biology',
+    difficulty: 'Easy',
   ),
   Subjective(
     id: 'sub_5',
@@ -65,6 +73,8 @@ final List<Subjective> dummySubjectives = [
       'Uses a real-world example to illustrate the concept',
       'Shows an understanding of the relationship between supply, demand, and price',
     ],
+    subject: 'Economics',
+    difficulty: 'Easy',
   ),
   Subjective(
     id: 'sub_6',
@@ -78,6 +88,8 @@ final List<Subjective> dummySubjectives = [
       'Discusses major consequences such as urbanization and labor changes',
       'Provides examples or statistics to support the argument',
     ],
+    subject: 'History',
+    difficulty: 'Medium',
   ),
   Subjective(
     id: 'sub_7',
@@ -92,6 +104,8 @@ final List<Subjective> dummySubjectives = [
       'Mentions decolonization and its effects',
       'Provides examples or statistics to support the argument',
     ],
+    subject: 'History',
+    difficulty: 'Hard',
   ),
   Subjective(
     id: 'sub_8',
@@ -106,6 +120,8 @@ final List<Subjective> dummySubjectives = [
       'Mentions advancements in art, science, and literature',
       'Provides examples or statistics to support the argument',
     ],
+    subject: 'History',
+    difficulty: 'Medium',
   ),
   Subjective(
     id: 'sub_9',
@@ -119,6 +135,8 @@ final List<Subjective> dummySubjectives = [
       'Explains the importance of each principle',
       'Provides examples or statistics to support the argument',
     ],
+    subject: 'Political Science',
+    difficulty: 'Easy',
   ),
   Subjective(
     id: 'sub_10',
@@ -133,5 +151,7 @@ final List<Subjective> dummySubjectives = [
       'Explains the impact on modern democratic institutions',
       'Provides examples or statistics to support the argument',
     ],
+    subject: 'History',
+    difficulty: 'Hard',
   ),
 ];

@@ -14,6 +14,8 @@ final List<MSQ> dummyMSQs = [
       'Energy cannot be created or destroyed',
     ],
     answerIndices: [0, 1, 2],
+    subject: 'Physics',
+    difficulty: 'Medium',
   ),
   MSQ(
     id: 'msq_2',
@@ -28,6 +30,8 @@ final List<MSQ> dummyMSQs = [
       'Double replacement',
     ],
     answerIndices: [0, 1, 2, 3],
+    subject: 'Chemistry',
+    difficulty: 'Easy',
   ),
   MSQ(
     id: 'msq_3',
@@ -37,6 +41,8 @@ final List<MSQ> dummyMSQs = [
     points: 5,
     options: ['2x + 3', 'x^2 - 4', '3y + 2z', '5'],
     answerIndices: [0, 1, 2],
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   MSQ(
     id: 'msq_4',
@@ -46,6 +52,8 @@ final List<MSQ> dummyMSQs = [
     points: 4,
     options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'],
     answerIndices: [0, 1, 2, 3],
+    subject: 'Biology',
+    difficulty: 'Easy',
   ),
   MSQ(
     id: 'msq_5',
@@ -60,6 +68,8 @@ final List<MSQ> dummyMSQs = [
       'Hiroshima and Nagasaki bombings',
     ],
     answerIndices: [0, 1, 2, 3],
+    subject: 'History',
+    difficulty: 'Medium',
   ),
   MSQ(
     id: 'msq_6',
@@ -74,6 +84,8 @@ final List<MSQ> dummyMSQs = [
       'Weak nuclear force',
     ],
     answerIndices: [0, 1, 2, 3],
+    subject: 'Physics',
+    difficulty: 'Medium',
   ),
   MSQ(
     id: 'msq_7',
@@ -83,6 +95,8 @@ final List<MSQ> dummyMSQs = [
     points: 4,
     options: ['Solid', 'Liquid', 'Gas', 'Plasma'],
     answerIndices: [0, 1, 2, 3],
+    subject: 'Chemistry',
+    difficulty: 'Easy',
   ),
   MSQ(
     id: 'msq_8',
@@ -92,6 +106,8 @@ final List<MSQ> dummyMSQs = [
     points: 5,
     options: ['2', '3', '5', '9'],
     answerIndices: [0, 1, 2],
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   MSQ(
     id: 'msq_9',
@@ -101,6 +117,8 @@ final List<MSQ> dummyMSQs = [
     points: 5,
     options: ['Epithelial', 'Connective', 'Muscle', 'Nervous'],
     answerIndices: [0, 1, 2, 3],
+    subject: 'Biology',
+    difficulty: 'Medium',
   ),
   MSQ(
     id: 'msq_10',
@@ -115,5 +133,7 @@ final List<MSQ> dummyMSQs = [
       'Imperialism',
     ],
     answerIndices: [0, 1, 2, 3],
+    subject: 'History',
+    difficulty: 'Hard',
   ),
 ];

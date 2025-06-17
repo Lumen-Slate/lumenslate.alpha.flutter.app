@@ -6,6 +6,8 @@ class Subjective {
   int points;
   String? idealAnswer;
   List<String>? gradingCriteria;
+  String subject;
+  String difficulty;
 
   Subjective({
     required this.id,
@@ -15,6 +17,8 @@ class Subjective {
     required this.points,
     this.idealAnswer,
     this.gradingCriteria,
+    required this.subject,
+    required this.difficulty,
   });
 
   Map<String, dynamic> toJson() {
@@ -26,6 +30,8 @@ class Subjective {
       'points': points,
       'idealAnswer': idealAnswer,
       'gradingCriteria': gradingCriteria,
+      'subject': subject,
+      'difficulty': difficulty,
     };
   }
 
@@ -38,6 +44,8 @@ class Subjective {
       points: json['points'],
       idealAnswer: json['idealAnswer'],
       gradingCriteria: List<String>.from(json['gradingCriteria']),
+      subject: json['subject'] ?? '',
+      difficulty: json['difficulty'] ?? '',
     );
   }
 
@@ -49,6 +57,8 @@ class Subjective {
     int? points,
     String? idealAnswer,
     List<String>? gradingCriteria,
+    String? subject,
+    String? difficulty,
   }) {
     return Subjective(
       id: id ?? this.id,
@@ -58,6 +68,8 @@ class Subjective {
       points: points ?? this.points,
       idealAnswer: idealAnswer ?? this.idealAnswer,
       gradingCriteria: gradingCriteria ?? this.gradingCriteria,
+      subject: subject ?? this.subject,
+      difficulty: difficulty ?? this.difficulty,
     );
   }
 

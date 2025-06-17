@@ -9,6 +9,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['H2O', 'CO2', 'O2', 'H2'],
     answerIndex: 0,
+    subject: 'Chemistry',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_2',
@@ -18,6 +20,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['0', '7', '14', '10'],
     answerIndex: 1,
+    subject: 'Chemistry',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_3',
@@ -27,6 +31,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Law of Inertia', 'Law of Acceleration', 'Law of Action-Reaction', 'Law of Gravitation'],
     answerIndex: 0,
+    subject: 'Physics',
+    difficulty: 'Medium',
   ),
   MCQ(
     id: 'mcq_4',
@@ -36,6 +42,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Newton', 'Joule', 'Watt', 'Pascal'],
     answerIndex: 0,
+    subject: 'Physics',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_5',
@@ -45,6 +53,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['x = 1', 'x = 2', 'x = 3', 'x = 4'],
     answerIndex: 1,
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   // The rest of the MCQs remain unchanged
   MCQ(
@@ -55,6 +65,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Endoplasmic Reticulum'],
     answerIndex: 1,
+    subject: 'Biology',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_7',
@@ -64,6 +76,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Protein synthesis', 'Energy production', 'Regulating the movement of substances in and out of the cell', 'DNA replication'],
     answerIndex: 2,
+    subject: 'Biology',
+    difficulty: 'Medium',
   ),
   MCQ(
     id: 'mcq_8',
@@ -73,6 +87,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Winston Churchill', 'Neville Chamberlain', 'Clement Attlee', 'Anthony Eden'],
     answerIndex: 0,
+    subject: 'History',
+    difficulty: 'Medium',
   ),
   MCQ(
     id: 'mcq_9',
@@ -82,6 +98,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['The invasion of Poland', 'The attack on Pearl Harbor', 'The Battle of Britain', 'The signing of the Treaty of Versailles'],
     answerIndex: 0,
+    subject: 'History',
+    difficulty: 'Medium',
   ),
   MCQ(
     id: 'mcq_10',
@@ -91,6 +109,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Law of Inertia', 'Law of Acceleration', 'Law of Action-Reaction', 'Law of Gravitation'],
     answerIndex: 0,
+    subject: 'Physics',
+    difficulty: 'Medium',
   ),
   MCQ(
     id: 'mcq_11',
@@ -100,6 +120,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Newton', 'Joule', 'Watt', 'Pascal'],
     answerIndex: 0,
+    subject: 'Physics',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_12',
@@ -109,6 +131,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['x = 1', 'x = 2', 'x = 3', 'x = 4'],
     answerIndex: 1,
+    subject: 'Mathematics',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_13',
@@ -118,6 +142,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['x = 2', 'x = -2', 'x = ±2', 'x = 0'],
     answerIndex: 2,
+    subject: 'Mathematics',
+    difficulty: 'Medium',
   ),
   MCQ(
     id: 'mcq_14',
@@ -127,6 +153,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Protein synthesis', 'Energy production', 'DNA replication', 'Cell division'],
     answerIndex: 0,
+    subject: 'Biology',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_15',
@@ -136,6 +164,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['H2O', 'CO2', 'O2', 'H2'],
     answerIndex: 0,
+    subject: 'Chemistry',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_16',
@@ -145,6 +175,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['0', '7', '14', '10'],
     answerIndex: 1,
+    subject: 'Chemistry',
+    difficulty: 'Easy',
   ),
   MCQ(
     id: 'mcq_17',
@@ -154,6 +186,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Germany', 'Austria-Hungary', 'France', 'Russia'],
     answerIndex: 1,
+    subject: 'History',
+    difficulty: 'Medium',
   ),
   MCQ(
     id: 'mcq_18',
@@ -163,6 +197,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['Economic hardship', 'Political repression', 'Military defeat', 'All of the above'],
     answerIndex: 3,
+    subject: 'History',
+    difficulty: 'Hard',
   ),
   MCQ(
     id: 'mcq_19',
@@ -172,6 +208,8 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['It is impossible to know both the position and momentum of a particle simultaneously', 'Energy is quantized', 'Light behaves as both a particle and a wave', 'Electrons orbit the nucleus in fixed paths'],
     answerIndex: 0,
+    subject: 'Physics',
+    difficulty: 'Hard',
   ),
   MCQ(
     id: 'mcq_20',
@@ -181,5 +219,7 @@ final List<MCQ> dummyMCQs = [
     points: 5,
     options: ['3 x 10^8 m/s', '3 x 10^6 m/s', '3 x 10^4 m/s', '3 x 10^2 m/s'],
     answerIndex: 0,
+    subject: 'Physics',
+    difficulty: 'Easy',
   ),
 ];
