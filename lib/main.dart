@@ -78,7 +78,7 @@ class LumenSlate extends StatelessWidget {
           BlocProvider(create: (context) => ChatAgentBloc(repository: RepositoryProvider.of<AgentRepository>(context))),
           BlocProvider(
             create: (context) =>
-                ClassroomBloc(classroomRepository: RepositoryProvider.of<ClassroomRepository>(context)),
+                ClassroomBloc(repository: RepositoryProvider.of<ClassroomRepository>(context)),
           ),
           BlocProvider(
             create: (context) => AssignmentBloc(repository: RepositoryProvider.of<AssignmentRepository>(context)),

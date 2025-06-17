@@ -29,11 +29,13 @@ class AssignmentRepository {
     required String teacherId,
     int limit = 10,
     int offset = 0,
+    bool extended = false,
   }) async {
     try {
       Map<String, dynamic> queryParams = {
         'limit': limit.toString(),
-        'offset': offset.toString()
+        'offset': offset.toString(),
+        'extended': extended.toString(),
       };
       return await _client.get('/assignments/', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
@@ -46,9 +48,9 @@ class AssignmentRepository {
     }
   }
 
-  Future<Response> getAssignment(String id) async {
+  Future<Response> getAssignment({required String id, bool extended = false}) async {
     try {
-      return await _client.get('/assignments/$id');
+      return await _client.get('/assignments/$id', queryParameters: {'extended': extended.toString()});
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error fetching Assignment: Status code ${dioError.response?.statusCode}',

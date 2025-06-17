@@ -4,11 +4,7 @@ import '../constants/app_constants.dart';
 import '../models/classroom.dart';
 
 class ClassroomRepository {
-  final Dio _client = Dio(
-    BaseOptions(
-      baseUrl: AppConstants.backendDomain,
-    ),
-  );
+  final Dio _client = Dio(BaseOptions(baseUrl: AppConstants.backendDomain));
 
   final Logger _logger = Logger();
 
@@ -29,14 +25,11 @@ class ClassroomRepository {
     required String teacherId,
     int limit = 10,
     int offset = 0,
+    bool extended = false,
   }) async {
     try {
-      Map<String, dynamic> queryParams = {
-        'limit': limit.toString(),
-        'offset': offset.toString(),
-        'teacherId': teacherId,
-      };
-      return await _client.get('/classrooms');
+      Map<String, dynamic> queryParams = {'extended': extended.toString()};
+      return await _client.get('/classrooms', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error fetching Classrooms: Status code ${dioError.response?.statusCode}',
@@ -47,9 +40,9 @@ class ClassroomRepository {
     }
   }
 
-  Future<Response> getClassroom(String id) async {
+  Future<Response> getClassroom({required String id, bool extended = false}) async {
     try {
-      return await _client.get('/classrooms/$id');
+      return await _client.get('/classrooms/$id', queryParameters: {'extended': extended.toString()});
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error fetching Classroom: Status code ${dioError.response?.statusCode}',
