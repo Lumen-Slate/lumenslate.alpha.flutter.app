@@ -3,22 +3,32 @@ part of 'classroom_bloc.dart';
 @immutable
 sealed class ClassroomEvent {}
 
-class LoadClassrooms extends ClassroomEvent {
+final class FetchNextClassroomPage extends ClassroomEvent {
   final String teacherId;
-  final int limit;
-  final int offset;
+  final int pageSize;
   final bool extended;
 
-  LoadClassrooms({
+  FetchNextClassroomPage({
     required this.teacherId,
-    this.limit = 10,
-    this.offset = 0,
+    this.pageSize = 10,
     this.extended = false,
   });
 }
 
-class RefreshClassrooms extends ClassroomEvent {
-  final String teacherId;
+class InitializeClassroomPaging extends ClassroomEvent {
+  final bool extended;
 
-  RefreshClassrooms({required this.teacherId});
+  InitializeClassroomPaging({
+    this.extended = false,
+  });
+}
+
+class FetchClassroomById extends ClassroomEvent {
+  final String id;
+  final bool extended;
+
+  FetchClassroomById({
+    required this.id,
+    this.extended = false,
+  });
 }

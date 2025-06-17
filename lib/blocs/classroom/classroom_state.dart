@@ -1,30 +1,41 @@
 part of 'classroom_bloc.dart';
 
 @immutable
-sealed class ClassroomState {}
+abstract class ClassroomState {}
 
-final class ClassroomInitial extends ClassroomState {}
+class ClassroomInitial extends ClassroomState {}
 
-class ClassroomLoading extends ClassroomState {}
+class ClassroomOriginalSuccess extends ClassroomState {
+  final PagingState<int, Classroom> pagingState;
 
-class ClassroomLoadSuccess extends ClassroomState {
-  final List<Classroom> classrooms;
-
-  ClassroomLoadSuccess({
-    required this.classrooms,
-  });
+  ClassroomOriginalSuccess(this.pagingState);
 }
 
-class ClassroomLoadExtendedSuccess extends ClassroomState {
-  final List<ClassroomExtended> classrooms;
+class ClassroomExtendedSuccess extends ClassroomState {
+  final PagingState<int, ClassroomExtended> pagingState;
 
-  ClassroomLoadExtendedSuccess({
-    required this.classrooms
-  });
+  ClassroomExtendedSuccess(this.pagingState);
 }
 
-class ClassroomLoadFailure extends ClassroomState {
-  final String error;
+class ClassroomFailure extends ClassroomState {
+  final Object error;
+  ClassroomFailure(this.error);
+}
 
-  ClassroomLoadFailure(this.error);
+// States for fetching a single classroom
+class ClassroomSingleLoading extends ClassroomState {}
+
+class ClassroomSingleOriginalSuccess extends ClassroomState {
+  final Classroom classroom;
+  ClassroomSingleOriginalSuccess(this.classroom);
+}
+
+class ClassroomSingleExtendedSuccess extends ClassroomState {
+  final ClassroomExtended classroom;
+  ClassroomSingleExtendedSuccess(this.classroom);
+}
+
+class ClassroomSingleFailure extends ClassroomState {
+  final Object error;
+  ClassroomSingleFailure(this.error);
 }
