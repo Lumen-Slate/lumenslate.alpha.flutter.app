@@ -1,6 +1,8 @@
 import 'package:lumen_slate/repositories/ai/agent_repository.dart';
+import 'package:lumen_slate/repositories/classroom_repository.dart';
 import 'package:lumen_slate/repositories/question_bank_repository.dart';
 import 'blocs/chat_agent/chat_agent_bloc.dart';
+import 'blocs/classroom/classroom_bloc.dart';
 import 'blocs/question_bank/question_bank_bloc.dart';
 import 'lib.dart';
 
@@ -29,6 +31,8 @@ class LumenSlate extends StatelessWidget {
         RepositoryProvider(create: (context) => SubjectiveRepository()),
         RepositoryProvider(create: (context) => TeacherRepository()),
         RepositoryProvider(create: (context) => QuestionBankRepository()),
+        RepositoryProvider(create: (context) => AgentRepository()),
+        RepositoryProvider(create: (context) => ClassroomRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -68,8 +72,10 @@ class LumenSlate extends StatelessWidget {
           BlocProvider(
             create: (context) => QuestionBankBloc(repository: RepositoryProvider.of<QuestionBankRepository>(context)),
           ),
+          BlocProvider(create: (context) => ChatAgentBloc(repository: RepositoryProvider.of<AgentRepository>(context))),
           BlocProvider(
-            create: (context) => ChatAgentBloc(repository: AgentRepository())
+            create: (context) =>
+                ClassroomBloc(classroomRepository: RepositoryProvider.of<ClassroomRepository>(context)),
           ),
         ],
         child: MaterialApp.router(
