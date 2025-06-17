@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../models/assignments.dart';
@@ -6,7 +7,7 @@ import '../each_assignment.dart';
 import '../../../services/assignment_export_service.dart';
 
 class AssignmentTile extends StatelessWidget {
-  final Assignments assignment;
+  final Assignment assignment;
 
   const AssignmentTile({super.key, required this.assignment});
 
@@ -163,7 +164,7 @@ class AssignmentTile extends StatelessWidget {
         await AssignmentExportService.exportAssignmentCSV(assignment);
       }
       
-      Navigator.of(context).pop(); // Close loading dialog
+      context.pop(); // Close loading dialog
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
