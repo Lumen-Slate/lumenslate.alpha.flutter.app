@@ -1,4 +1,6 @@
+import 'package:lumen_slate/repositories/ai/agent_repository.dart';
 import 'package:lumen_slate/repositories/question_bank_repository.dart';
+import 'blocs/chat_agent/chat_agent_bloc.dart';
 import 'blocs/question_bank/question_bank_bloc.dart';
 import 'lib.dart';
 
@@ -65,6 +67,9 @@ class LumenSlate extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => QuestionBankBloc(repository: RepositoryProvider.of<QuestionBankRepository>(context)),
+          ),
+          BlocProvider(
+            create: (context) => ChatAgentBloc(repository: AgentRepository())
           ),
         ],
         child: MaterialApp.router(

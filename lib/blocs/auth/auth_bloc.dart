@@ -29,8 +29,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           return;
         }
 
-        Logger().i('Google SignIn Response: $response');
-
         final checkTeacherResponse = await teacherRepository.getAllTeachers({
           "email": response['email'],
           "limit": "10",
@@ -47,7 +45,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             );
             if (createTeacherResponse.statusCode! >= 200) {
               teacher = Teacher.fromJson(createTeacherResponse.data);
-              _logger.i('Teacher created successfully');
             } else {
               _logger.e('Failed to create teacher: ${createTeacherResponse.data}');
             }
@@ -58,9 +55,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           teacher = Teacher.fromJson(checkTeacherResponse.data[0]);
         }
 
-        if (teacher != null) {
-          _logger.i('Teacher fetched successfully: ${teacher.toJson()}');
-        } else {
+        if (teacher == null) {
           throw Exception('Failed to fetch teacher');
         }
 
@@ -106,9 +101,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           teacher = Teacher.fromJson(checkTeacherResponse.data[0]);
         }
 
-        if (teacher != null) {
-          _logger.i('Teacher fetched successfully: ${teacher.toJson()}');
-        } else {
+        if (teacher == null) {
           throw Exception('Failed to fetch teacher');
         }
 

@@ -8,7 +8,7 @@ import '../../models/questions/msq.dart';
 class VariationRepository {
   final Dio _client = Dio(
     BaseOptions(
-      baseUrl: AppConstants.microserviceDomain,
+      baseUrl: AppConstants.backendDomain,
     ),
   );
 
@@ -17,7 +17,7 @@ class VariationRepository {
   Future<Response> generateMCQVariations(MCQ mcq) async {
     try {
       return await _client.post(
-        '/generate-mcq-variations',
+        '/ai/generate-mcq-variations',
         data: {
           'question': mcq.question,
           'options': mcq.options,

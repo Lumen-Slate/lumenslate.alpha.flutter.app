@@ -6,7 +6,7 @@ import '../../constants/app_constants.dart';
 class QuestionSegmentationRepository {
   final Dio _client = Dio(
     BaseOptions(
-      baseUrl: AppConstants.microserviceDomain,
+      baseUrl: AppConstants.backendDomain,
     ),
   );
 
@@ -21,7 +21,7 @@ class QuestionSegmentationRepository {
   Future<Response> segmentQuestion(String question) async {
     try {
       return await _client.post(
-        '/segment-question',
+        '/ai/segment-question',
         data: {
           'question': question,
         },
