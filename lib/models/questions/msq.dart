@@ -23,8 +23,8 @@ class MSQ {
     this.createdAt,
     this.updatedAt,
     this.isActive,
-    this.subject = '',
-    this.difficulty = '',
+    required this.subject,
+    required this.difficulty,
   });
 
   Map<String, dynamic> toJson({bool forCreation = false}) {

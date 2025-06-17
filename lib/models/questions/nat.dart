@@ -15,8 +15,8 @@ class NAT {
     required this.variableIds,
     required this.points,
     required this.answer,
-    this.subject = '',
-    this.difficulty = '',
+    required this.subject,
+    required this.difficulty,
   });
 
   Map<String, dynamic> toJson() {

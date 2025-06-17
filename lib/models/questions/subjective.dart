@@ -17,8 +17,8 @@ class Subjective {
     required this.points,
     this.idealAnswer,
     this.gradingCriteria,
-    this.subject = '',
-    this.difficulty = '',
+    required this.subject,
+    required this.difficulty,
   });
 
   Map<String, dynamic> toJson() {
