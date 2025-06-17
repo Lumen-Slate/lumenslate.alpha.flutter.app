@@ -2,8 +2,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:lumen_slate/pages/classrooms_page/desktop/widget/classroom_tile.dart';
 import '../../../blocs/classroom/classroom_bloc.dart';
+import '../../../models/classroom.dart';
 
 class ClassroomsPageDesktop extends StatefulWidget {
   const ClassroomsPageDesktop({super.key});
@@ -13,39 +15,8 @@ class ClassroomsPageDesktop extends StatefulWidget {
 }
 
 class _ClassroomsPageDesktopState extends State<ClassroomsPageDesktop> {
-  final _scrollController = ScrollController();
-  final int _limit = 10;
-  final int _offset = 0;
-  late String _teacherId;
-
-  @override
-  void initState() {
-    super.initState();
-    _teacherId = "teacherId1";
-    context.read<ClassroomBloc>().add(
-          LoadClassrooms(
-            teacherId: _teacherId,
-            limit: _limit,
-            offset: _offset,
-          ),
-        );
-  }
-
-  void _fetchClassrooms() {
-    context.read<ClassroomBloc>().add(
-          LoadClassrooms(
-            teacherId: _teacherId,
-            limit: _limit,
-            offset: _offset,
-          ),
-        );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+  final int _pageSize = 10;
+  final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
 
   int _getCrossAxisCount(double screenWidth) {
     if (screenWidth >= 1200) {
@@ -54,6 +25,12 @@ class _ClassroomsPageDesktopState extends State<ClassroomsPageDesktop> {
       return 2;
     }
     return 1;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ClassroomBloc>().add(InitializeClassroomPaging(extended: false));
   }
 
   @override
@@ -81,36 +58,47 @@ class _ClassroomsPageDesktopState extends State<ClassroomsPageDesktop> {
                 Expanded(
                   child: Builder(
                     builder: (_) {
-                      if (state is ClassroomLoading || state is ClassroomInitial) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state is ClassroomLoadFailure) {
-                        return Center(child: Text(state.error));
-                      } else if (state is ClassroomLoadSuccess) {
-                        if (state.classrooms.isEmpty) {
-                          return const Center(child: Text("No classrooms found."));
-                        }
-                        return GridView.builder(
-                          controller: _scrollController,
-                          itemCount:  state.classrooms.length,
+                      if (state is ClassroomOriginalSuccess) {
+                        return PagedGridView<int, Classroom>(
+                          showNewPageProgressIndicatorAsGridChild: false,
+                          showNewPageErrorIndicatorAsGridChild: false,
+                          showNoMoreItemsIndicatorAsGridChild: false,
+                          state: state.pagingState,
+                          fetchNextPage: () {
+                            context.read<ClassroomBloc>().add(
+                              FetchNextClassroomPage(
+                                teacherId: _teacherId,
+                                pageSize: _pageSize,
+                                extended: false,
+                              ),
+                            );
+                          },
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: _getCrossAxisCount(screenWidth),
                             mainAxisSpacing: 20,
                             crossAxisSpacing: 20,
                             childAspectRatio: 2.0,
                           ),
-                          itemBuilder: (context, index) {
-                            if (index >= state.classrooms.length) {
-                              return const Center(child: CircularProgressIndicator());
-                            }
-                            final classroom = state.classrooms[index];
-                            return ClassroomTile(
-                              classroom: classroom,
+                          builderDelegate: PagedChildBuilderDelegate<Classroom>(
+                            itemBuilder: (context, item, index) => ClassroomTile(
+                              classroom: item,
                               teacherNames: const [],
                               classroomAssignments: const [],
                               index: index,
-                            );
-                          },
+                            ),
+                            noItemsFoundIndicatorBuilder: (context) =>
+                                const Center(child: Text("No classrooms found.")),
+                            firstPageErrorIndicatorBuilder: (context) =>
+                                const Center(child: Text("Error loading classrooms")),
+                          ),
                         );
+                      }
+                      // ...existing code for loading, error, etc...
+                      if (state is ClassroomFailure) {
+                        return Center(child: Text('Error loading classrooms'));
+                      }
+                      if (state is ClassroomInitial) {
+                        return const Center(child: CircularProgressIndicator());
                       }
                       return const SizedBox.shrink();
                     },
