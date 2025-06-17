@@ -14,6 +14,9 @@ class RagAgentPageDesktop extends StatefulWidget {
   /// TODO: Replace with actual teacher ID
   final String teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
 
+  /// TODO : Hardcoded data
+  final String corpusName = 'my_test_corpus';
+
   const RagAgentPageDesktop({super.key});
 
   @override
@@ -24,13 +27,11 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
   final TextEditingController _textController = TextEditingController();
   String? _selectedFileUrl;
   String? _selectedFileName;
-  /// TODO : Hardcoded data
-  String corpusName = 'my_test_corpus';
 
   @override
   void initState() {
     context.read<RagAgentBloc>().add(FetchRagAgentChatHistory(teacherId: widget.teacherId, pageSize: 20));
-    context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: corpusName));
+    context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: widget.corpusName));
     super.initState();
   }
 
@@ -61,7 +62,10 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Enter Google Drive PDF File URL', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Enter Google Drive PDF File URL',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: urlController,
@@ -81,18 +85,15 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
-                  ),
+                  TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
                   const SizedBox(width: 8),
                   TextButton(
                     onPressed: () {
                       final url = urlController.text.trim();
                       if (url.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter a valid PDF file URL.')),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(const SnackBar(content: Text('Please enter a valid PDF file URL.')));
                         return;
                       }
                       setState(() {
@@ -114,12 +115,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
 
   void _addDocumentToCorpus() {
     if (_selectedFileUrl != null && _selectedFileName != null) {
-      context.read<RagDocumentBloc>().add(
-        AddCorpusDocument(
-          corpusName: corpusName,
-          fileLink: _selectedFileUrl!,
-        ),
-      );
+      context.read<RagDocumentBloc>().add(AddCorpusDocument(corpusName: widget.corpusName, fileLink: _selectedFileUrl!));
       setState(() {
         _selectedFileUrl = null;
         _selectedFileName = null;
@@ -177,7 +173,12 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                       },
                                       builderDelegate: PagedChildBuilderDelegate(
                                         itemBuilder: (context, item, index) => RagMessageTile(message: item),
-                                        noItemsFoundIndicatorBuilder: (context) => Center(child: Text('No messages')),
+                                        noItemsFoundIndicatorBuilder: (context) => Center(
+                                          child: Text(
+                                            'Start Your Chat',
+                                            style: GoogleFonts.poppins(fontSize: 38, color: Colors.grey[500]),
+                                          ),
+                                        ),
                                         firstPageErrorIndicatorBuilder: (context) =>
                                             Center(child: Text('Error loading messages')),
                                       ),
@@ -235,7 +236,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                         borderRadius: BorderRadius.circular(30),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey.withValues(alpha: 0.9),
+                                            color: Colors.grey.withValues(alpha: 0.4),
                                             blurRadius: 10,
                                             offset: const Offset(0, 4),
                                           ),
@@ -264,7 +265,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                       backgroundColor: Colors.blue[100],
                                       shape: const CircleBorder(),
                                     ),
-                                    icon: const Icon(Icons.attach_file),
+                                    icon: const Icon(Icons.attach_file, color: Colors.blue),
                                     tooltip: 'Attach PDF URL',
                                     onPressed: _showFileUrlDialog,
                                   ),
@@ -274,7 +275,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                       backgroundColor: Colors.green[100],
                                       shape: const CircleBorder(),
                                     ),
-                                    icon: const Icon(Icons.send),
+                                    icon: const Icon(Icons.send, color: Colors.green),
                                     onPressed: () => _sendMessage(context),
                                   ),
                                 ],
@@ -312,17 +313,21 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                   listener: (context, state) {
                                     if (state is RagAddCorpusDocumentSuccess) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Document added successfully! Please refresh documents to see it.')),
+                                        const SnackBar(
+                                          content: Text(
+                                            'Document added successfully! Please refresh documents to see it.',
+                                          ),
+                                        ),
                                       );
                                     } else if (state is RagDeleteCorpusDocumentSuccess) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Document deleted successfully!')),
-                                      );
-                                     context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: corpusName));
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(const SnackBar(content: Text('Document deleted successfully!')));
+                                      context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: widget.corpusName));
                                     } else if (state is RagDocumentFailure) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Error: ${state.message}')),
-                                      );
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(SnackBar(content: Text('Error: ${state.message}')));
                                     }
                                   },
                                   builder: (context, state) {
@@ -338,43 +343,77 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                         separatorBuilder: (_, __) => const Divider(),
                                         itemBuilder: (context, idx) {
                                           final doc = docs[idx];
-                                          return ListTile(
-                                            leading: const Icon(Icons.insert_drive_file),
-                                            title: Text(doc.displayName),
-                                            subtitle: Text(
-                                              'Uploaded: ${DateTime.parse(doc.createTime).toLocal().toString()}',
-                                              style: const TextStyle(fontSize: 12),
+                                          return Container(
+                                            padding: const EdgeInsets.all(12.0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(12),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withValues(alpha: 0.2),
+                                                  blurRadius: 5,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
                                             ),
-                                            trailing: IconButton(
-                                              icon: const Icon(Icons.delete, color: Colors.red),
-                                              tooltip: 'Delete Document',
-                                              onPressed: () async {
-                                                final confirm = await showDialog<bool>(
-                                                  context: context,
-                                                  builder: (context) => AlertDialog(
-                                                    title: const Text('Delete Document'),
-                                                    content: Text('Are you sure you want to delete "${doc.displayName}"?'),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () => Navigator.of(context).pop(false),
-                                                        child: const Text('Cancel'),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () => Navigator.of(context).pop(true),
-                                                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                            child: Row(
+                                              children: [
+                                                const Icon(Icons.insert_drive_file, color: Colors.blue),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(doc.displayName, style: const TextStyle(fontSize: 16)),
+                                                      Text(
+                                                        'Uploaded: ${DateTime.parse(doc.createTime).toLocal().toString()}',
+                                                        style: const TextStyle(fontSize: 12, color: Colors.grey),
                                                       ),
                                                     ],
                                                   ),
-                                                );
-                                                if (confirm == true) {
-                                                  context.read<RagDocumentBloc>().add(
-                                                    DeleteCorpusDocument(
-                                                      corpusName: corpusName,
-                                                      fileDisplayName: doc.displayName,
-                                                    ),
-                                                  );
-                                                }
-                                              },
+                                                ),
+                                                IconButton(
+                                                  padding: const EdgeInsets.all(14.0),
+                                                  style: IconButton.styleFrom(
+                                                    backgroundColor: Colors.red[100],
+                                                    shape: const CircleBorder(),
+                                                  ),
+                                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                                  tooltip: 'Delete Document',
+                                                  onPressed: () async {
+                                                    final confirm = await showDialog<bool>(
+                                                      context: context,
+                                                      builder: (context) => AlertDialog(
+                                                        title: const Text('Delete Document'),
+                                                        content: Text(
+                                                          'Are you sure you want to delete "${doc.displayName}"?',
+                                                        ),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () => Navigator.of(context).pop(false),
+                                                            child: const Text('Cancel'),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () => Navigator.of(context).pop(true),
+                                                            child: const Text(
+                                                              'Delete',
+                                                              style: TextStyle(color: Colors.red),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                    if (confirm == true) {
+                                                      context.read<RagDocumentBloc>().add(
+                                                        DeleteCorpusDocument(
+                                                          corpusName: widget.corpusName,
+                                                          fileDisplayName: doc.displayName,
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              ],
                                             ),
                                           );
                                         },
@@ -388,12 +427,27 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                               // Add button to refresh the document list
                               Padding(
                                 padding: const EdgeInsets.only(top: 12.0),
-                                child: ElevatedButton.icon(
-                                  icon: const Icon(Icons.refresh),
-                                  label: const Text('Refresh Documents'),
+                                child: FilledButton.tonal(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: Colors.blue[100],
+                                    foregroundColor: Colors.black,
+                                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                  ),
                                   onPressed: () {
-                                    context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: corpusName));
+                                    context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: widget.corpusName));
                                   },
+                                  child: Row(
+                                    spacing: 10,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.refresh, color: Colors.blue),
+                                      Text(
+                                        'Refresh Documents',
+                                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],

@@ -21,14 +21,16 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
   void initState() {
     super.initState();
     questionController = TextEditingController(text: widget.mcq.question);
-    pointsController = TextEditingController(text: widget.mcq.points.toString());
+    pointsController = TextEditingController(
+      text: widget.mcq.points.toString(),
+    );
     selectedAnswerIndex = widget.mcq.answerIndex;
-    
+
     // Initialize option controllers
     optionControllers = widget.mcq.options
         .map((option) => TextEditingController(text: option))
         .toList();
-    
+
     // Ensure we have at least 2 options
     while (optionControllers.length < 2) {
       optionControllers.add(TextEditingController());
@@ -56,7 +58,7 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
       setState(() {
         optionControllers[index].dispose();
         optionControllers.removeAt(index);
-        
+
         // Adjust answer index if necessary
         if (selectedAnswerIndex == index) {
           selectedAnswerIndex = 0;
@@ -125,7 +127,7 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // Form content
             Expanded(
               child: SingleChildScrollView(
@@ -152,7 +154,7 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Points field
                     Row(
                       children: [
@@ -190,7 +192,7 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Options
                     Text(
                       'Options (Select the correct answer)',
@@ -203,7 +205,7 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
                     ...optionControllers.asMap().entries.map((entry) {
                       int index = entry.key;
                       TextEditingController controller = entry.value;
-                      
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
@@ -223,18 +225,20 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
                               width: 30,
                               height: 30,
                               decoration: BoxDecoration(
-                                color: selectedAnswerIndex == index 
-                                    ? Colors.green[100] 
+                                color: selectedAnswerIndex == index
+                                    ? Colors.green[100]
                                     : Colors.grey[200],
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Center(
                                 child: Text(
-                                  String.fromCharCode(65 + index), // A, B, C, D...
+                                  String.fromCharCode(
+                                    65 + index,
+                                  ), // A, B, C, D...
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
-                                    color: selectedAnswerIndex == index 
-                                        ? Colors.green[800] 
+                                    color: selectedAnswerIndex == index
+                                        ? Colors.green[800]
                                         : Colors.grey[600],
                                   ),
                                 ),
@@ -246,7 +250,8 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
                               child: TextField(
                                 controller: controller,
                                 decoration: InputDecoration(
-                                  hintText: 'Option ${String.fromCharCode(65 + index)}',
+                                  hintText:
+                                      'Option ${String.fromCharCode(65 + index)}',
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -257,17 +262,20 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
                             if (optionControllers.length > 2)
                               IconButton(
                                 onPressed: () => _removeOption(index),
-                                icon: const Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
                               ),
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
             ),
-            
+
             // Action buttons
             const SizedBox(height: 20),
             Row(
@@ -291,4 +299,4 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
       ),
     );
   }
-} 
+}

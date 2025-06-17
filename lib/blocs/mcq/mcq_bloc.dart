@@ -6,6 +6,7 @@ import '../../../../models/questions/mcq.dart';
 import '../../../../repositories/mcq_repository.dart';
 
 part 'mcq_event.dart';
+
 part 'mcq_state.dart';
 
 class MCQBloc extends Bloc<MCQEvent, MCQState> {
@@ -21,9 +22,7 @@ class MCQBloc extends Bloc<MCQEvent, MCQState> {
           throw StateError(response.data['error'] ?? 'Failed to fetch MCQs.');
         }
 
-        final mcqs = (response.data as List)
-            .map((item) => MCQ.fromJson(item as Map<String, dynamic>))
-            .toList();
+        final mcqs = (response.data as List).map((item) => MCQ.fromJson(item as Map<String, dynamic>)).toList();
 
         emit(MCQLoaded(mcqs));
       } catch (e) {
@@ -39,7 +38,7 @@ class MCQBloc extends Bloc<MCQEvent, MCQState> {
           throw StateError(response.data['error'] ?? 'Failed to create MCQ.');
         }
 
-        add(FetchMCQs(event.mcq.bankId)); // Reload MCQs
+        add(FetchMCQs(event.mcq.bankId));
       } catch (e) {
         emit(MCQError(e.toString()));
       }
@@ -84,9 +83,7 @@ class MCQBloc extends Bloc<MCQEvent, MCQState> {
 
         Logger().i('Bulk MCQs saved successfully');
 
-        final mcqs = (response.data as List)
-            .map((item) => MCQ.fromJson(item as Map<String, dynamic>))
-            .toList();
+        final mcqs = (response.data as List).map((item) => MCQ.fromJson(item as Map<String, dynamic>)).toList();
 
         emit(MCQLoaded(mcqs));
       } catch (e) {
