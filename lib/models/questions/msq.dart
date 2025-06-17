@@ -9,6 +9,8 @@ class MSQ {
   DateTime? createdAt;
   DateTime? updatedAt;
   bool? isActive;
+  String subject;
+  String difficulty;
 
   MSQ({
     required this.id,
@@ -21,6 +23,8 @@ class MSQ {
     this.createdAt,
     this.updatedAt,
     this.isActive,
+    this.subject = '',
+    this.difficulty = '',
   });
 
   Map<String, dynamic> toJson({bool forCreation = false}) {
@@ -31,6 +35,8 @@ class MSQ {
       'points': points,
       'options': options,
       'answerIndices': answerIndices,
+      'subject': subject,
+      'difficulty': difficulty,
     };
     
     // Only include id if not for creation (backend generates its own IDs)
@@ -53,6 +59,8 @@ class MSQ {
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
       isActive: json['isActive'],
+      subject: json['subject'] ?? '',
+      difficulty: json['difficulty'] ?? '',
     );
   }
 
@@ -67,6 +75,8 @@ class MSQ {
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isActive,
+    String? subject,
+    String? difficulty,
   }) {
     return MSQ(
       id: id ?? this.id,
@@ -79,6 +89,8 @@ class MSQ {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isActive: isActive ?? this.isActive,
+      subject: subject ?? this.subject,
+      difficulty: difficulty ?? this.difficulty,
     );
   }
 }
