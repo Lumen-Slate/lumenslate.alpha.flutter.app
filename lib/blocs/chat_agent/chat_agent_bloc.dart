@@ -16,8 +16,8 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
   ChatAgentBloc({required this.repository}) : super(ChatAgentInitial()) {
     on<CallAgent>((event, emit) async {
       PagingState<int, AgentResponse> pagingState;
-      if (state is ChatAgentSuccess) {
-        pagingState = (state as ChatAgentSuccess).state;
+      if (state is ChatAgentStateUpdate) {
+        pagingState = (state as ChatAgentStateUpdate).state;
       } else {
         pagingState = PagingState<int, AgentResponse>();
       }
@@ -44,7 +44,7 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
         updatedPages.add([userMessage]);
       }
 
-      emit(ChatAgentSuccess(pagingState.copyWith(pages: updatedPages, isLoading: true, error: null)));
+      emit(ChatAgentStateUpdate(pagingState.copyWith(pages: updatedPages, isLoading: true, error: null)));
 
       try {
         final response = await repository.callAgent(
@@ -67,7 +67,7 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
             replyPages.add([agentMessage]);
           }
 
-          emit(ChatAgentSuccess(pagingState.copyWith(pages: replyPages, isLoading: false)));
+          emit(ChatAgentStateUpdate(pagingState.copyWith(pages: replyPages, isLoading: false)));
         } else {
           emit(ChatAgentFailure('Failed to get agent response'));
         }
@@ -78,15 +78,15 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
 
     on<FetchAgentChatHistory>((event, emit) async {
       PagingState<int, AgentResponse> pagingState;
-      if (state is ChatAgentSuccess) {
-        pagingState = (state as ChatAgentSuccess).state;
+      if (state is ChatAgentStateUpdate) {
+        pagingState = (state as ChatAgentStateUpdate).state;
       } else {
         pagingState = PagingState<int, AgentResponse>();
       }
 
       if (pagingState.isLoading || !pagingState.hasNextPage) return;
 
-      emit(ChatAgentSuccess(pagingState.copyWith(isLoading: true, error: null)));
+      emit(ChatAgentStateUpdate(pagingState.copyWith(isLoading: true, error: null)));
 
       try {
         final int nextOffset = (pagingState.keys?.last ?? 0) + (pagingState.pages?.lastOrNull?.length ?? 0);
@@ -106,7 +106,7 @@ class ChatAgentBloc extends Bloc<ChatAgentEvent, ChatAgentState> {
             hasNextPage: !isLastPage,
             isLoading: false,
           );
-          emit(ChatAgentSuccess(newPagingState));
+          emit(ChatAgentStateUpdate(newPagingState));
         } else {
           emit(ChatAgentFailure('Failed to fetch chat history'));
         }

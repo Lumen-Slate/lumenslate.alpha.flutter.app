@@ -115,7 +115,9 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
 
   void _addDocumentToCorpus() {
     if (_selectedFileUrl != null && _selectedFileName != null) {
-      context.read<RagDocumentBloc>().add(AddCorpusDocument(corpusName: widget.corpusName, fileLink: _selectedFileUrl!));
+      context.read<RagDocumentBloc>().add(
+        AddCorpusDocument(corpusName: widget.corpusName, fileLink: _selectedFileUrl!),
+      );
       setState(() {
         _selectedFileUrl = null;
         _selectedFileName = null;
@@ -162,7 +164,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                               height: 580,
                               child: BlocBuilder<RagAgentBloc, RagAgentState>(
                                 builder: (context, state) {
-                                  if (state is RagAgentSuccess) {
+                                  if (state is RagAgentStateUpdate) {
                                     return PagedListView<int, RagAgentResponse>(
                                       state: state.state,
                                       reverse: true,
@@ -269,14 +271,31 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                     tooltip: 'Attach PDF URL',
                                     onPressed: _showFileUrlDialog,
                                   ),
-                                  IconButton(
-                                    padding: const EdgeInsets.all(20.0),
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.green[100],
-                                      shape: const CircleBorder(),
-                                    ),
-                                    icon: const Icon(Icons.send, color: Colors.green),
-                                    onPressed: () => _sendMessage(context),
+                                  BlocBuilder<RagAgentBloc, RagAgentState>(
+                                    builder: (context, state) {
+                                      return IconButton(
+                                        padding: const EdgeInsets.all(20.0),
+                                        style: IconButton.styleFrom(
+                                          backgroundColor: Colors.green[100],
+                                          shape: CircleBorder(),
+                                        ),
+                                        icon: (state is RagAgentStateUpdate && state.state.isLoading)
+                                            ? Center(
+                                                child: SizedBox(
+                                                  width: 24,
+                                                  height: 24,
+                                                  child: CircularProgressIndicator(
+                                                    color: Colors.green,
+                                                    strokeWidth: 1.7,
+                                                  ),
+                                                ),
+                                              )
+                                            : const Icon(Icons.send, color: Colors.green),
+                                        onPressed: (state is! RagAgentStateUpdate || (state.state.isLoading))
+                                            ? () {}
+                                            : () => _sendMessage(context),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
@@ -323,7 +342,9 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(const SnackBar(content: Text('Document deleted successfully!')));
-                                      context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: widget.corpusName));
+                                      context.read<RagDocumentBloc>().add(
+                                        ListCorpusContent(corpusName: widget.corpusName),
+                                      );
                                     } else if (state is RagDocumentFailure) {
                                       ScaffoldMessenger.of(
                                         context,
@@ -435,7 +456,9 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                                   ),
                                   onPressed: () {
-                                    context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: widget.corpusName));
+                                    context.read<RagDocumentBloc>().add(
+                                      ListCorpusContent(corpusName: widget.corpusName),
+                                    );
                                   },
                                   child: Row(
                                     spacing: 10,

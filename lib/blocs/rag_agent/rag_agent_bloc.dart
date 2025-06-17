@@ -15,8 +15,8 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
   RagAgentBloc({required this.repository}) : super(RagAgentInitial()) {
     on<CallRagAgent>((event, emit) async {
       PagingState<int, RagAgentResponse> pagingState;
-      if (state is RagAgentSuccess) {
-        pagingState = (state as RagAgentSuccess).state;
+      if (state is RagAgentStateUpdate) {
+        pagingState = (state as RagAgentStateUpdate).state;
       } else {
         pagingState = PagingState<int, RagAgentResponse>();
       }
@@ -47,7 +47,7 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
       }
 
       emit(
-        RagAgentSuccess(
+        RagAgentStateUpdate(
           pagingState.copyWith(
             pages: updatedPages,
             isLoading: true,
@@ -87,7 +87,7 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
           }
 
           emit(
-            RagAgentSuccess(
+            RagAgentStateUpdate(
               pagingState.copyWith(pages: replyPages, isLoading: false),
             ),
           );
@@ -101,15 +101,15 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
 
     on<FetchRagAgentChatHistory>((event, emit) async {
       PagingState<int, RagAgentResponse> pagingState;
-      if (state is RagAgentSuccess) {
-        pagingState = (state as RagAgentSuccess).state;
+      if (state is RagAgentStateUpdate) {
+        pagingState = (state as RagAgentStateUpdate).state;
       } else {
         pagingState = PagingState<int, RagAgentResponse>();
       }
 
       if (pagingState.isLoading || !pagingState.hasNextPage) return;
 
-      emit(RagAgentSuccess(pagingState.copyWith(isLoading: true, error: null)));
+      emit(RagAgentStateUpdate(pagingState.copyWith(isLoading: true, error: null)));
 
       try {
         final int nextOffset =
@@ -134,7 +134,7 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
             hasNextPage: !isLastPage,
             isLoading: false,
           );
-          emit(RagAgentSuccess(newPagingState));
+          emit(RagAgentStateUpdate(newPagingState));
         } else {
           emit(RagAgentFailure('Failed to fetch chat history'));
         }
