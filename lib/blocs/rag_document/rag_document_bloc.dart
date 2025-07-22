@@ -8,7 +8,6 @@ import '../../serializers/rag_agent_serializers/delete_corpus_document_serialize
 import '../../serializers/rag_agent_serializers/list_corpus_content_serializer.dart';
 
 part 'rag_document_event.dart';
-
 part 'rag_document_state.dart';
 
 class RagDocumentBloc extends Bloc<RagDocumentEvent, RagDocumentState> {
@@ -16,29 +15,30 @@ class RagDocumentBloc extends Bloc<RagDocumentEvent, RagDocumentState> {
 
   RagDocumentBloc({required this.ragAgentRepository}) : super(RagDocumentInitial()) {
     on<AddCorpusDocument>((event, emit) async {
-      emit(RagDocumentLoading());
+      emit(RagDocumentAdding());
       try {
-        final result = await ragAgentRepository.addCorpusDocument(
+        final _ = await ragAgentRepository.addCorpusDocument(
           AddCorpusFilePayload(corpusName: event.corpusName, file: event.file),
         );
-        emit(RagAddCorpusDocumentSuccess(result));
+        add(ListCorpusContent(corpusName: event.corpusName));
       } catch (e) {
         emit(RagDocumentFailure('Error adding document'));
       }
     });
 
     on<DeleteCorpusDocument>((event, emit) async {
-      emit(RagDocumentLoading());
+      emit(RagDocumentDeleting());
       try {
-        final result = await ragAgentRepository.deleteCorpusDocument(event.id);
-        emit(RagDeleteCorpusDocumentSuccess(result));
+        final _ = await ragAgentRepository.deleteCorpusDocument(event.id);
+
+        add(ListCorpusContent(corpusName: event.corpusName));
       } catch (e) {
         emit(RagDocumentFailure('Error deleting document'));
       }
     });
 
     on<ListCorpusContent>((event, emit) async {
-      emit(RagDocumentLoading());
+      emit(RagDocumentsLoading());
       try {
         final result = await ragAgentRepository.listCorpusContent(corpusName: event.corpusName);
         emit(RagListCorpusContentSuccess(result));
