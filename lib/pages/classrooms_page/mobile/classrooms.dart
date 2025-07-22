@@ -3,13 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lumen_slate/pages/classrooms_page/mobile/widget/classroom_card.dart';
 
-import '../../../constants/dummy_data/assignments.dart';
 import '../../../constants/dummy_data/classroom.dart';
+import '../../../constants/dummy_data/assignments.dart';
 import '../../../constants/dummy_data/teacher.dart';
 
-class ClassroomsPageMobile extends StatelessWidget {
-  ClassroomsPageMobile({super.key});
+class ClassroomsPageMobile extends StatefulWidget {
+  const ClassroomsPageMobile({super.key});
 
+  @override
+  State<ClassroomsPageMobile> createState() => _ClassroomsPageMobileState();
+}
+
+class _ClassroomsPageMobileState extends State<ClassroomsPageMobile> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<String> _getTeacherNames(List<String> teacherIds) {
@@ -18,6 +23,12 @@ class ClassroomsPageMobile extends StatelessWidget {
         .where((teacher) => teacher != null && teacher.name.isNotEmpty)
         .map((teacher) => teacher!.name)
         .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Using dummy data, so no BLoC calls needed
   }
 
   @override
@@ -59,17 +70,18 @@ class ClassroomsPageMobile extends StatelessWidget {
         itemCount: dummyClassrooms.length,
         itemBuilder: (context, index) {
           final classroom = dummyClassrooms[index];
-          final teacherNames = _getTeacherNames(classroom.teacherIds);
+          // Get assignments for this classroom
           final classroomAssignments = dummyAssignments
-              .where((a) => classroom.assignmentIds.contains(a.id))
+              .where((assignment) => classroom.assignmentIds.contains(assignment.id))
               .toList();
+          
           return Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: SizedBox(
               height: 400,
               child: ClassroomCardMobile(
                 classroom: classroom,
-                teacherNames: teacherNames,
+                teacherNames: _getTeacherNames(classroom.teacherIds),
                 classroomAssignments: classroomAssignments,
                 index: index,
               ),

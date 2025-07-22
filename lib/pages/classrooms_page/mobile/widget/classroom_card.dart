@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 class ClassroomCardMobile extends StatelessWidget {
   final dynamic classroom;
@@ -21,8 +22,7 @@ class ClassroomCardMobile extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigator.pushNamed(context, '/classroom/${classroom.id}');
-        /// TODO: Implement navigation to classroom details
+        context.go('/teacher-dashboard/classrooms/${classroom.id}/students');
       },
       child: Card(
         shape: RoundedRectangleBorder(

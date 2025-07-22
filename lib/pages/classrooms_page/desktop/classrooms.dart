@@ -30,7 +30,36 @@ class _ClassroomsPageDesktopState extends State<ClassroomsPageDesktop> {
   @override
   void initState() {
     super.initState();
+    // Initialize classroom paging when this page loads
     context.read<ClassroomBloc>().add(InitializeClassroomPaging(extended: false));
+    // Fetch the first page of classrooms
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ClassroomBloc>().add(
+        FetchNextClassroomPage(
+          teacherId: _teacherId,
+          pageSize: _pageSize,
+          extended: false,
+        ),
+      );
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Always reinitialize classroom paging when returning to this page
+    // This ensures fresh data is loaded when navigating back from other pages
+    context.read<ClassroomBloc>().add(InitializeClassroomPaging(extended: false));
+    // Fetch the first page of classrooms
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ClassroomBloc>().add(
+        FetchNextClassroomPage(
+          teacherId: _teacherId,
+          pageSize: _pageSize,
+          extended: false,
+        ),
+      );
+    });
   }
 
   @override

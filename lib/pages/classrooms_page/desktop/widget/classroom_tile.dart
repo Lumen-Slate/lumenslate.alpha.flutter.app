@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lumen_slate/models/classroom.dart';
+import 'package:go_router/go_router.dart';
 
 class ClassroomTile extends StatelessWidget {
   final Classroom classroom;
@@ -18,10 +19,10 @@ class ClassroomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = ScrollController();
-
     return FilledButton.tonal(
-      onPressed: () {},
+      onPressed: () {
+        context.go('/teacher-dashboard/classrooms/${classroom.id}/students');
+      },
       style: FilledButton.styleFrom(
         backgroundColor: Colors.grey[100],
         foregroundColor: Colors.black,
@@ -29,28 +30,45 @@ class ClassroomTile extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(50.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          spacing: 8,
+          spacing: 4,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(classroom.subject, style: GoogleFonts.poppins(fontSize: 46, fontWeight: FontWeight.w600)),
-            Text(
-              'Teachers: ${classroom.teacherIds.length}',
-              style: GoogleFonts.poppins(fontSize: 36, color: Colors.grey[700]),
+            Flexible(
+              child: Text(
+                classroom.subject,
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                'Teachers: ${classroom.teacherIds.length}',
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             Row(
-              spacing: 10,
+              spacing: 6,
               children: [
-                Text('Assignments', style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey[600])),
+                Flexible(
+                  child: Text(
+                    'Assignments',
+                    style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8.0)),
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6.0)),
                   child: Center(
                     child: Text(
                       classroom.assignmentIds.length.toString(),
-                      style: GoogleFonts.poppins(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.poppins(fontSize: 10, color: Colors.black, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
