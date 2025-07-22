@@ -11,9 +11,10 @@ class AddCorpusDocument extends RagDocumentEvent {
 }
 
 class DeleteCorpusDocument extends RagDocumentEvent {
+  final String corpusName;
   final String id;
 
-  DeleteCorpusDocument({required this.id});
+  DeleteCorpusDocument({required this.corpusName,required this.id});
 }
 
 class ListCorpusContent extends RagDocumentEvent {
