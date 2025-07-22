@@ -27,15 +27,6 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
   String _currentEmailFilter = '';
   String _currentRollNoFilter = '';
 
-  int _getCrossAxisCount(double screenWidth) {
-    if (screenWidth >= 1200) {
-      return 3;
-    } else if (screenWidth >= 800) {
-      return 2;
-    }
-    return 1;
-  }
-
   void _performSearch() {
     final query = _searchController.text.trim();
     setState(() {
@@ -209,8 +200,6 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
@@ -303,10 +292,7 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
               child: BlocBuilder<StudentBloc, StudentState>(
                 builder: (context, state) {
                   if (state is StudentOriginalSuccess) {
-                    return PagedGridView<int, Student>(
-                      showNewPageProgressIndicatorAsGridChild: false,
-                      showNewPageErrorIndicatorAsGridChild: false,
-                      showNoMoreItemsIndicatorAsGridChild: false,
+                    return PagedListView<int, Student>(
                       state: state.pagingState,
                       fetchNextPage: () {
                         context.read<StudentBloc>().add(
@@ -319,12 +305,6 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                           ),
                         );
                       },
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: _getCrossAxisCount(screenWidth),
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        childAspectRatio: 2.5,
-                      ),
                       builderDelegate: PagedChildBuilderDelegate<Student>(
                         itemBuilder: (context, item, index) => StudentTile(
                           student: item,

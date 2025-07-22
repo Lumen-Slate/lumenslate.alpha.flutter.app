@@ -14,89 +14,71 @@ class StudentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.tonal(
-      onPressed: () {
-        // TODO: Navigate to student detail page if needed
-      },
-      style: FilledButton.styleFrom(
-        backgroundColor: Colors.grey[100],
-        foregroundColor: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
-        padding: const EdgeInsets.all(16.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          spacing: 4,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.primaries[index % Colors.primaries.length][400],
-                  child: Text(
-                    student.name.isNotEmpty ? student.name[0].toUpperCase() : 'S',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        student.name,
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        'Roll No: ${student.rollNo}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16.0),
+        leading: CircleAvatar(
+          radius: 24,
+          backgroundColor: Colors.primaries[index % Colors.primaries.length][400],
+          child: Text(
+            student.name.isNotEmpty ? student.name[0].toUpperCase() : 'S',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
+          ),
+        ),
+        title: Text(
+          student.name,
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              'Roll No: ${student.rollNo}',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 2),
             Text(
               student.email,
               style: GoogleFonts.poppins(
-                fontSize: 12,
+                fontSize: 14,
                 color: Colors.grey[600],
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-            if (student.isActive != null)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          ],
+        ),
+        trailing: student.isActive != null
+            ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: student.isActive! ? Colors.green[100] : Colors.red[100],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   student.isActive! ? 'Active' : 'Inactive',
                   style: GoogleFonts.poppins(
-                    fontSize: 10,
+                    fontSize: 12,
                     color: student.isActive! ? Colors.green[800] : Colors.red[800],
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-          ],
-        ),
+              )
+            : null,
+        onTap: () {
+          // TODO: Navigate to student detail page if needed
+        },
       ),
     );
   }
