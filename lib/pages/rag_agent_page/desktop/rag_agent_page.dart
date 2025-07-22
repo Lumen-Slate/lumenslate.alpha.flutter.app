@@ -116,18 +116,6 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
     );
   }
 
-  void _addDocumentToCorpus() {
-    if (_selectedFileUrl != null && _selectedFileName != null) {
-      context.read<RagDocumentBloc>().add(
-        AddCorpusDocument(corpusName: widget.corpusName, fileLink: _selectedFileUrl!),
-      );
-      setState(() {
-        _selectedFileUrl = null;
-        _selectedFileName = null;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
@@ -195,39 +183,6 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                 },
                               ),
                             ),
-                            // Show selected file url and unselect/add button if a file url is selected
-                            if (_selectedFileUrl != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.link, color: Colors.blue),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        _selectedFileName ?? _selectedFileUrl!,
-                                        style: const TextStyle(fontSize: 14),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.close, size: 20),
-                                      tooltip: 'Unselect file',
-                                      onPressed: () {
-                                        setState(() {
-                                          _selectedFileUrl = null;
-                                          _selectedFileName = null;
-                                        });
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.cloud_upload),
-                                      tooltip: 'Add to Corpus',
-                                      onPressed: _addDocumentToCorpus,
-                                    ),
-                                  ],
-                                ),
-                              ),
                             // Message Input
                             Padding(
                               padding: const EdgeInsets.only(top: 16.0),
@@ -264,16 +219,16 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                       ),
                                     ),
                                   ),
-                                  IconButton(
-                                    padding: const EdgeInsets.all(20.0),
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.blue[100],
-                                      shape: const CircleBorder(),
-                                    ),
-                                    icon: const Icon(Icons.attach_file, color: Colors.blue),
-                                    tooltip: 'Attach PDF URL',
-                                    onPressed: _showFileUrlDialog,
-                                  ),
+                                  // IconButton(
+                                  //   padding: const EdgeInsets.all(20.0),
+                                  //   style: IconButton.styleFrom(
+                                  //     backgroundColor: Colors.blue[100],
+                                  //     shape: const CircleBorder(),
+                                  //   ),
+                                  //   icon: const Icon(Icons.attach_file, color: Colors.blue),
+                                  //   tooltip: 'Attach PDF URL',
+                                  //   onPressed: _showFileUrlDialog,
+                                  // ),
                                   BlocBuilder<RagAgentBloc, RagAgentState>(
                                     builder: (context, state) {
                                       return IconButton(
@@ -358,7 +313,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                     if (state is RagDocumentFailure) {
                                       return Center(child: Text(state.message));
                                     } else if (state is RagListCorpusContentSuccess) {
-                                      final docs = state.response?.files ?? [];
+                                      final docs = state.response?.documents ?? [];
                                       if (docs.isEmpty) {
                                         return const Center(child: Text('No documents found.'));
                                       }
@@ -394,7 +349,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                                         overflow: TextOverflow.ellipsis,
                                                       ),
                                                       Text(
-                                                        'Uploaded: ${DateTime.parse(doc.createTime).toLocal().toString()}',
+                                                        'Uploaded: ${DateTime.parse(doc.createdAt).toLocal().toString()}',
                                                         overflow: TextOverflow.ellipsis,
                                                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                                                       ),
@@ -413,12 +368,12 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                                   onPressed: () async {
                                                     try {
                                                       final repo = RagAgentRepository();
-                                                      final response = await repo.getFileUrl(id: doc.id);
+                                                      final response = await repo.getFileUrl(id: doc.fileId);
                                                       final url = response.data['url'] as String?;
                                                       if (url != null) {
-                                                        final _url = Uri.parse(url);
-                                                        if (!await launchUrl(_url)) {
-                                                          throw Exception('Could not launch $_url');
+                                                        final url0 = Uri.parse(url);
+                                                        if (!await launchUrl(url0)) {
+                                                          throw Exception('Could not launch $url0');
                                                         }
                                                       } else {
                                                         ScaffoldMessenger.of(context).showSnackBar(
@@ -468,8 +423,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                                     if (confirm == true) {
                                                       context.read<RagDocumentBloc>().add(
                                                         DeleteCorpusDocument(
-                                                          corpusName: widget.corpusName,
-                                                          fileDisplayName: doc.displayName,
+                                                          id: doc.fileId,
                                                         ),
                                                       );
                                                     }
