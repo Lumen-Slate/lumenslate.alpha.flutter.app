@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lumen_slate/models/students.dart';
 
 class StudentTile extends StatelessWidget {
   final Student student;
   final int index;
+  final String? classroomId;
 
   const StudentTile({
     super.key,
     required this.student,
     required this.index,
+    this.classroomId,
   });
 
   @override
@@ -77,7 +80,9 @@ class StudentTile extends StatelessWidget {
               )
             : null,
         onTap: () {
-          // TODO: Navigate to student detail page if needed
+          if (classroomId != null) {
+            context.go('/teacher-dashboard/classrooms/$classroomId/students/${student.id}');
+          }
         },
       ),
     );

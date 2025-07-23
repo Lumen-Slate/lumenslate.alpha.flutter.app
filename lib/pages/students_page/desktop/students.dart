@@ -309,6 +309,7 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                         itemBuilder: (context, item, index) => StudentTile(
                           student: item,
                           index: index,
+                          classroomId: widget.classroomId,
                         ),
                         noItemsFoundIndicatorBuilder: (context) =>
                             const Center(child: Text("No students found in this classroom.")),

@@ -29,20 +29,21 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
     setState(() {
       _currentSearchQuery = query;
     });
-    
+
     if (query.isEmpty) {
       // Reset to original list without search
-      context.read<StudentBloc>().add(InitializeStudentPaging(
-        extended: false,
-        classIds: widget.classroomId,
-      ));
+      context.read<StudentBloc>().add(
+        InitializeStudentPaging(extended: false, classIds: widget.classroomId),
+      );
     } else {
       // Perform search
-      context.read<StudentBloc>().add(SearchStudents(
-        searchQuery: query,
-        classIds: widget.classroomId,
-        extended: false,
-      ));
+      context.read<StudentBloc>().add(
+        SearchStudents(
+          searchQuery: query,
+          classIds: widget.classroomId,
+          extended: false,
+        ),
+      );
     }
   }
 
@@ -51,10 +52,9 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
     setState(() {
       _currentSearchQuery = '';
     });
-    context.read<StudentBloc>().add(InitializeStudentPaging(
-      extended: false,
-      classIds: widget.classroomId,
-    ));
+    context.read<StudentBloc>().add(
+      InitializeStudentPaging(extended: false, classIds: widget.classroomId),
+    );
   }
 
   @override
@@ -67,12 +67,13 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
   void initState() {
     super.initState();
     // Fetch classroom details first
-    context.read<ClassroomBloc>().add(FetchClassroomById(id: widget.classroomId, extended: false));
+    context.read<ClassroomBloc>().add(
+      FetchClassroomById(id: widget.classroomId, extended: false),
+    );
     // Initialize student paging with classIds filter
-    context.read<StudentBloc>().add(InitializeStudentPaging(
-      extended: false,
-      classIds: widget.classroomId,
-    ));
+    context.read<StudentBloc>().add(
+      InitializeStudentPaging(extended: false, classIds: widget.classroomId),
+    );
   }
 
   @override
@@ -92,17 +93,26 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
             ),
             ListTile(
               leading: Icon(Icons.dashboard),
-              title: Text('Dashboard', style: GoogleFonts.poppins(fontSize: 16)),
+              title: Text(
+                'Dashboard',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
               onTap: () => context.go('/teacher-dashboard'),
             ),
             ListTile(
               leading: Icon(Icons.class_),
-              title: Text('Classrooms', style: GoogleFonts.poppins(fontSize: 16)),
+              title: Text(
+                'Classrooms',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
               onTap: () => context.go('/teacher-dashboard/classrooms'),
             ),
             ListTile(
               leading: Icon(Icons.assignment),
-              title: Text('Assignments', style: GoogleFonts.poppins(fontSize: 16)),
+              title: Text(
+                'Assignments',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
               onTap: () => context.go('/teacher-dashboard/assignments'),
             ),
           ],
@@ -118,9 +128,9 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
             }
           },
           child: Text(
-            _classroom != null 
-              ? "Students in ${_classroom!.subject}"
-              : "Loading...",
+            _classroom != null
+                ? "Students in ${_classroom!.subject}"
+                : "Loading...",
             style: GoogleFonts.poppins(),
           ),
         ),
@@ -184,29 +194,36 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
                       context.read<StudentBloc>().add(
                         FetchNextStudentPage(
                           classIds: widget.classroomId,
-                          searchQuery: _currentSearchQuery.isEmpty ? null : _currentSearchQuery,
+                          searchQuery: _currentSearchQuery.isEmpty
+                              ? null
+                              : _currentSearchQuery,
                         ),
                       );
                     },
                     builderDelegate: PagedChildBuilderDelegate<Student>(
                       itemBuilder: (context, item, index) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
                         child: StudentCardMobile(
                           student: item,
                           index: index,
+                          classroomId: widget.classroomId,
                         ),
                       ),
                       noItemsFoundIndicatorBuilder: (context) => const Center(
                         child: Text("No students found in this classroom."),
                       ),
-                      firstPageErrorIndicatorBuilder: (context) => const Center(
-                        child: Text("Error loading students"),
-                      ),
+                      firstPageErrorIndicatorBuilder: (context) =>
+                          const Center(child: Text("Error loading students")),
                     ),
                   );
                 }
                 if (state is StudentFailure) {
-                  return Center(child: Text('Error loading students: ${state.error}'));
+                  return Center(
+                    child: Text('Error loading students: ${state.error}'),
+                  );
                 }
                 if (state is StudentInitial) {
                   return const Center(child: CircularProgressIndicator());
