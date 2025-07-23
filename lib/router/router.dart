@@ -14,6 +14,7 @@ import '../pages/rag_agent_page/desktop/rag_agent_page.dart';
 import '../pages/sign_in_page/sign_in.dart';
 import '../pages/pdf_generator_page.dart';
 import '../pages/students_page/students.dart';
+import '../pages/student_detail_page/student_detail.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/teacher-dashboard',
@@ -53,6 +54,21 @@ final GoRouter router = GoRouter(
                   child: StudentsPage(classroomId: classroomId!),
                 );
               },
+              routes: [
+                GoRoute(
+                  path: '/:studentId',
+                  pageBuilder: (context, state) {
+                    final classroomId = state.pathParameters['classroomId'];
+                    final studentId = state.pathParameters['studentId'];
+                    return MaterialPage(
+                      child: StudentDetailPage(
+                        studentId: studentId!,
+                        classroomId: classroomId!,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

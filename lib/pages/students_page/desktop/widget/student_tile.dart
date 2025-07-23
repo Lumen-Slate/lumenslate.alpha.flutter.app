@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lumen_slate/models/students.dart';
 
 class StudentTile extends StatelessWidget {
   final Student student;
   final int index;
+  final String? classroomId;
 
   const StudentTile({
     super.key,
     required this.student,
     required this.index,
+    this.classroomId,
   });
 
   @override
@@ -68,10 +71,28 @@ class StudentTile extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      onTap: () {
-        // TODO: Navigate to student detail page if needed
-      },
+        trailing: student.isActive != null
+            ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: student.isActive! ? Colors.green[100] : Colors.red[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  student.isActive! ? 'Active' : 'Inactive',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: student.isActive! ? Colors.green[800] : Colors.red[800],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+            : null,
+        onTap: () {
+          if (classroomId != null) {
+            context.go('/teacher-dashboard/classrooms/$classroomId/students/${student.id}');
+          }
+        },
     );
   }
 }
