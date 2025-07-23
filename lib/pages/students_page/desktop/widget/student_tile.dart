@@ -17,12 +17,12 @@ class StudentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16.0),
-        leading: CircleAvatar(
+    return ListTile(
+      tileColor: Colors.grey[100],
+      contentPadding: const EdgeInsets.all(12.0),
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: CircleAvatar(
           radius: 24,
           backgroundColor: Colors.primaries[index % Colors.primaries.length][400],
           child: Text(
@@ -34,14 +34,23 @@ class StudentTile extends StatelessWidget {
             ),
           ),
         ),
-        title: Text(
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      title: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Text(
           student.name,
           style: GoogleFonts.poppins(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),
-        subtitle: Column(
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
@@ -84,7 +93,6 @@ class StudentTile extends StatelessWidget {
             context.go('/teacher-dashboard/classrooms/$classroomId/students/${student.id}');
           }
         },
-      ),
     );
   }
 }
