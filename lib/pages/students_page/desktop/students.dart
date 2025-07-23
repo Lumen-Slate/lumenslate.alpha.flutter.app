@@ -34,17 +34,18 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
 
     if (query.isEmpty) {
       // Reset to original list without search
-      context.read<StudentBloc>().add(InitializeStudentPaging(
-        extended: false,
-        classIds: widget.classroomId,
-      ));
+      context.read<StudentBloc>().add(
+        InitializeStudentPaging(extended: false, classIds: widget.classroomId),
+      );
     } else {
       // Perform search
-      context.read<StudentBloc>().add(SearchStudents(
-        searchQuery: query,
-        classIds: widget.classroomId,
-        extended: false,
-      ));
+      context.read<StudentBloc>().add(
+        SearchStudents(
+          searchQuery: query,
+          classIds: widget.classroomId,
+          extended: false,
+        ),
+      );
     }
   }
 
@@ -53,10 +54,9 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
     setState(() {
       _currentSearchQuery = '';
     });
-    context.read<StudentBloc>().add(InitializeStudentPaging(
-      extended: false,
-      classIds: widget.classroomId,
-    ));
+    context.read<StudentBloc>().add(
+      InitializeStudentPaging(extended: false, classIds: widget.classroomId),
+    );
   }
 
   @override
@@ -85,7 +85,10 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                   const SizedBox(width: 12),
                   Text(
                     'Advanced Filters',
-                    style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -97,7 +100,10 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
               const SizedBox(height: 24),
               Text(
                 'Filter by Email',
-                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -112,7 +118,10 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
               const SizedBox(height: 16),
               Text(
                 'Filter by Roll Number',
-                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -137,16 +146,21 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                           _currentRollNoFilter = '';
                         });
                         Navigator.of(context).pop();
-                        context.read<StudentBloc>().add(InitializeStudentPaging(
-                          extended: false,
-                          classIds: widget.classroomId,
-                        ));
+                        context.read<StudentBloc>().add(
+                          InitializeStudentPaging(
+                            extended: false,
+                            classIds: widget.classroomId,
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[300],
                         foregroundColor: Colors.black87,
                       ),
-                      child: Text('Clear Filters', style: GoogleFonts.poppins()),
+                      child: Text(
+                        'Clear Filters',
+                        style: GoogleFonts.poppins(),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -158,19 +172,30 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                           _currentRollNoFilter = rollNoController.text.trim();
                         });
                         Navigator.of(context).pop();
-                        context.read<StudentBloc>().add(SearchStudents(
-                          email: _currentEmailFilter.isEmpty ? null : _currentEmailFilter,
-                          rollNo: _currentRollNoFilter.isEmpty ? null : _currentRollNoFilter,
-                          searchQuery: _currentSearchQuery.isEmpty ? null : _currentSearchQuery,
-                          classIds: widget.classroomId,
-                          extended: false,
-                        ));
+                        context.read<StudentBloc>().add(
+                          SearchStudents(
+                            email: _currentEmailFilter.isEmpty
+                                ? null
+                                : _currentEmailFilter,
+                            rollNo: _currentRollNoFilter.isEmpty
+                                ? null
+                                : _currentRollNoFilter,
+                            searchQuery: _currentSearchQuery.isEmpty
+                                ? null
+                                : _currentSearchQuery,
+                            classIds: widget.classroomId,
+                            extended: false,
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
                       ),
-                      child: Text('Apply Filters', style: GoogleFonts.poppins()),
+                      child: Text(
+                        'Apply Filters',
+                        style: GoogleFonts.poppins(),
+                      ),
                     ),
                   ),
                 ],
@@ -189,19 +214,22 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
   void initState() {
     super.initState();
     // Fetch classroom details first
-    context.read<ClassroomBloc>().add(FetchClassroomById(id: widget.classroomId, extended: false));
+    context.read<ClassroomBloc>().add(
+      FetchClassroomById(id: widget.classroomId, extended: false),
+    );
     // Initialize student paging with classIds filter
-    context.read<StudentBloc>().add(InitializeStudentPaging(
-      extended: false,
-      classIds: widget.classroomId,
-    ));
+    context.read<StudentBloc>().add(
+      InitializeStudentPaging(extended: false, classIds: widget.classroomId),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvokedWithResult: (result,object) {
-        context.read<ClassroomBloc>().add(InitializeClassroomPaging(extended: false));
+      onPopInvokedWithResult: (result, object) {
+        context.read<ClassroomBloc>().add(
+          InitializeClassroomPaging(extended: false),
+        );
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -226,8 +254,8 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                         children: [
                           AutoSizeText(
                             _classroom != null
-                              ? _classroom!.subject
-                              : "Loading Classroom...",
+                                ? _classroom!.subject
+                                : "Loading Classroom...",
                             maxLines: 2,
                             minFontSize: 80,
                             style: GoogleFonts.poppins(fontSize: 80),
@@ -236,7 +264,10 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                             "Browse and manage students in this classroom",
                             maxLines: 1,
                             minFontSize: 24,
-                            style: GoogleFonts.poppins(fontSize: 24, color: Colors.black54),
+                            style: GoogleFonts.poppins(
+                              fontSize: 24,
+                              color: Colors.black54,
+                            ),
                           ),
                         ],
                       ),
@@ -256,9 +287,13 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                         child: Icon(Icons.search),
                       ),
                       backgroundColor: WidgetStateProperty.all(Colors.white),
-                      hintText: "Search students by name, email, or roll number",
+                      hintText:
+                          "Search students by name, email, or roll number",
                       hintStyle: WidgetStateProperty.all(
-                        GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
+                        GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.black54,
+                        ),
                       ),
                       onSubmitted: (value) => _performSearch(),
                       trailing: [
@@ -309,9 +344,15 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                             FetchNextStudentPage(
                               pageSize: _pageSize,
                               classIds: widget.classroomId,
-                              email: _currentEmailFilter.isEmpty ? null : _currentEmailFilter,
-                              rollNo: _currentRollNoFilter.isEmpty ? null : _currentRollNoFilter,
-                              searchQuery: _currentSearchQuery.isEmpty ? null : _currentSearchQuery,
+                              email: _currentEmailFilter.isEmpty
+                                  ? null
+                                  : _currentEmailFilter,
+                              rollNo: _currentRollNoFilter.isEmpty
+                                  ? null
+                                  : _currentRollNoFilter,
+                              searchQuery: _currentSearchQuery.isEmpty
+                                  ? null
+                                  : _currentSearchQuery,
                             ),
                           );
                         },
@@ -321,26 +362,26 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                             child: StudentTile(
                               student: item,
                               index: index,
+                              classroomId: widget.classroomId,
                             ),
                           ),
-                        );
-                      },
-                      builderDelegate: PagedChildBuilderDelegate<Student>(
-                        itemBuilder: (context, item, index) => StudentTile(
-                          student: item,
-                          index: index,
-                          classroomId: widget.classroomId,
-
                           noItemsFoundIndicatorBuilder: (context) =>
-                              const Center(child: Text("No students found in this classroom.")),
+                              const Center(
+                                child: Text(
+                                  "No students found in this classroom.",
+                                ),
+                              ),
                           firstPageErrorIndicatorBuilder: (context) =>
-                              const Center(child: Text("Error loading students")),
-
+                              const Center(
+                                child: Text("Error loading students"),
+                              ),
                         ),
                       );
                     }
                     if (state is StudentFailure) {
-                      return Center(child: Text('Error loading students: ${state.error}'));
+                      return Center(
+                        child: Text('Error loading students: ${state.error}'),
+                      );
                     }
                     if (state is StudentInitial) {
                       return const Center(child: CircularProgressIndicator());
