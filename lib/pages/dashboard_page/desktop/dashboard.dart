@@ -27,7 +27,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
           context.go('/teacher-dashboard');
         },
         child: ResponsiveScaledBox(
-          width: 1920,
+          width: AppConstants.desktopScaleWidth,
           child: Scaffold(
             backgroundColor: Colors.white,
             floatingActionButtonLocation: ExpandableFab.location,
