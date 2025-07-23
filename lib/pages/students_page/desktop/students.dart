@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:go_router/go_router.dart';
 import '../../../blocs/student/student_bloc.dart';
 import '../../../blocs/classroom/classroom_bloc.dart';
 import '../../../models/students.dart';
@@ -32,7 +31,7 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
     setState(() {
       _currentSearchQuery = query;
     });
-    
+
     if (query.isEmpty) {
       // Reset to original list without search
       context.read<StudentBloc>().add(InitializeStudentPaging(
@@ -69,7 +68,7 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
   void _showAdvancedFiltersDialog() {
     final emailController = TextEditingController(text: _currentEmailFilter);
     final rollNoController = TextEditingController(text: _currentRollNoFilter);
-    
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -193,141 +192,156 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
     context.read<ClassroomBloc>().add(FetchClassroomById(id: widget.classroomId, extended: false));
     // Initialize student paging with classIds filter
     context.read<StudentBloc>().add(InitializeStudentPaging(
-      extended: false, 
+      extended: false,
       classIds: widget.classroomId,
     ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => context.pop(),
-                  icon: const Icon(Icons.arrow_back, size: 32),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: BlocListener<ClassroomBloc, ClassroomState>(
-                    listener: (context, state) {
-                      if (state is ClassroomSingleOriginalSuccess) {
-                        setState(() {
-                          _classroom = state.classroom;
-                        });
-                      }
-                    },
-                    child: AutoSizeText(
-                      _classroom != null 
-                        ? "Students in ${_classroom!.subject}" 
-                        : "Loading Classroom...",
-                      maxLines: 2,
-                      minFontSize: 28,
-                      style: GoogleFonts.poppins(fontSize: 36, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 50),
-            // Search bar with filters
-            Row(
-              children: [
-                Expanded(
-                  child: SearchBar(
-                    controller: _searchController,
-                    leading: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.search),
-                    ),
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    hintText: "Search students by name, email, or roll number",
-                    hintStyle: WidgetStateProperty.all(
-                      GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
-                    ),
-                    onSubmitted: (value) => _performSearch(),
-                    trailing: [
-                      if (_currentSearchQuery.isNotEmpty)
-                        IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: _clearSearch,
-                          tooltip: 'Clear search',
-                        ),
-                      IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: _performSearch,
-                        tooltip: 'Search',
-                      ),
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.filter_list),
-                        tooltip: 'Advanced filters',
-                        onSelected: (value) {
-                          _showAdvancedFiltersDialog();
-                        },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'filters',
-                            child: Row(
-                              children: [
-                                Icon(Icons.tune),
-                                SizedBox(width: 8),
-                                Text('Advanced Filters'),
-                              ],
-                            ),
+    return PopScope(
+      onPopInvokedWithResult: (result,object) {
+        context.read<ClassroomBloc>().add(InitializeClassroomPaging(extended: false));
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: BlocListener<ClassroomBloc, ClassroomState>(
+                      listener: (context, state) {
+                        if (state is ClassroomSingleOriginalSuccess) {
+                          setState(() {
+                            _classroom = state.classroom;
+                          });
+                        }
+                      },
+                      child: Column(
+                        spacing: 16,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            _classroom != null
+                              ? _classroom!.subject
+                              : "Loading Classroom...",
+                            maxLines: 2,
+                            minFontSize: 80,
+                            style: GoogleFonts.poppins(fontSize: 80),
+                          ),
+                          AutoSizeText(
+                            "Browse and manage students in this classroom",
+                            maxLines: 1,
+                            minFontSize: 24,
+                            style: GoogleFonts.poppins(fontSize: 24, color: Colors.black54),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            Expanded(
-              child: BlocBuilder<StudentBloc, StudentState>(
-                builder: (context, state) {
-                  if (state is StudentOriginalSuccess) {
-                    return PagedListView<int, Student>(
-                      state: state.pagingState,
-                      fetchNextPage: () {
-                        context.read<StudentBloc>().add(
-                          FetchNextStudentPage(
-                            pageSize: _pageSize,
-                            classIds: widget.classroomId,
-                            email: _currentEmailFilter.isEmpty ? null : _currentEmailFilter,
-                            rollNo: _currentRollNoFilter.isEmpty ? null : _currentRollNoFilter,
-                            searchQuery: _currentSearchQuery.isEmpty ? null : _currentSearchQuery,
-                          ),
-                        );
-                      },
-                      builderDelegate: PagedChildBuilderDelegate<Student>(
-                        itemBuilder: (context, item, index) => StudentTile(
-                          student: item,
-                          index: index,
-                        ),
-                        noItemsFoundIndicatorBuilder: (context) =>
-                            const Center(child: Text("No students found in this classroom.")),
-                        firstPageErrorIndicatorBuilder: (context) =>
-                            const Center(child: Text("Error loading students")),
-                      ),
-                    );
-                  }
-                  if (state is StudentFailure) {
-                    return Center(child: Text('Error loading students: ${state.error}'));
-                  }
-                  if (state is StudentInitial) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return const SizedBox.shrink();
-                },
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 50),
+              // Search bar with filters
+              Row(
+                children: [
+                  Expanded(
+                    child: SearchBar(
+                      controller: _searchController,
+                      leading: const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Icon(Icons.search),
+                      ),
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      hintText: "Search students by name, email, or roll number",
+                      hintStyle: WidgetStateProperty.all(
+                        GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
+                      ),
+                      onSubmitted: (value) => _performSearch(),
+                      trailing: [
+                        if (_currentSearchQuery.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: _clearSearch,
+                            tooltip: 'Clear search',
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: _performSearch,
+                          tooltip: 'Search',
+                        ),
+                        PopupMenuButton<String>(
+                          icon: const Icon(Icons.filter_list),
+                          tooltip: 'Advanced filters',
+                          onSelected: (value) {
+                            _showAdvancedFiltersDialog();
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'filters',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.tune),
+                                  SizedBox(width: 8),
+                                  Text('Advanced Filters'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+              Expanded(
+                child: BlocBuilder<StudentBloc, StudentState>(
+                  builder: (context, state) {
+                    if (state is StudentOriginalSuccess) {
+                      return PagedListView<int, Student>(
+                        state: state.pagingState,
+                        fetchNextPage: () {
+                          context.read<StudentBloc>().add(
+                            FetchNextStudentPage(
+                              pageSize: _pageSize,
+                              classIds: widget.classroomId,
+                              email: _currentEmailFilter.isEmpty ? null : _currentEmailFilter,
+                              rollNo: _currentRollNoFilter.isEmpty ? null : _currentRollNoFilter,
+                              searchQuery: _currentSearchQuery.isEmpty ? null : _currentSearchQuery,
+                            ),
+                          );
+                        },
+                        builderDelegate: PagedChildBuilderDelegate<Student>(
+                          itemBuilder: (context, item, index) => Container(
+                            margin: const EdgeInsets.only(bottom: 16.0),
+                            child: StudentTile(
+                              student: item,
+                              index: index,
+                            ),
+                          ),
+                          noItemsFoundIndicatorBuilder: (context) =>
+                              const Center(child: Text("No students found in this classroom.")),
+                          firstPageErrorIndicatorBuilder: (context) =>
+                              const Center(child: Text("Error loading students")),
+                        ),
+                      );
+                    }
+                    if (state is StudentFailure) {
+                      return Center(child: Text('Error loading students: ${state.error}'));
+                    }
+                    if (state is StudentInitial) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
