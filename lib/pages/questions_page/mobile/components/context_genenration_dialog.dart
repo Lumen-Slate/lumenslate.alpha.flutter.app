@@ -69,7 +69,7 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
   void _overrideQuestion() {
     if (_contextController.text.isNotEmpty) {
       context.read<ContextGeneratorBloc>().add(
-        OverrideQuestionWithContext(
+        OverwriteQuestionWithContext(
           questionId: widget.id,
           questionType: widget.type,
           contextualizedQuestion: _contextController.text,
@@ -216,14 +216,14 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                       _generatedContext = state.response;
                       _contextController.text = _generatedContext;
                     });
-                  } else if (state is ContextOverrideSuccess) {
+                  } else if (state is ContextOverwriteSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.message), backgroundColor: Colors.green),
                     );
                     // Refresh questions list
                     context.read<QuestionsBloc>().add(const LoadQuestions());
                     Navigator.of(context).pop();
-                  } else if (state is ContextOverrideFailure) {
+                  } else if (state is ContextOverwriteFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Override failed: ${state.error}'), backgroundColor: Colors.red),
                     );
@@ -254,7 +254,7 @@ class _ContextGenerationDialogMobileState extends State<ContextGenerationDialogM
                         Text('Generating context...', style: TextStyle(fontSize: 12)),
                       ],
                     );
-                  } else if (state is ContextOverrideLoading) {
+                  } else if (state is ContextOverwriteLoading) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

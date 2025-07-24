@@ -32,7 +32,7 @@ class AIRepository {
     }
   }
 
-  Future<Response> overrideQuestionWithContext(String questionId, String questionType, String contextualizedQuestion) async {
+  Future<Response> overwriteQuestionWithContext(String questionId, String questionType, String contextualizedQuestion) async {
     try {
       // Use PATCH to update the question
       String endpoint = '/${questionType.toLowerCase()}s/$questionId';
