@@ -30,21 +30,21 @@ class ContextGeneratorFailure extends ContextGeneratorState {
   List<Object> get props => [error];
 }
 
-class ContextOverrideLoading extends ContextGeneratorState {}
+class ContextOverwriteLoading extends ContextGeneratorState {}
 
-class ContextOverrideSuccess extends ContextGeneratorState {
+class ContextOverwriteSuccess extends ContextGeneratorState {
   final String message;
 
-  const ContextOverrideSuccess(this.message);
+  const ContextOverwriteSuccess(this.message);
 
   @override
   List<Object> get props => [message];
 }
 
-class ContextOverrideFailure extends ContextGeneratorState {
+class ContextOverwriteFailure extends ContextGeneratorState {
   final String error;
 
-  const ContextOverrideFailure(this.error);
+  const ContextOverwriteFailure(this.error);
 
   @override
   List<Object> get props => [error];
