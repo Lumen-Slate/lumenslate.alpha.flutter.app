@@ -78,8 +78,14 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
+    return PopScope(
+      onPopInvokedWithResult: (result, object) {
+        context.read<ClassroomBloc>().add(
+          InitializeClassroomPaging(extended: false),
+        );
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -233,6 +239,7 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
