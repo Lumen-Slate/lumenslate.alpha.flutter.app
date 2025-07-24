@@ -1,6 +1,6 @@
 class Classroom {
   String id;
-  String subject;
+  String name;
   List<String> teacherIds;
   List<String> assignmentIds;
   int credits;
@@ -8,7 +8,7 @@ class Classroom {
 
   Classroom({
     required this.id,
-    required this.subject,
+    required this.name,
     required this.teacherIds,
     required this.assignmentIds,
     required this.credits,
@@ -18,7 +18,7 @@ class Classroom {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'subject': subject,
+      'name': name,
       'teacherIds': teacherIds,
       'assignmentIds': assignmentIds,
       'credits': credits,
@@ -29,7 +29,7 @@ class Classroom {
   factory Classroom.fromJson(Map<String, dynamic> json) {
     return Classroom(
       id: json['id'],
-      subject: json['subject'],
+      name: json['name'],
       teacherIds: List<String>.from(json['teacherIds']),
       assignmentIds: List<String>.from(json['assignmentIds']),
       credits: json['credits'],

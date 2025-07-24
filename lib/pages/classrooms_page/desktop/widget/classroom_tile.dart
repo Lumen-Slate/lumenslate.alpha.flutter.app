@@ -34,7 +34,8 @@ class _ClassroomTileState extends State<ClassroomTile> {
     return MouseRegion(
       opaque: false,
       onEnter: (event) {
-        if (_isOverflowing && _toolTipController.value == TooltipStatus.isHidden) {
+        if (_isOverflowing &&
+            _toolTipController.value == TooltipStatus.isHidden) {
           _toolTipController.showTooltip();
         }
       },
@@ -45,12 +46,16 @@ class _ClassroomTileState extends State<ClassroomTile> {
       },
       child: FilledButton.tonal(
         onPressed: () {
-          context.go('/teacher-dashboard/classrooms/${widget.classroom.id}/students');
+          context.go(
+            '/teacher-dashboard/classrooms/${widget.classroom.id}/students',
+          );
         },
         style: FilledButton.styleFrom(
           backgroundColor: Colors.grey[100],
           foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(60.0),
+          ),
           padding: const EdgeInsets.all(16.0),
         ),
         child: Padding(
@@ -62,8 +67,11 @@ class _ClassroomTileState extends State<ClassroomTile> {
               LayoutBuilder(
                 builder: (context, size) {
                   TextSpan span = TextSpan(
-                    text: widget.classroom.subject,
-                    style: GoogleFonts.poppins(fontSize: fontSize, fontWeight: FontWeight.w600),
+                    text: widget.classroom.name,
+                    style: GoogleFonts.poppins(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
+                    ),
                   );
                   TextPainter tp = TextPainter(
                     maxLines: maxLines,
@@ -93,43 +101,68 @@ class _ClassroomTileState extends State<ClassroomTile> {
                           ],
                         ),
                         child: Text(
-                          widget.classroom.subject,
-                          style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.w400),
+                          widget.classroom.name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                       child: Text(
-                        widget.classroom.subject,
+                        widget.classroom.name,
                         maxLines: maxLines,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(fontSize: fontSize, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.poppins(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     );
                   } else {
                     return Text(
-                      widget.classroom.subject,
+                      widget.classroom.name,
                       maxLines: maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(fontSize: fontSize, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.poppins(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w600,
+                      ),
                     );
                   }
                 },
               ),
               Text(
                 'Teachers: ${widget.classroom.teacherIds.length}',
-                style: GoogleFonts.poppins(fontSize: 36, color: Colors.grey[700]),
+                style: GoogleFonts.poppins(
+                  fontSize: 36,
+                  color: Colors.grey[700],
+                ),
               ),
               Row(
                 spacing: 10,
                 children: [
-                  Text('Assignments', style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey[600])),
+                  Text(
+                    'Assignments',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      color: Colors.grey[600],
+                    ),
+                  ),
                   Container(
                     width: 30,
                     height: 30,
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8.0)),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                     child: Center(
                       child: Text(
                         widget.classroom.assignmentIds.length.toString(),
-                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),

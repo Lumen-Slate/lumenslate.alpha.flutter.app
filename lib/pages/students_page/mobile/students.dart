@@ -129,7 +129,7 @@ class _StudentsPageMobileState extends State<StudentsPageMobile> {
           },
           child: Text(
             _classroom != null
-                ? "Students in ${_classroom!.subject}"
+                ? "Students in ${_classroom!.name}"
                 : "Loading...",
             style: GoogleFonts.poppins(),
           ),

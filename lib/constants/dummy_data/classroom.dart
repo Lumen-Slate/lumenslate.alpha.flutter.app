@@ -3,7 +3,7 @@ import '../../models/classroom.dart';
 final List<Classroom> dummyClassrooms = [
   Classroom(
     id: '101',
-    subject: 'Physics',
+    name: 'Physics',
     teacherIds: ['101'],
     assignmentIds: ['201'],
     credits: 4,
@@ -11,7 +11,7 @@ final List<Classroom> dummyClassrooms = [
   ),
   Classroom(
     id: '102',
-    subject: 'Chemistry',
+    name: 'Chemistry',
     teacherIds: ['102'],
     assignmentIds: ['202'],
     credits: 3,
@@ -19,7 +19,7 @@ final List<Classroom> dummyClassrooms = [
   ),
   Classroom(
     id: '103',
-    subject: 'Mathematics',
+    name: 'Mathematics',
     teacherIds: ['103'],
     assignmentIds: ['203'],
     credits: 2,
@@ -27,7 +27,7 @@ final List<Classroom> dummyClassrooms = [
   ),
   Classroom(
     id: '104',
-    subject: 'Biology',
+    name: 'Biology',
     teacherIds: ['104'],
     assignmentIds: ['204'],
     credits: 3,
@@ -35,7 +35,7 @@ final List<Classroom> dummyClassrooms = [
   ),
   Classroom(
     id: '105',
-    subject: 'History',
+    name: 'History',
     teacherIds: ['105'],
     assignmentIds: ['205'],
     credits: 5,
@@ -43,7 +43,7 @@ final List<Classroom> dummyClassrooms = [
   ),
   Classroom(
     id: '106',
-    subject: 'Advanced Physics',
+    name: 'Advanced Physics',
     teacherIds: ['106'],
     assignmentIds: ['206', '207'],
     credits: 5,

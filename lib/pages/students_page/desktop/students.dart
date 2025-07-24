@@ -254,7 +254,7 @@ class _StudentsPageDesktopState extends State<StudentsPageDesktop> {
                         children: [
                           AutoSizeText(
                             _classroom != null
-                                ? _classroom!.subject
+                                ? _classroom!.name
                                 : "Loading Classroom...",
                             maxLines: 2,
                             minFontSize: 80,

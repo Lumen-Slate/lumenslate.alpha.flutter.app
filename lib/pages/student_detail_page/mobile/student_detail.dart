@@ -33,8 +33,15 @@ class _StudentDetailPageMobileState extends State<StudentDetailPageMobile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return PopScope(
+      onPopInvokedWithResult: (result, object) {
+        // Reinitialize student paging when navigating back to students list
+        context.read<StudentBloc>().add(
+          InitializeStudentPaging(extended: false, classIds: widget.classroomId),
+        );
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -118,6 +125,7 @@ class _StudentDetailPageMobileState extends State<StudentDetailPageMobile> {
             );
           }
         },
+      ),
       ),
     );
   }
