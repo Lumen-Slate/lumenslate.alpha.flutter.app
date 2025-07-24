@@ -97,7 +97,7 @@ class _QuestionsMobileState extends State<QuestionsMobile> {
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Dashboard'),
-              onTap: () => context.go('/teacher-dashboard_page'),
+              onTap: () => context.go('/teacher-dashboard'),
             ),
           ],
         ),
