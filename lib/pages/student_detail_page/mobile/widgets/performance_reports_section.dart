@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../models/students.dart';
+import 'student_report_popup.dart';
 
 class PerformanceReportsSectionMobile extends StatelessWidget {
   final Student student;
@@ -78,7 +79,14 @@ class PerformanceReportsSectionMobile extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          // TODO: Implement view detailed report
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => StudentReportPopupMobile(
+                                student: student,
+                                classroomId: classroomId,
+                              ),
+                            ),
+                          );
                         },
                         icon: const Icon(Icons.visibility, size: 20),
                         label: Text(
