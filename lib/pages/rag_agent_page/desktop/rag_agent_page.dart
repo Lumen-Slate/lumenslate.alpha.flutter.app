@@ -1,13 +1,17 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lumen_slate/serializers/rag_agent_serializers/reg_agent_response.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../blocs/rag_agent/rag_agent_bloc.dart';
 import '../../../blocs/rag_document/rag_document_bloc.dart';
+import '../../../constants/app_constants.dart';
+import '../../../repositories/ai/rag_agent_repository.dart';
 import 'components/rag_message_tile.dart';
 
 class RagAgentPageDesktop extends StatefulWidget {
@@ -25,8 +29,6 @@ class RagAgentPageDesktop extends StatefulWidget {
 
 class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
   final TextEditingController _textController = TextEditingController();
-  String? _selectedFileUrl;
-  String? _selectedFileName;
 
   @override
   void initState() {
@@ -49,86 +51,10 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
     }
   }
 
-  Future<void> _showFileUrlDialog() async {
-    final urlController = TextEditingController();
-    await showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        child: Container(
-          width: 900,
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Enter Google Drive PDF File URL',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: urlController,
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
-                decoration: const InputDecoration(
-                  hintText: 'https://example.com/file.pdf',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    borderSide: BorderSide.none,
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () {
-                      final url = urlController.text.trim();
-                      if (url.isEmpty) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(const SnackBar(content: Text('Please enter a valid PDF file URL.')));
-                        return;
-                      }
-                      setState(() {
-                        _selectedFileUrl = url;
-                        _selectedFileName = url.split('/').last;
-                      });
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Select'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _addDocumentToCorpus() {
-    if (_selectedFileUrl != null && _selectedFileName != null) {
-      context.read<RagDocumentBloc>().add(
-        AddCorpusDocument(corpusName: widget.corpusName, fileLink: _selectedFileUrl!),
-      );
-      setState(() {
-        _selectedFileUrl = null;
-        _selectedFileName = null;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
-      width: 1920,
+      width: AppConstants.desktopScaleWidth,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
@@ -141,7 +67,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                   child: Hero(
                     tag: 'rag_agent',
                     child: AutoSizeText(
-                      "RAG Agent",
+                      "Knowledge Based Generation",
                       maxLines: 2,
                       minFontSize: 80,
                       style: GoogleFonts.poppins(fontSize: 80, color: Colors.black),
@@ -192,39 +118,6 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                 },
                               ),
                             ),
-                            // Show selected file url and unselect/add button if a file url is selected
-                            if (_selectedFileUrl != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.link, color: Colors.blue),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        _selectedFileName ?? _selectedFileUrl!,
-                                        style: const TextStyle(fontSize: 14),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.close, size: 20),
-                                      tooltip: 'Unselect file',
-                                      onPressed: () {
-                                        setState(() {
-                                          _selectedFileUrl = null;
-                                          _selectedFileName = null;
-                                        });
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.cloud_upload),
-                                      tooltip: 'Add to Corpus',
-                                      onPressed: _addDocumentToCorpus,
-                                    ),
-                                  ],
-                                ),
-                              ),
                             // Message Input
                             Padding(
                               padding: const EdgeInsets.only(top: 16.0),
@@ -261,16 +154,16 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                       ),
                                     ),
                                   ),
-                                  IconButton(
-                                    padding: const EdgeInsets.all(20.0),
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.blue[100],
-                                      shape: const CircleBorder(),
-                                    ),
-                                    icon: const Icon(Icons.attach_file, color: Colors.blue),
-                                    tooltip: 'Attach PDF URL',
-                                    onPressed: _showFileUrlDialog,
-                                  ),
+                                  // IconButton(
+                                  //   padding: const EdgeInsets.all(20.0),
+                                  //   style: IconButton.styleFrom(
+                                  //     backgroundColor: Colors.blue[100],
+                                  //     shape: const CircleBorder(),
+                                  //   ),
+                                  //   icon: const Icon(Icons.attach_file, color: Colors.blue),
+                                  //   tooltip: 'Attach PDF URL',
+                                  //   onPressed: _showFileUrlDialog,
+                                  // ),
                                   BlocBuilder<RagAgentBloc, RagAgentState>(
                                     builder: (context, state) {
                                       return IconButton(
@@ -315,7 +208,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               AutoSizeText(
-                                "RAG Documents",
+                                "Documents",
                                 maxLines: 2,
                                 minFontSize: 40,
                                 style: GoogleFonts.poppins(fontSize: 40, color: Colors.black),
@@ -355,7 +248,7 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                     if (state is RagDocumentFailure) {
                                       return Center(child: Text(state.message));
                                     } else if (state is RagListCorpusContentSuccess) {
-                                      final docs = state.response?.files ?? [];
+                                      final docs = state.response?.documents ?? [];
                                       if (docs.isEmpty) {
                                         return const Center(child: Text('No documents found.'));
                                       }
@@ -378,20 +271,58 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                               ],
                                             ),
                                             child: Row(
+                                              spacing: 12,
                                               children: [
                                                 const Icon(Icons.insert_drive_file, color: Colors.blue),
-                                                const SizedBox(width: 12),
                                                 Expanded(
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text(doc.displayName, style: const TextStyle(fontSize: 16)),
                                                       Text(
-                                                        'Uploaded: ${DateTime.parse(doc.createTime).toLocal().toString()}',
+                                                        doc.displayName,
+                                                        style: const TextStyle(fontSize: 16),
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                      Text(
+                                                        'Uploaded: ${DateTime.parse(doc.createdAt).toLocal().toString()}',
+                                                        overflow: TextOverflow.ellipsis,
                                                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                                                       ),
                                                     ],
                                                   ),
+                                                ),
+                                                // View Document Button
+                                                IconButton(
+                                                  padding: const EdgeInsets.all(14.0),
+                                                  style: IconButton.styleFrom(
+                                                    backgroundColor: Colors.blue[100],
+                                                    shape: const CircleBorder(),
+                                                  ),
+                                                  icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
+                                                  tooltip: 'View Document',
+                                                  onPressed: () async {
+                                                    try {
+                                                      final repo = RagAgentRepository();
+                                                      final response = await repo.getFileUrl(id: doc.fileId);
+                                                      final url = response.data['url'] as String?;
+                                                      if (url != null) {
+                                                        final url0 = Uri.parse(url);
+                                                        if (!await launchUrl(url0)) {
+                                                          throw Exception('Could not launch $url0');
+                                                        }
+                                                      } else {
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          const SnackBar(
+                                                            content: Text('No URL found for this document.'),
+                                                          ),
+                                                        );
+                                                      }
+                                                    } catch (e) {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(content: Text('Failed to open document: $e')),
+                                                      );
+                                                    }
+                                                  },
                                                 ),
                                                 IconButton(
                                                   padding: const EdgeInsets.all(14.0),
@@ -427,8 +358,8 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                                     if (confirm == true) {
                                                       context.read<RagDocumentBloc>().add(
                                                         DeleteCorpusDocument(
+                                                          id: doc.fileId,
                                                           corpusName: widget.corpusName,
-                                                          fileDisplayName: doc.displayName,
                                                         ),
                                                       );
                                                     }
@@ -446,32 +377,76 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                 ),
                               ),
                               // Add button to refresh the document list
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12.0),
-                                child: FilledButton.tonal(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: Colors.blue[100],
-                                    foregroundColor: Colors.black,
-                                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                                  ),
-                                  onPressed: () {
-                                    context.read<RagDocumentBloc>().add(
-                                      ListCorpusContent(corpusName: widget.corpusName),
-                                    );
-                                  },
-                                  child: Row(
-                                    spacing: 10,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(Icons.refresh, color: Colors.blue),
-                                      Text(
-                                        'Refresh Documents',
-                                        style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 12.0),
+                                    child: FilledButton.tonal(
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: Colors.orange[100],
+                                        foregroundColor: Colors.black,
+                                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                                       ),
-                                    ],
+                                      onPressed: () async {
+                                        final FilePickerResult? file = await FilePicker.platform.pickFiles(
+                                          type: FileType.custom,
+                                          allowedExtensions: ['pdf'],
+                                        );
+
+                                        if (file != null && file.files.isNotEmpty) {
+                                          final PlatformFile selectedFile = file.files.first;
+                                          context.read<RagDocumentBloc>().add(
+                                            AddCorpusDocument(corpusName: widget.corpusName, file: selectedFile),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(const SnackBar(content: Text('No file selected')));
+                                        }
+                                      },
+                                      child: Row(
+                                        spacing: 10,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.add, color: Colors.orange.shade700),
+                                          Text(
+                                            'Add Documents',
+                                            style: GoogleFonts.poppins(fontSize: 16, color: Colors.orange.shade700),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 12.0),
+                                    child: FilledButton.tonal(
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: Colors.blue[100],
+                                        foregroundColor: Colors.black,
+                                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                      ),
+                                      onPressed: () {
+                                        context.read<RagDocumentBloc>().add(
+                                          ListCorpusContent(corpusName: widget.corpusName),
+                                        );
+                                      },
+                                      child: Row(
+                                        spacing: 10,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.refresh, color: Colors.blue),
+                                          Text(
+                                            'Refresh Documents',
+                                            style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/auth/auth_bloc.dart';
 import '../../../blocs/question_bank/question_bank_bloc.dart';
 
+import '../../../constants/app_constants.dart';
 import '../../../models/question_bank.dart';
 import 'components/question_bank_tile.dart';
 
@@ -30,7 +31,7 @@ class QuestionBankPageDesktopState extends State<QuestionBankPageDesktop> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
-      width: 1920,
+      width: AppConstants.desktopScaleWidth,
       child: Scaffold(
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(

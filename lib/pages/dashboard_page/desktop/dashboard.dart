@@ -141,7 +141,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                 onTap: () => context.go('/teacher-dashboard/agent'),
                                 child: Container(
                                   width: 700,
-                                  height: 300,
+                                  height: 350,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15),
                                     border: Border.all(color: Colors.black, width: 3),
@@ -153,7 +153,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                       Hero(
                                         tag: 'agent',
                                         child: Text(
-                                          'Agent',
+                                          'Lumen Agent',
                                           style: GoogleFonts.poppins(fontSize: 46, color: Colors.black),
                                         ),
                                       ),
@@ -165,7 +165,8 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                           style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                                           decoration: InputDecoration(
                                             border: OutlineInputBorder(),
-                                            hintText: 'I want to create an assignment',
+                                            hintText:
+                                                'You can use Lumen Agent to generate assignments, grade them and more.',
                                             hintStyle: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                                           ),
                                         ),
@@ -191,7 +192,6 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                   backgroundColor: Colors.redAccent[100]!,
                                 ),
                               ),
-
                             ],
                           ),
                           SizedBox(height: 50),
@@ -250,18 +250,21 @@ class TeacherDashboardDesktop extends StatelessWidget {
                               GestureDetector(
                                 onTap: () => context.go('/teacher-dashboard/rag-agent'),
                                 child: WideTile(
-                                  title: AutoSizeText("RAG agent", style: GoogleFonts.poppins(fontSize: 46)),
-                                  subTitle: AutoSizeText("Generate questions", style: GoogleFonts.poppins(fontSize: 16)),
+                                  title: AutoSizeText(
+                                    "Knowledge Based Generation",
+                                    style: GoogleFonts.poppins(fontSize: 46),
+                                  ),
+                                  subTitle: AutoSizeText(
+                                    "Generate questions",
+                                    style: GoogleFonts.poppins(fontSize: 16),
+                                  ),
                                   description: AutoSizeText(
-                                    "Manage your curriculum and generate questions based on it.",
+                                    "Generate questions based on your knowledge base like curriculum, syllabus etc. using AI.",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   backgroundColor: Colors.lightBlueAccent[100]!,
                                 ),
                               ),
-
-
-
 
                               // GestureDetector(
                               //   onTap: () => context.go('/teacher-dashboard/pdf-generator'),

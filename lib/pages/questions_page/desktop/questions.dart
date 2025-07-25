@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../blocs/questions/questions_bloc.dart';
+import '../../../constants/app_constants.dart';
 import '../../../models/questions/mcq.dart';
 import '../../../models/questions/msq.dart';
 import '../../../models/questions/nat.dart';
@@ -96,7 +97,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
-      width: 1920,
+      width: AppConstants.desktopScaleWidth,
       child: Scaffold(
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(

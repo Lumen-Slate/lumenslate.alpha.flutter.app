@@ -1,3 +1,5 @@
+import 'package:lumen_slate/serializers/agent_serializers/assessor_agent_serializer.dart';
+
 import 'assignment_generator_general_serializer.dart';
 import 'assignment_generator_tailored_serializer.dart';
 
@@ -38,6 +40,8 @@ class AgentResponse {
       data = AssignmentGeneratorSerializer.fromJson(dataMap);
     } else if (agentName == 'assignment_generator_tailored') {
       data = AssignmentGeneratorTailoredSerializer.fromJson(dataMap);
+    } else if (agentName == 'assessor_agent') {
+      data = AssessorAgentSerializer.fromJson(dataMap);
     } else if (agentName == 'general_chat_agent') {
       data = {};
     } else {

@@ -183,6 +183,13 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                       _getQuestionText(),
                       style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w400),
                     ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Keyword cannot be empty';
+                      }
+                      return null;
+                    },
+                    onFieldSubmitted: (value) => _addKeyword(value),
                   ),
                   const SizedBox(height: 20),
                   Text('Keywords (Optional)', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w400)),

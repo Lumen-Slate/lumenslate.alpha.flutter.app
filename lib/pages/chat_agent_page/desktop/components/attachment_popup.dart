@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_popup/flutter_popup.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lumen_slate/lib.dart';
 import 'package:lumen_slate/pages/chat_agent_page/desktop/components/student_selection_dialog.dart';
 import 'package:lumen_slate/pages/chat_agent_page/desktop/components/assignment_selection_dialog.dart';
 

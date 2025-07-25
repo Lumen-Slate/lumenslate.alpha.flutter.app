@@ -1,28 +1,20 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:lumen_slate/constants/app_constants.dart';
+import 'package:lumen_slate/serializers/rag_agent_serializers/add_file_payload.dart';
 import '../../serializers/rag_agent_serializers/add_corpus_document_serializer.dart';
 import '../../serializers/rag_agent_serializers/delete_corpus_document_serializer.dart';
 import '../../serializers/rag_agent_serializers/list_corpus_content_serializer.dart';
 import '../../serializers/rag_agent_serializers/rag_agent_payload.dart';
 
 class RagAgentRepository {
-  final Dio _client = Dio(
-    BaseOptions(
-      baseUrl: AppConstants.backendDomain,
-    ),
-  );
+  final Dio _client = Dio(BaseOptions(baseUrl: AppConstants.backendDomain));
 
   final Logger _logger = Logger();
 
-  Future<Response?> callRagAgent({
-    required RAGAgentPayload payload,
-  }) async {
+  Future<Response?> callRagAgent({required RAGAgentPayload payload}) async {
     try {
-      final response = await _client.post(
-        '/ai/rag-agent',
-        data: payload.toJson(),
-      );
+      final response = await _client.post('/ai/rag-agent', data: payload.toJson());
       return response;
     } catch (e) {
       _logger.e('Error calling rag agent: $e');
@@ -30,11 +22,7 @@ class RagAgentRepository {
     }
   }
 
-  Future<Response?> fetchRagChatHistory({
-    required String teacherId,
-    int limit = 20,
-    int offset = 0,
-  }) async {
+  Future<Response?> fetchRagChatHistory({required String teacherId, int limit = 20, int offset = 0}) async {
     // Dummy response for testing
     await Future.delayed(const Duration(milliseconds: 300));
     return Response(
@@ -44,19 +32,9 @@ class RagAgentRepository {
     );
   }
 
-
-  Future<AddCorpusDocumentSerializer?> addCorpusDocument({
-    required String corpusName,
-    required String fileLink
-  }) async {
+  Future<AddCorpusDocumentSerializer?> addCorpusDocument(AddCorpusFilePayload payload) async {
     try {
-      final response = await _client.post(
-        '/ai/rag-agent/add-corpus-document',
-        data: {
-          'corpusName': corpusName,
-          'fileLink': fileLink,
-        },
-      );
+      final response = await _client.post('/ai/rag-agent/add-corpus-document', data: payload.toFormData());
       return AddCorpusDocumentSerializer.fromJson(response.data);
     } catch (e) {
       _logger.e('Error adding corpus document: $e');
@@ -64,18 +42,9 @@ class RagAgentRepository {
     }
   }
 
-  Future<DeleteCorpusDocumentSerializer?> deleteCorpusDocument({
-    required String corpusName,
-    required String fileDisplayName,
-  }) async {
+  Future<DeleteCorpusDocumentSerializer?> deleteCorpusDocument(String id) async {
     try {
-      final response = await _client.post(
-        '/ai/rag-agent/delete-corpus-document',
-        data: {
-          'corpusName': corpusName,
-          'fileDisplayName': fileDisplayName,
-        },
-      );
+      final response = await _client.delete('/ai/documents/$id');
       return DeleteCorpusDocumentSerializer.fromJson(response.data);
     } catch (e) {
       _logger.e('Error deleting corpus document: $e');
@@ -83,19 +52,22 @@ class RagAgentRepository {
     }
   }
 
-  Future<ListCorpusContentSerializer?> listCorpusContent({
-    required String corpusName,
-  }) async {
+  Future<ListCorpusContentSerializer?> listCorpusContent({required String corpusName}) async {
     try {
-      final response = await _client.post(
-        '/ai/rag-agent/list-corpus-content',
-        data: {
-          'corpusName': corpusName,
-        },
-      );
+      final response = await _client.get('/ai/rag-agent/$corpusName/documents');
       return ListCorpusContentSerializer.fromJson(response.data);
     } catch (e) {
       _logger.e('Error listing corpus content: $e');
+      rethrow;
+    }
+  }
+
+  Future<Response> getFileUrl({required String id}) async {
+    try {
+      final response = await _client.get('/ai/documents/view/$id');
+      return response;
+    } catch (e) {
+      _logger.e('Error getting file URL: $e');
       rethrow;
     }
   }
