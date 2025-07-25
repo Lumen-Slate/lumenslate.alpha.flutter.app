@@ -13,6 +13,7 @@ import '../question_segmentation_dialog.dart';
 class SubjectiveTile extends StatelessWidget {
   final Subjective subjective;
   final bool viewOnly;
+  final double _iconSize = 23;
 
   const SubjectiveTile({super.key, required this.subjective, this.viewOnly = false});
 
@@ -32,6 +33,7 @@ class SubjectiveTile extends StatelessWidget {
         children: [
           Row(
             spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
@@ -74,10 +76,10 @@ class SubjectiveTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                       IconButton(
-                        icon: Icon(Icons.auto_fix_high, color: Colors.green[700]),
+                        icon: Icon(Icons.auto_fix_high_outlined, color: Colors.green[700]),
                         onPressed: () async {
                           await showDialog(
                             context: context,
@@ -88,10 +90,10 @@ class SubjectiveTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue[700]),
+                        icon: Icon(Icons.edit_outlined, color: Colors.blue[700]),
                         onPressed: () async {
                           final updatedSubjective = await showDialog<Subjective>(
                             context: context,
@@ -119,10 +121,10 @@ class SubjectiveTile extends StatelessWidget {
                             }
                           }
                         },
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red[700]),
+                        icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700]),
                         onPressed: () async {
                           final confirmed = await showDialog<bool>(
                             context: context,
@@ -162,7 +164,7 @@ class SubjectiveTile extends StatelessWidget {
                             }
                           }
                         },
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                     ],
                   ),

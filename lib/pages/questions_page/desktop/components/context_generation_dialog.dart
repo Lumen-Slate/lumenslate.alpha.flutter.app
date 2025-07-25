@@ -171,7 +171,7 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                     style: GoogleFonts.jost(fontSize: 20, fontWeight: FontWeight.w300),
                   ),
                   const SizedBox(height: 20),
-                  Text('Original Question:', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w400)),
+                  Text('Original Question', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w400)),
                   SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.all(10),
@@ -188,7 +188,7 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
                   Text('Keywords (Optional)', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w400)),
                   const SizedBox(height: 4),
                   Text(
-                    'Keywords can be added to help AI generate more targeted Stories around a question.',
+                    'Keywords can be added to help AI generate more targeted Stories around a question',
                     style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 16),

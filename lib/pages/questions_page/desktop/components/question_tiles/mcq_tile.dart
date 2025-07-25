@@ -13,6 +13,7 @@ import '../mcq_variation_dialog.dart';
 class MCQTile extends StatelessWidget {
   final MCQ mcq;
   final bool viewOnly;
+  final double _iconSize = 23;
 
   const MCQTile({super.key, required this.mcq, this.viewOnly = false});
 
@@ -141,6 +142,7 @@ class MCQTile extends StatelessWidget {
         children: [
           Row(
             spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
@@ -209,10 +211,10 @@ class MCQTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                       IconButton(
-                        icon: Icon(Icons.account_tree, color: Colors.blue[700]),
+                        icon: Icon(Icons.account_tree_outlined, color: Colors.blue[700]),
                         onPressed: () async {
                           await showDialog(
                             context: context,
@@ -226,17 +228,17 @@ class MCQTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue[700]),
+                        icon: Icon(Icons.edit_outlined, color: Colors.purple),
                         onPressed: () => _editQuestion(context),
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red[700]),
+                        icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700]),
                         onPressed: () => _deleteQuestion(context),
-                        iconSize: 21,
+                        iconSize: _iconSize,
                       ),
                     ],
                   ),

@@ -10,6 +10,7 @@ import '../context_generation_dialog.dart';
 class NATTile extends StatelessWidget {
   final NAT nat;
   final bool viewOnly;
+  final double _iconSize = 23;
 
   const NATTile({super.key, required this.nat, this.viewOnly = false});
 
@@ -149,6 +150,7 @@ class NATTile extends StatelessWidget {
         children: [
           Row(
             spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
@@ -216,17 +218,17 @@ class NATTile extends StatelessWidget {
                           ),
                         );
                       },
-                      iconSize: 21,
+                      iconSize: _iconSize,
                     ),
                     IconButton(
-                      icon: Icon(Icons.edit, color: Colors.blue[700]),
+                      icon: Icon(Icons.mode_edit_outlined, color: Colors.blue[700]),
                       onPressed: () => _editQuestion(context),
-                      iconSize: 21,
+                      iconSize: _iconSize,
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red[700]),
+                      icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700]),
                       onPressed: () => _deleteQuestion(context),
-                      iconSize: 21,
+                      iconSize: _iconSize,
                     ),
                   ],
                 ),
