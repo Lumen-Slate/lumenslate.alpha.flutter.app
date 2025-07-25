@@ -30,6 +30,11 @@ class _ClassroomsPageDesktopState extends State<ClassroomsPageDesktop> {
   void initState() {
     super.initState();
     context.read<ClassroomBloc>().add(InitializeClassroomPaging(extended: false));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ClassroomBloc>().add(
+        FetchNextClassroomPage(teacherId: _teacherId, pageSize: _pageSize, extended: false),
+      );
+    });
   }
 
   @override
@@ -40,72 +45,70 @@ class _ClassroomsPageDesktopState extends State<ClassroomsPageDesktop> {
       builder: (context, state) {
         return ResponsiveScaledBox(
           width: AppConstants.desktopScaleWidth,
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            body: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: AutoSizeText(
-                      "Classrooms",
-                      maxLines: 2,
-                      minFontSize: 80,
-                      style: GoogleFonts.poppins(fontSize: 80),
+          child: PopScope(
+            onPopInvokedWithResult: (result, object) {},
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: AutoSizeText(
+                        "Classrooms",
+                        maxLines: 2,
+                        minFontSize: 80,
+                        style: GoogleFonts.poppins(fontSize: 80),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 50),
-                  Expanded(
-                    child: Builder(
-                      builder: (_) {
-                        if (state is ClassroomOriginalSuccess) {
-                          return PagedGridView<int, Classroom>(
-                            showNewPageProgressIndicatorAsGridChild: false,
-                            showNewPageErrorIndicatorAsGridChild: false,
-                            showNoMoreItemsIndicatorAsGridChild: false,
-                            state: state.pagingState,
-                            fetchNextPage: () {
-                              context.read<ClassroomBloc>().add(
-                                FetchNextClassroomPage(
-                                  teacherId: _teacherId,
-                                  pageSize: _pageSize,
-                                  extended: false,
-                                ),
-                              );
-                            },
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: _getCrossAxisCount(screenWidth),
-                              mainAxisSpacing: 20,
-                              crossAxisSpacing: 20,
-                              childAspectRatio: 2.0,
-                            ),
-                            builderDelegate: PagedChildBuilderDelegate<Classroom>(
-                              itemBuilder: (context, item, index) => ClassroomTile(
-                                classroom: item,
-                                teacherNames: const [],
-                                classroomAssignments: const [],
-                                index: index,
+                    const SizedBox(height: 50),
+                    Expanded(
+                      child: Builder(
+                        builder: (_) {
+                          if (state is ClassroomOriginalSuccess) {
+                            return PagedGridView<int, Classroom>(
+                              showNewPageProgressIndicatorAsGridChild: false,
+                              showNewPageErrorIndicatorAsGridChild: false,
+                              showNoMoreItemsIndicatorAsGridChild: false,
+                              state: state.pagingState,
+                              fetchNextPage: () {
+                                context.read<ClassroomBloc>().add(
+                                  FetchNextClassroomPage(teacherId: _teacherId, pageSize: _pageSize, extended: false),
+                                );
+                              },
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: _getCrossAxisCount(screenWidth),
+                                mainAxisSpacing: 20,
+                                crossAxisSpacing: 20,
+                                childAspectRatio: 2.0,
                               ),
-                              noItemsFoundIndicatorBuilder: (context) =>
-                                  const Center(child: Text("No classrooms found.")),
-                              firstPageErrorIndicatorBuilder: (context) =>
-                                  const Center(child: Text("Error loading classrooms")),
-                            ),
-                          );
-                        }
-                        // ...existing code for loading, error, etc...
-                        if (state is ClassroomFailure) {
-                          return Center(child: Text('Error loading classrooms'));
-                        }
-                        if (state is ClassroomInitial) {
-                          return const Center(child: CircularProgressIndicator());
-                        }
-                        return const SizedBox.shrink();
-                      },
+                              builderDelegate: PagedChildBuilderDelegate<Classroom>(
+                                itemBuilder: (context, item, index) => ClassroomTile(
+                                  classroom: item,
+                                  teacherNames: const [],
+                                  classroomAssignments: const [],
+                                  index: index,
+                                ),
+                                noItemsFoundIndicatorBuilder: (context) =>
+                                    const Center(child: Text("No classrooms found.")),
+                                firstPageErrorIndicatorBuilder: (context) =>
+                                    const Center(child: Text("Error loading classrooms")),
+                              ),
+                            );
+                          }
+                          if (state is ClassroomFailure) {
+                            return Center(child: Text('Error loading classrooms'));
+                          }
+                          if (state is ClassroomInitial) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

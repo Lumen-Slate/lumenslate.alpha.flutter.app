@@ -28,7 +28,11 @@ class ClassroomRepository {
     bool extended = false,
   }) async {
     try {
-      Map<String, dynamic> queryParams = {'extended': extended.toString()};
+      Map<String, dynamic> queryParams = {
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+        'extended': extended.toString()
+      };
       return await _client.get('/classrooms', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(

@@ -4,11 +4,7 @@ import '../constants/app_constants.dart';
 import '../models/students.dart';
 
 class StudentRepository {
-  final Dio _client = Dio(
-    BaseOptions(
-      baseUrl: AppConstants.backendDomain,
-    ),
-  );
+  final Dio _client = Dio(BaseOptions(baseUrl: AppConstants.backendDomain));
 
   final Logger _logger = Logger();
 
@@ -29,6 +25,10 @@ class StudentRepository {
     int limit = 10,
     int offset = 0,
     bool extended = false,
+    String? email,
+    String? rollNo,
+    String? classIds,
+    String? q,
   }) async {
     try {
       Map<String, dynamic> queryParams = {
@@ -36,6 +36,18 @@ class StudentRepository {
         'offset': offset.toString(),
         'extended': extended.toString(),
       };
+      if (email != null && email.isNotEmpty) {
+        queryParams['email'] = email;
+      }
+      if (rollNo != null && rollNo.isNotEmpty) {
+        queryParams['rollNo'] = rollNo;
+      }
+      if (classIds != null && classIds.isNotEmpty) {
+        queryParams['classIds'] = classIds;
+      }
+      if (q != null && q.isNotEmpty) {
+        queryParams['q'] = q;
+      }
       return await _client.get('/students', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
@@ -47,9 +59,15 @@ class StudentRepository {
     }
   }
 
-  Future<Response> getStudent({required String id, bool extended = false}) async {
+  Future<Response> getStudent({
+    required String id,
+    bool extended = false,
+  }) async {
     try {
-      return await _client.get('/students/$id', queryParameters: {'extended': extended.toString()});
+      return await _client.get(
+        '/students/$id',
+        queryParameters: {'extended': extended.toString()},
+      );
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error fetching Student: Status code ${dioError.response?.statusCode}',
@@ -99,4 +117,3 @@ class StudentRepository {
     }
   }
 }
-

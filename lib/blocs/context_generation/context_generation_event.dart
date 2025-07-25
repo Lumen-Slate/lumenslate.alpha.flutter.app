@@ -24,23 +24,12 @@ class ContextGeneratorReset extends ContextGeneratorEvent {
   List<Object> get props => [];
 }
 
-class SaveQuestion extends ContextGeneratorEvent {
-  final String id;
-  final String type;
-  final String updatedQuestion;
-
-  const SaveQuestion(this.id, this.type, this.updatedQuestion);
-
-  @override
-  List<Object> get props => [id, type, updatedQuestion];
-}
-
-class OverrideQuestionWithContext extends ContextGeneratorEvent {
+class OverwriteQuestionWithContext extends ContextGeneratorEvent {
   final String questionId;
   final String questionType;
   final String contextualizedQuestion;
 
-  const OverrideQuestionWithContext({
+  const OverwriteQuestionWithContext({
     required this.questionId,
     required this.questionType,
     required this.contextualizedQuestion,

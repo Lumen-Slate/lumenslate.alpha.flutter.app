@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 class ClassroomCardMobile extends StatelessWidget {
   final dynamic classroom;
@@ -21,13 +22,10 @@ class ClassroomCardMobile extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigator.pushNamed(context, '/classroom/${classroom.id}');
-        /// TODO: Implement navigation to classroom details
+        context.go('/teacher-dashboard/classrooms/${classroom.id}/students');
       },
       child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 4,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +44,7 @@ class ClassroomCardMobile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    classroom.subject,
+                    classroom.name,
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -74,7 +72,10 @@ class ClassroomCardMobile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

@@ -35,8 +35,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
   ) : super(ContextGeneratorInitial()) {
     on<GenerateContext>(_onGenerateContext);
     on<ContextGeneratorReset>(_onContextGeneratorReset);
-    on<SaveQuestion>(_onSaveQuestion);
-    on<OverrideQuestionWithContext>(_onOverrideQuestionWithContext);
+    on<OverwriteQuestionWithContext>(_onOverwriteQuestionWithContext);
     on<SaveAsNewQuestionWithContext>(_onSaveAsNewQuestionWithContext);
   }
 
@@ -60,52 +59,13 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
     emit(ContextGeneratorInitial());
   }
 
-  Future<void> _onSaveQuestion(
-      SaveQuestion event,
-      Emitter<ContextGeneratorState> emit,
-      ) async {
-    emit(ContextGeneratorLoading());
-    try {
-      // Update the dummy data based on the type
-      switch (event.type) {
-        case 'MCQ':
-          final index = dummyMCQs.indexWhere((item) => item.id == event.id);
-          if (index != -1) {
-            dummyMCQs[index] = dummyMCQs[index].copyWith(question: event.updatedQuestion);
-          }
-          break;
-        case 'MSQ':
-          final index = dummyMSQs.indexWhere((item) => item.id == event.id);
-          if (index != -1) {
-            dummyMSQs[index] = dummyMSQs[index].copyWith(question: event.updatedQuestion);
-          }
-          break;
-        case 'NAT':
-          final index = dummyNATs.indexWhere((item) => item.id == event.id);
-          if (index != -1) {
-            dummyNATs[index] = dummyNATs[index].copyWith(question: event.updatedQuestion);
-          }
-          break;
-        case 'Subjective':
-          final index = dummySubjectives.indexWhere((item) => item.id == event.id);
-          if (index != -1) {
-            dummySubjectives[index] = dummySubjectives[index].copyWith(question: event.updatedQuestion);
-          }
-          break;
-      }
-      emit(ContextGeneratorSuccess('Question updated successfully'));
-    } catch (e) {
-      emit(ContextGeneratorFailure(e.toString()));
-    }
-  }
-
-  Future<void> _onOverrideQuestionWithContext(
-    OverrideQuestionWithContext event,
+  Future<void> _onOverwriteQuestionWithContext(
+    OverwriteQuestionWithContext event,
     Emitter<ContextGeneratorState> emit,
   ) async {
-    emit(ContextOverrideLoading());
+    emit(ContextOverwriteLoading());
     try {
-      final Response response = await aiRepository.overrideQuestionWithContext(
+      final Response response = await aiRepository.overwriteQuestionWithContext(
         event.questionId,
         event.questionType,
         event.contextualizedQuestion,
@@ -115,14 +75,14 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
         throw StateError(response.data['error'] ?? 'An error occurred while overriding the question.');
       }
 
-      emit(ContextOverrideSuccess('Question successfully overridden with context.'));
+      emit(ContextOverwriteSuccess('Question successfully overridden with context.'));
     } on StateError catch (e) {
-      emit(ContextOverrideFailure(e.message));
+      emit(ContextOverwriteFailure(e.message));
     } on DioException catch (e) {
-      emit(ContextOverrideFailure("Network error: ${e.message}"));
+      emit(ContextOverwriteFailure("Network error: ${e.message}"));
     } catch (e) {
       Logger().e('Error overriding question with context: $e');
-      emit(ContextOverrideFailure("Unexpected error: $e"));
+      emit(ContextOverwriteFailure("Unexpected error: $e"));
     }
   }
 
@@ -133,7 +93,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
     emit(ContextSaveAsNewLoading());
     try {
       Response response;
-      
+
       // Determine question type and use appropriate repository
       switch (event.questionType.toLowerCase()) {
         // TODO: remove dummy
@@ -151,7 +111,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
           );
           response = await mcqRepository.createMCQ(mcq);
           break;
-          
+
         case 'msq':
           final msq = MSQ(
             id: '',
@@ -166,7 +126,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
           );
           response = await msqRepository.createMSQ(msq);
           break;
-          
+
         case 'nat':
           final nat = NAT(
             id: '',
@@ -180,7 +140,7 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
           );
           response = await natRepository.createNAT(nat);
           break;
-          
+
         case 'subjective':
           final subjective = Subjective(
             id: '',
@@ -191,13 +151,13 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
             variableIds: List<String>.from(event.questionData['variableIds'] ?? []),
             points: event.questionData['points'] ?? 10,
             idealAnswer: event.questionData['idealAnswer'],
-            gradingCriteria: event.questionData['gradingCriteria'] != null 
+            gradingCriteria: event.questionData['gradingCriteria'] != null
                 ? List<String>.from(event.questionData['gradingCriteria'])
                 : null,
           );
           response = await subjectiveRepository.createSubjective(subjective);
           break;
-          
+
         default:
           throw StateError('Unsupported question type: ${event.questionType}');
       }

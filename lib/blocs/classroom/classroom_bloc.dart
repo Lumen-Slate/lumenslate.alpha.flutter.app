@@ -32,8 +32,10 @@ class ClassroomBloc extends Bloc<ClassroomEvent, ClassroomState> {
 
           if (response.statusCode == 200) {
             final List<ClassroomExtended> classrooms = [];
-            for (var item in response.data) {
-              classrooms.add(ClassroomExtended.fromJson(item));
+            if (response.data != null) {
+              for (var item in response.data) {
+                classrooms.add(ClassroomExtended.fromJson(item));
+              }
             }
             final isLastPage = classrooms.length < event.pageSize;
 
@@ -71,8 +73,10 @@ class ClassroomBloc extends Bloc<ClassroomEvent, ClassroomState> {
 
           if (response.statusCode == 200) {
             final List<Classroom> classrooms = [];
-            for (var item in response.data) {
-              classrooms.add(Classroom.fromJson(item));
+            if (response.data != null) {
+              for (var item in response.data) {
+                classrooms.add(Classroom.fromJson(item));
+              }
             }
             final isLastPage = classrooms.length < event.pageSize;
 

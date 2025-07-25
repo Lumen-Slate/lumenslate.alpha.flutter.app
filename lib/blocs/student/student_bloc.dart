@@ -64,12 +64,18 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
             limit: event.pageSize,
             offset: nextOffset,
             extended: false,
+            classIds: event.classIds,
+            email: event.email,
+            rollNo: event.rollNo,
+            q: event.searchQuery,
           );
 
           if (response.statusCode == 200) {
             final List<Student> students = [];
-            for (var item in response.data) {
-              students.add(Student.fromJson(item));
+            if (response.data != null) {
+              for (var item in response.data) {
+                students.add(Student.fromJson(item));
+              }
             }
             final isLastPage = students.length < event.pageSize;
 
@@ -117,6 +123,48 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
         }
       } catch (error) {
         emit(StudentSingleFailure(error));
+      }
+    });
+
+    on<SearchStudents>((event, emit) async {
+      // Initialize a fresh paginated search
+      emit(StudentOriginalSuccess(PagingState<int, Student>(isLoading: true)));
+
+      try {
+        final response = await repository.getStudents(
+          limit: 10, // First page size for search
+          offset: 0,
+          extended: event.extended,
+          classIds: event.classIds,
+          email: event.email,
+          rollNo: event.rollNo,
+          q: event.searchQuery,
+        );
+
+        if (response.statusCode == 200) {
+          final List<Student> students = [];
+          if (response.data != null) {
+            for (var item in response.data) {
+              students.add(Student.fromJson(item));
+            }
+          }
+          final isLastPage = students.length < 10;
+
+          emit(
+            StudentOriginalSuccess(
+              PagingState<int, Student>(
+                pages: [students],
+                keys: [0],
+                hasNextPage: !isLastPage,
+                isLoading: false,
+              ),
+            ),
+          );
+        } else {
+          emit(StudentFailure(Exception('Failed to search students')));
+        }
+      } catch (error) {
+        emit(StudentFailure(error));
       }
     });
   }

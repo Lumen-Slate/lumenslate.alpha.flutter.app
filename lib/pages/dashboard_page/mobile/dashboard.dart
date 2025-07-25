@@ -117,7 +117,7 @@ class TeacherDashboardMobile extends StatelessWidget {
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
               backgroundColor: Colors.redAccent[100]!,
-              onTap: () => context.push('/teacher-dashboard_page/question-banks'),
+              onTap: () => context.push('/teacher-dashboard/question-banks'),
             ),
             const SizedBox(height: 20),
             WideTile(
@@ -128,7 +128,7 @@ class TeacherDashboardMobile extends StatelessWidget {
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
               backgroundColor: Colors.deepPurpleAccent[100]!,
-              onTap: () => context.push('/teacher-dashboard_page/questions_page'),
+              onTap: () => context.push('/teacher-dashboard/questions'),
             ),
             const SizedBox(height: 20),
             WideTile(
@@ -139,7 +139,7 @@ class TeacherDashboardMobile extends StatelessWidget {
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
               backgroundColor: Colors.orangeAccent[100]!,
-              onTap: () => context.push('/teacher-dashboard_page/classrooms_page'),
+              onTap: () => context.push('/teacher-dashboard/classrooms'),
             ),
             const SizedBox(height: 20),
             WideTile(
@@ -150,7 +150,7 @@ class TeacherDashboardMobile extends StatelessWidget {
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
               backgroundColor: Colors.greenAccent[200]!,
-              onTap: () => context.push('/teacher-dashboard_page/assignments_page'),
+              onTap: () => context.push('/teacher-dashboard/assignments'),
             ),
             const SizedBox(height: 20),
             WideTile(
