@@ -14,6 +14,7 @@ import '../msq_variation_dialog.dart';
 class MSQTile extends StatelessWidget {
   final MSQ msq;
   final bool viewOnly;
+  final double _iconSize = 23;
 
   const MSQTile({super.key, required this.msq, this.viewOnly = false});
 
@@ -107,10 +108,10 @@ class MSQTile extends StatelessWidget {
                           ),
                         );
                       },
-                      iconSize: 21,
+                      iconSize: _iconSize,
                     ),
                     IconButton(
-                      icon: Icon(Icons.account_tree, color: Colors.blue[700]),
+                      icon: Icon(Icons.account_tree_outlined, color: Colors.blue[700]),
                       onPressed: () async {
                         await showDialog(
                           context: context,
@@ -124,10 +125,10 @@ class MSQTile extends StatelessWidget {
                           ),
                         );
                       },
-                      iconSize: 21,
+                      iconSize: _iconSize,
                     ),
                     IconButton(
-                      icon: Icon(Icons.edit, color: Colors.blue[700]),
+                      icon: Icon(Icons.edit_outlined, color: Colors.purple),
                       onPressed: () async {
                         final updatedMSQ = await showDialog<MSQ>(
                           context: context,
@@ -158,10 +159,10 @@ class MSQTile extends StatelessWidget {
                           }
                         }
                       },
-                      iconSize: 21,
+                      iconSize: _iconSize,
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red[700]),
+                      icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700]),
                       onPressed: () async {
                         final confirmed = await showDialog<bool>(
                           context: context,
@@ -205,7 +206,7 @@ class MSQTile extends StatelessWidget {
                           }
                         }
                       },
-                      iconSize: 21,
+                      iconSize: _iconSize,
                     ),
                   ],
                 ),
