@@ -142,6 +142,7 @@ class MCQTile extends StatelessWidget {
         children: [
           Row(
             spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
