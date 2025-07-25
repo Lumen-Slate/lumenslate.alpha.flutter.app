@@ -143,6 +143,17 @@ class TeacherDashboardMobile extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             WideTile(
+              title: AutoSizeText("RAG Agent", style: GoogleFonts.poppins(fontSize: 30)),
+              subTitle: AutoSizeText("Knowledge-based AI assistant", style: GoogleFonts.poppins(fontSize: 14)),
+              description: AutoSizeText(
+                "Upload documents and chat with an AI that can answer questions based on your uploaded content.",
+                style: GoogleFonts.poppins(fontSize: 14),
+              ),
+              backgroundColor: Colors.indigoAccent[100]!,
+              onTap: () => context.push('/teacher-dashboard/rag-agent'),
+            ),
+            const SizedBox(height: 20),
+            WideTile(
               title: AutoSizeText("Classrooms", style: GoogleFonts.poppins(fontSize: 30)),
               subTitle: AutoSizeText("Manage classrooms_page", style: GoogleFonts.poppins(fontSize: 14)),
               description: AutoSizeText(
