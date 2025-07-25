@@ -132,6 +132,17 @@ class TeacherDashboardMobile extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             WideTile(
+              title: AutoSizeText("Chat Agent", style: GoogleFonts.poppins(fontSize: 30)),
+              subTitle: AutoSizeText("AI-powered teaching assistant", style: GoogleFonts.poppins(fontSize: 14)),
+              description: AutoSizeText(
+                "Interact with an intelligent AI agent to get help with teaching, grading, and educational content creation.",
+                style: GoogleFonts.poppins(fontSize: 14),
+              ),
+              backgroundColor: Colors.tealAccent[100]!,
+              onTap: () => context.push('/teacher-dashboard/agent'),
+            ),
+            const SizedBox(height: 20),
+            WideTile(
               title: AutoSizeText("Classrooms", style: GoogleFonts.poppins(fontSize: 30)),
               subTitle: AutoSizeText("Manage classrooms_page", style: GoogleFonts.poppins(fontSize: 14)),
               description: AutoSizeText(
