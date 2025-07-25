@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../models/students.dart';
+import 'assignment_report_popup.dart';
 
 class AssignmentReportsSection extends StatelessWidget {
   final Student student;
@@ -53,28 +54,37 @@ class AssignmentReportsSection extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       children: [
-                        _buildAssignmentCard(
-                          title: 'Physics Assignment #1',
-                          score: '85/100',
-                          date: 'Jan 15, 2025',
-                          status: 'Completed',
-                          statusColor: Colors.green,
+                        InkWell(
+                          onTap: () => _showAssignmentReport(context, 'Physics Assignment #1'),
+                          child: _buildAssignmentCard(
+                            title: 'Physics Assignment #1',
+                            score: '85/100',
+                            date: 'Jan 15, 2025',
+                            status: 'Completed',
+                            statusColor: Colors.green,
+                          ),
                         ),
                         const SizedBox(height: 12),
-                        _buildAssignmentCard(
-                          title: 'Math Quiz #3',
-                          score: '92/100',
-                          date: 'Jan 12, 2025',
-                          status: 'Completed',
-                          statusColor: Colors.green,
+                        InkWell(
+                          onTap: () => _showAssignmentReport(context, 'Math Quiz #3'),
+                          child: _buildAssignmentCard(
+                            title: 'Math Quiz #3',
+                            score: '92/100',
+                            date: 'Jan 12, 2025',
+                            status: 'Completed',
+                            statusColor: Colors.green,
+                          ),
                         ),
                         const SizedBox(height: 12),
-                        _buildAssignmentCard(
-                          title: 'Chemistry Lab Report',
-                          score: '78/100',
-                          date: 'Jan 10, 2025',
-                          status: 'Completed',
-                          statusColor: Colors.green,
+                        InkWell(
+                          onTap: () => _showAssignmentReport(context, 'Chemistry Lab Report'),
+                          child: _buildAssignmentCard(
+                            title: 'Chemistry Lab Report',
+                            score: '78/100',
+                            date: 'Jan 10, 2025',
+                            status: 'Completed',
+                            statusColor: Colors.green,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         _buildAssignmentCard(
@@ -205,6 +215,26 @@ class AssignmentReportsSection extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAssignmentReport(BuildContext context, String assignmentTitle) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(40),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: AssignmentReportPopupDesktop(
+              student: student,
+              classroomId: classroomId,
+            ),
+          ),
+        );
+      },
     );
   }
 }

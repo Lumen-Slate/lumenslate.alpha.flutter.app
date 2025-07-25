@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../models/students.dart';
+import 'assignment_report_popup.dart';
 
 class AssignmentReportsSectionMobile extends StatelessWidget {
   final Student student;
@@ -46,28 +47,37 @@ class AssignmentReportsSectionMobile extends StatelessWidget {
             child: Column(
               children: [
                 // Recent Assignments List
-                _buildAssignmentCard(
-                  title: 'Physics Assignment #1',
-                  score: '85/100',
-                  date: 'Jan 15, 2025',
-                  status: 'Completed',
-                  statusColor: Colors.green,
+                GestureDetector(
+                  onTap: () => _navigateToAssignmentReport(context, 'Physics Assignment #1'),
+                  child: _buildAssignmentCard(
+                    title: 'Physics Assignment #1',
+                    score: '85/100',
+                    date: 'Jan 15, 2025',
+                    status: 'Completed',
+                    statusColor: Colors.green,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                _buildAssignmentCard(
-                  title: 'Math Quiz #3',
-                  score: '92/100',
-                  date: 'Jan 12, 2025',
-                  status: 'Completed',
-                  statusColor: Colors.green,
+                GestureDetector(
+                  onTap: () => _navigateToAssignmentReport(context, 'Math Quiz #3'),
+                  child: _buildAssignmentCard(
+                    title: 'Math Quiz #3',
+                    score: '92/100',
+                    date: 'Jan 12, 2025',
+                    status: 'Completed',
+                    statusColor: Colors.green,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                _buildAssignmentCard(
-                  title: 'Chemistry Lab Report',
-                  score: '78/100',
-                  date: 'Jan 10, 2025',
-                  status: 'Completed',
-                  statusColor: Colors.green,
+                GestureDetector(
+                  onTap: () => _navigateToAssignmentReport(context, 'Chemistry Lab Report'),
+                  child: _buildAssignmentCard(
+                    title: 'Chemistry Lab Report',
+                    score: '78/100',
+                    date: 'Jan 10, 2025',
+                    status: 'Completed',
+                    statusColor: Colors.green,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 _buildAssignmentCard(
@@ -185,6 +195,17 @@ class AssignmentReportsSectionMobile extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _navigateToAssignmentReport(BuildContext context, String assignmentTitle) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AssignmentReportPopupMobile(
+          student: student,
+          classroomId: classroomId,
+        ),
       ),
     );
   }
