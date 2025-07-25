@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../models/students.dart';
+import 'student_report_popup.dart';
 
 class PerformanceReportsSection extends StatelessWidget {
   final Student student;
@@ -83,7 +84,13 @@ class PerformanceReportsSection extends StatelessWidget {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              // TODO: Implement view detailed report
+                              showDialog(
+                                context: context,
+                                builder: (context) => StudentReportPopupDesktop(
+                                  student: student,
+                                  classroomId: classroomId,
+                                ),
+                              );
                             },
                             icon: const Icon(Icons.visibility),
                             label: Text(
