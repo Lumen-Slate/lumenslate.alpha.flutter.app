@@ -3,13 +3,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../blocs/auth/auth_bloc.dart';
 
-class LoadingPage extends StatelessWidget {
+class LoadingPage extends StatefulWidget {
   const LoadingPage({super.key});
 
   @override
+  State<LoadingPage> createState() => _LoadingPageState();
+}
+
+class _LoadingPageState extends State<LoadingPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Use post-frame callback to avoid calling during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<AuthBloc>().add(AuthCheck());
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<AuthBloc>().add(AuthCheck());
-    return BlocConsumer<AuthBloc, AuthState>(
+    return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthPending) {
           context.go('/sign-in');
@@ -18,13 +33,11 @@ class LoadingPage extends StatelessWidget {
           context.go('/teacher-dashboard');
         }
       },
-      builder: (context, state) {
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
+      child: const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 }
