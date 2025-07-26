@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class QuestionTile extends StatelessWidget {
+class QuestionTileMobile extends StatelessWidget {
   final String question;
   final List<String>? options;
   final int? points;
 
-  const QuestionTile({
+  const QuestionTileMobile({
     super.key,
     required this.question,
     this.options,

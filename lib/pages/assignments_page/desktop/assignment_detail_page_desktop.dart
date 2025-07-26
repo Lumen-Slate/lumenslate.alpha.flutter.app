@@ -5,20 +5,20 @@ import 'package:lumen_slate/models/extended/assignment_extended.dart';
 import 'package:lumen_slate/pages/questions_page/desktop/components/question_tiles/mcq_tile.dart';
 import 'package:lumen_slate/pages/questions_page/desktop/components/question_tiles/msq_tile.dart';
 import 'package:lumen_slate/pages/questions_page/desktop/components/question_tiles/nat_tile.dart';
-import '../../blocs/assignment/assignment_bloc.dart';
-import '../../services/assignment_export_service.dart';
-import '../questions_page/desktop/components/question_tiles/subjective_tile.dart';
+import '../../../blocs/assignment/assignment_bloc.dart';
+import '../../../services/assignment_export_service.dart';
+import '../../questions_page/desktop/components/question_tiles/subjective_tile.dart';
 
-class AssignmentDetailPage extends StatefulWidget {
+class AssignmentDetailPageDesktop extends StatefulWidget {
   final String assignmentId;
 
-  const AssignmentDetailPage({super.key, required this.assignmentId});
+  const AssignmentDetailPageDesktop({super.key, required this.assignmentId});
 
   @override
-  State<AssignmentDetailPage> createState() => _AssignmentDetailPageState();
+  State<AssignmentDetailPageDesktop> createState() => _AssignmentDetailPageDesktopState();
 }
 
-class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
+class _AssignmentDetailPageDesktopState extends State<AssignmentDetailPageDesktop> {
   @override
   void initState() {
     context.read<AssignmentBloc>().add(FetchAssignmentById(id: widget.assignmentId, extended: true));
@@ -95,28 +95,28 @@ class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
                         ],
                       ),
                       if (state.assignment.mcqs != null && state.assignment.mcqs!.isNotEmpty)
-                        buildQuestionSection(
+                        _buildQuestionSection(
                           title: "Multiple Choice Questions",
                           description: "Choose the correct option. Only one answer is correct.",
                           backgroundColor: Colors.blue,
                           children: state.assignment.mcqs!.map((q) => MCQTile(mcq: q, viewOnly: true)).toList(),
                         ),
                       if (state.assignment.msqs != null && state.assignment.msqs!.isNotEmpty)
-                        buildQuestionSection(
+                        _buildQuestionSection(
                           title: "Multiple Select Questions",
                           description: "Select all correct options. More than one may apply.",
                           backgroundColor: Colors.green,
                           children: state.assignment.msqs!.map((q) => MSQTile(msq: q, viewOnly: true)).toList(),
                         ),
                       if (state.assignment.nats != null && state.assignment.nats!.isNotEmpty)
-                        buildQuestionSection(
+                        _buildQuestionSection(
                           title: "Numerical Answer Type",
                           description: "Type the numerical answer without options.",
                           backgroundColor: Colors.orange,
                           children: state.assignment.nats!.map((q) => NATTile(nat: q, viewOnly: true)).toList(),
                         ),
                       if (state.assignment.subjectives != null && state.assignment.subjectives!.isNotEmpty)
-                        buildQuestionSection(
+                        _buildQuestionSection(
                           title: "Subjective Questions",
                           description: "Write descriptive answers in your own words.",
                           backgroundColor: Colors.purple,
@@ -127,7 +127,7 @@ class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
 
                       /// Comments Section
                       if (state.assignment.comments != null && state.assignment.comments!.isNotEmpty)
-                        buildQuestionSection(
+                        _buildQuestionSection(
                           title: "Comments",
                           description: "Remarks or feedback related to this assignment.",
                           backgroundColor: Colors.grey,
@@ -160,7 +160,7 @@ class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
                   child: Text('Failed to load assignment: ${state.error}', style: GoogleFonts.poppins(color: Colors.red)),
                 );
               } else {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
             },
           ),
@@ -253,37 +253,37 @@ class _AssignmentDetailPageState extends State<AssignmentDetailPage> {
       ).showSnackBar(SnackBar(content: Text('Failed to export assignment: $e'), backgroundColor: Colors.red));
     }
   }
-}
 
-Widget buildQuestionSection({
-  required String title,
-  required String description,
-  required List<Widget> children,
-  required Color backgroundColor,
-  bool isLast = false,
-}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const SizedBox(height: 24),
-      Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(38),
-        decoration: BoxDecoration(
-          color: backgroundColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(16),
+  Widget _buildQuestionSection({
+    required String title,
+    required String description,
+    required List<Widget> children,
+    required Color backgroundColor,
+    bool isLast = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(38),
+          decoration: BoxDecoration(
+            color: backgroundColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: GoogleFonts.poppins(fontSize: 38, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 4),
+              Text(description, style: GoogleFonts.poppins(fontSize: 26, color: Colors.grey[600])),
+              const SizedBox(height: 12),
+              ...children,
+            ],
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: GoogleFonts.poppins(fontSize: 38, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 4),
-            Text(description, style: GoogleFonts.poppins(fontSize: 26, color: Colors.grey[600])),
-            const SizedBox(height: 12),
-            ...children,
-          ],
-        ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
