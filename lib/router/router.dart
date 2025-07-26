@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../pages/add_question_page/add_question_page.dart';
-import '../pages/assignments_page/assignments.dart';
-import '../pages/assignments_page/each_assignment.dart';
+import '../pages/assignments_page/assignment_detail_page.dart';
+import '../pages/assignments_page/assignments_page.dart';
 import '../pages/chat_agent_page/chat_agent_page.dart';
 import '../pages/classrooms_page/classrooms.dart';
 import '../pages/dashboard_page/dashboard.dart';
@@ -95,13 +95,11 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/agent',
-          pageBuilder: (context, state) =>
-              MaterialPage(child: ChatAgentPage()),
+          pageBuilder: (context, state) => MaterialPage(child: ChatAgentPage()),
         ),
         GoRoute(
           path: '/rag-agent',
-          pageBuilder: (context, state) =>
-              MaterialPage(child: RagAgentPage()),
+          pageBuilder: (context, state) => MaterialPage(child: RagAgentPage()),
         ),
       ],
     ),
