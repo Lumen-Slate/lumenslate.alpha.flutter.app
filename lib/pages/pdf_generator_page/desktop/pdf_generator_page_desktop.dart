@@ -3,16 +3,16 @@ import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:lumen_slate/lib.dart';
-import '../services/pdf_generator_service.dart';
+import '../../../services/pdf_generator_service.dart';
 
-class PdfGeneratorPage extends StatefulWidget {
-  const PdfGeneratorPage({super.key});
+class PdfGeneratorPageDesktop extends StatefulWidget {
+  const PdfGeneratorPageDesktop({super.key});
 
   @override
-  State<PdfGeneratorPage> createState() => _PdfGeneratorPageState();
+  State<PdfGeneratorPageDesktop> createState() => _PdfGeneratorPageDesktopState();
 }
 
-class _PdfGeneratorPageState extends State<PdfGeneratorPage> {
+class _PdfGeneratorPageDesktopState extends State<PdfGeneratorPageDesktop> {
   bool _isGenerating = false;
   List<File> _savedPDFs = [];
   String _selectedSubject = 'Mixed';
