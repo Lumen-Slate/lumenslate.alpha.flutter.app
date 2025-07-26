@@ -48,3 +48,20 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# LumenSlate Signing Keys & Sensitive Files
+android/key.properties
+keys/
+*.keystore
+*.jks
+
+# Local configuration files
+local.properties
+
+# Sensitive configuration
+google-services.json.backup
+firebase-adminsdk-*.json
+
+# Temporary files
+*.tmp
+*.temp
