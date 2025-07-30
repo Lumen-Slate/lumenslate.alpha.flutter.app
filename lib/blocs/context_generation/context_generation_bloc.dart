@@ -2,10 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import '../../../../constants/dummy_data/questions/mcq.dart';
-import '../../../../constants/dummy_data/questions/msq.dart';
-import '../../../../constants/dummy_data/questions/nat.dart';
-import '../../../../constants/dummy_data/questions/subjective.dart';
 import '../../../../repositories/ai/context_generator.dart';
 import '../../../../repositories/mcq_repository.dart';
 import '../../../../repositories/msq_repository.dart';
@@ -19,7 +15,8 @@ import '../../../../models/questions/subjective.dart';
 part 'context_generation_event.dart';
 part 'context_generation_state.dart';
 
-class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorState> {
+class ContextGeneratorBloc
+    extends Bloc<ContextGeneratorEvent, ContextGeneratorState> {
   final AIRepository aiRepository;
   final MCQRepository mcqRepository;
   final MSQRepository msqRepository;
@@ -40,12 +37,15 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
   }
 
   Future<void> _onGenerateContext(
-      GenerateContext event,
-      Emitter<ContextGeneratorState> emit,
-      ) async {
+    GenerateContext event,
+    Emitter<ContextGeneratorState> emit,
+  ) async {
     emit(ContextGeneratorLoading());
     try {
-      final response = await aiRepository.generateContext(event.question, event.keywords);
+      final response = await aiRepository.generateContext(
+        event.question,
+        event.keywords,
+      );
       emit(ContextGeneratorSuccess(response));
     } catch (e) {
       emit(ContextGeneratorFailure(e.toString()));
@@ -72,10 +72,17 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
       );
 
       if (response.statusCode! >= 400) {
-        throw StateError(response.data['error'] ?? 'An error occurred while overriding the question.');
+        throw StateError(
+          response.data['error'] ??
+              'An error occurred while overriding the question.',
+        );
       }
 
-      emit(ContextOverwriteSuccess('Question successfully overridden with context.'));
+      emit(
+        ContextOverwriteSuccess(
+          'Question successfully overridden with context.',
+        ),
+      );
     } on StateError catch (e) {
       emit(ContextOverwriteFailure(e.message));
     } on DioException catch (e) {
@@ -100,11 +107,15 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
         case 'mcq':
           final mcq = MCQ(
             id: '',
-            subject: 'mathematics', // Dummy subject, replace with actual if needed
-            difficulty: 'easy', // Dummy difficulty, replace with actual if needed
+            subject:
+                'mathematics', // Dummy subject, replace with actual if needed
+            difficulty:
+                'easy', // Dummy difficulty, replace with actual if needed
             bankId: event.bankId,
             question: event.contextualizedQuestion,
-            variableIds: List<String>.from(event.questionData['variableIds'] ?? []),
+            variableIds: List<String>.from(
+              event.questionData['variableIds'] ?? [],
+            ),
             points: event.questionData['points'] ?? 5,
             options: List<String>.from(event.questionData['options'] ?? []),
             answerIndex: event.questionData['answerIndex'] ?? 0,
@@ -115,14 +126,20 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
         case 'msq':
           final msq = MSQ(
             id: '',
-            subject: 'mathematics', // Dummy subject, replace with actual if needed
-            difficulty: 'easy', // Dummy difficulty, replace with actual if needed
+            subject:
+                'mathematics', // Dummy subject, replace with actual if needed
+            difficulty:
+                'easy', // Dummy difficulty, replace with actual if needed
             bankId: event.bankId,
             question: event.contextualizedQuestion,
-            variableIds: List<String>.from(event.questionData['variableIds'] ?? []),
+            variableIds: List<String>.from(
+              event.questionData['variableIds'] ?? [],
+            ),
             points: event.questionData['points'] ?? 5,
             options: List<String>.from(event.questionData['options'] ?? []),
-            answerIndices: List<int>.from(event.questionData['answerIndices'] ?? [0]),
+            answerIndices: List<int>.from(
+              event.questionData['answerIndices'] ?? [0],
+            ),
           );
           response = await msqRepository.createMSQ(msq);
           break;
@@ -130,11 +147,15 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
         case 'nat':
           final nat = NAT(
             id: '',
-            subject: 'mathematics', // Dummy subject, replace with actual if needed
-            difficulty: 'easy', // Dummy difficulty, replace with actual if needed
+            subject:
+                'mathematics', // Dummy subject, replace with actual if needed
+            difficulty:
+                'easy', // Dummy difficulty, replace with actual if needed
             bankId: event.bankId,
             question: event.contextualizedQuestion,
-            variableIds: List<String>.from(event.questionData['variableIds'] ?? []),
+            variableIds: List<String>.from(
+              event.questionData['variableIds'] ?? [],
+            ),
             points: event.questionData['points'] ?? 5,
             answer: (event.questionData['answer'] ?? 0.0).toDouble(),
           );
@@ -144,11 +165,15 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
         case 'subjective':
           final subjective = Subjective(
             id: '',
-            subject: 'mathematics', // Dummy subject, replace with actual if needed
-            difficulty: 'easy', // Dummy difficulty, replace with actual if needed
+            subject:
+                'mathematics', // Dummy subject, replace with actual if needed
+            difficulty:
+                'easy', // Dummy difficulty, replace with actual if needed
             bankId: event.bankId,
             question: event.contextualizedQuestion,
-            variableIds: List<String>.from(event.questionData['variableIds'] ?? []),
+            variableIds: List<String>.from(
+              event.questionData['variableIds'] ?? [],
+            ),
             points: event.questionData['points'] ?? 10,
             idealAnswer: event.questionData['idealAnswer'],
             gradingCriteria: event.questionData['gradingCriteria'] != null
@@ -163,10 +188,17 @@ class ContextGeneratorBloc extends Bloc<ContextGeneratorEvent, ContextGeneratorS
       }
 
       if (response.statusCode! >= 400) {
-        throw StateError(response.data['error'] ?? 'An error occurred while saving the new question.');
+        throw StateError(
+          response.data['error'] ??
+              'An error occurred while saving the new question.',
+        );
       }
 
-      emit(ContextSaveAsNewSuccess('New question with context successfully saved.'));
+      emit(
+        ContextSaveAsNewSuccess(
+          'New question with context successfully saved.',
+        ),
+      );
     } on StateError catch (e) {
       emit(ContextSaveAsNewFailure(e.message));
     } on DioException catch (e) {
