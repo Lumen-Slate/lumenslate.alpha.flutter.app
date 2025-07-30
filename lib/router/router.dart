@@ -11,13 +11,13 @@ import '../pages/loading_page/loading.dart';
 import '../pages/question_bank_page/question_bank.dart';
 import '../pages/questions_page/questions.dart';
 import '../pages/rag_agent_page/rag_agent_page.dart';
-import '../pages/sign_in_page/sign_in.dart';
+import '../pages/sign_in_page/sign_in_page.dart';
 import '../pages/pdf_generator_page/pdf_generator_page.dart';
 import '../pages/students_page/students.dart';
 import '../pages/student_detail_page/student_detail.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/teacher-dashboard',
+  initialLocation: '/sign-in',
   routes: [
     GoRoute(
       path: '/',
@@ -25,8 +25,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/sign-in',
-      pageBuilder: (context, state) =>
-          const MaterialPage(child: SignInDesktop()),
+      pageBuilder: (context, state) => const MaterialPage(child: SignInPage()),
     ),
     GoRoute(
       path: '/teacher-dashboard',
