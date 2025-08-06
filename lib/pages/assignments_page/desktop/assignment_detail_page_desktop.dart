@@ -37,12 +37,11 @@ class _AssignmentDetailPageDesktopState extends State<AssignmentDetailPageDeskto
         width: AppConstants.desktopScaleWidth,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppBar(backgroundColor: Colors.white),
           body: BlocBuilder<AssignmentBloc, AssignmentState>(
             builder: (context, state) {
               if (state is AssignmentSingleExtendedSuccess) {
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 46),
                   child: Column(
                     spacing: 30,
                     crossAxisAlignment: CrossAxisAlignment.start,
