@@ -195,12 +195,20 @@ class MCQTile extends StatelessWidget {
                 Spacer(),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.grey[100]),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.white),
                   child: Row(
+                    spacing: 20,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
+                      TextButton.icon(
                         icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.orange[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.orange[700],
+                          backgroundColor: Colors.orange.shade50,
+                          overlayColor: Colors.orange.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () async {
                           await showDialog(
                             context: context,
@@ -211,10 +219,20 @@ class MCQTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: _iconSize,
+                        label: Text(
+                          'Story Generation',
+                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.orange[700]),
+                        ),
                       ),
-                      IconButton(
+                      TextButton.icon(
                         icon: Icon(Icons.account_tree_outlined, color: Colors.blue[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.blue[700],
+                          backgroundColor: Colors.blue.shade50,
+                          overlayColor: Colors.blue.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () async {
                           await showDialog(
                             context: context,
@@ -228,17 +246,32 @@ class MCQTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: _iconSize,
+                        label: Text('Variations', style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue[700])),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.edit_outlined, color: Colors.purple),
+                      TextButton.icon(
+                        icon: Icon(Icons.edit_outlined, color: Colors.purple[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.purple[700],
+                          backgroundColor: Colors.purple.shade50,
+                          overlayColor: Colors.purple.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () => _editQuestion(context),
-                        iconSize: _iconSize,
+                        label: Text('Edit', style: GoogleFonts.poppins(fontSize: 16, color: Colors.purple[700])),
                       ),
-                      IconButton(
+
+                      TextButton.icon(
                         icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.red[700],
+                          backgroundColor: Colors.red.shade50,
+                          overlayColor: Colors.red.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () => _deleteQuestion(context),
-                        iconSize: _iconSize,
+                        label: Text('Delete', style: GoogleFonts.poppins(fontSize: 16, color: Colors.red[700])),
                       ),
                     ],
                   ),
