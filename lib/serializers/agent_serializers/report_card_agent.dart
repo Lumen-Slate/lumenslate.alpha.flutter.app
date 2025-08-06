@@ -11,17 +11,17 @@ class ReportCardAgentSerializer {
 
   factory ReportCardAgentSerializer.fromJson(Map<String, dynamic> json) {
     return ReportCardAgentSerializer(
-      reportCard: ReportCard.fromJson(json['report_card']),
-      databaseId: json['database_id'],
-      savedAt: json['saved_at'],
+      reportCard: ReportCard.fromJson(json['reportCard'] ?? json['report_card']),
+      databaseId: json['databaseId'] ?? json['database_id'],
+      savedAt: json['savedAt'] ?? json['saved_at'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'report_card': reportCard.toJson(),
-      'database_id': databaseId,
-      'saved_at': savedAt,
+      'reportCard': reportCard.toJson(),
+      'databaseId': databaseId,
+      'savedAt': savedAt,
     };
   }
 }
@@ -53,35 +53,35 @@ class ReportCard {
 
   factory ReportCard.fromJson(Map<String, dynamic> json) {
     return ReportCard(
-      studentId: json['student_id'],
-      studentName: json['student_name'],
-      reportPeriod: json['report_period'],
-      generationDate: json['generation_date'],
-      overallPerformance: OverallPerformance.fromJson(json['overall_performance']),
-      subjectPerformance: (json['subject_performance'] as List)
-          .map((e) => SubjectPerformance.fromJson(e))
+      studentId: json['studentId'] ?? json['student_id'],
+      studentName: json['studentName'] ?? json['student_name'],
+      reportPeriod: json['reportPeriod'] ?? json['report_period'],
+      generationDate: json['generationDate'] ?? json['generation_date'],
+      overallPerformance: OverallPerformance.fromJson(json['overallPerformance'] ?? json['overall_performance']),
+      subjectPerformance: (json['subjectPerformance'] ?? json['subject_performance'] ?? [])
+          .map<SubjectPerformance>((e) => SubjectPerformance.fromJson(e))
           .toList(),
-      assignmentSummaries: (json['assignment_summaries'] as List)
-          .map((e) => AssignmentSummary.fromJson(e))
+      assignmentSummaries: (json['assignmentSummaries'] ?? json['assignment_summaries'] ?? [])
+          .map<AssignmentSummary>((e) => AssignmentSummary.fromJson(e))
           .toList(),
-      aiRemarks: json['ai_remarks'],
-      teacherRemarks: json['teacher_remarks'],
-      studentInsights: StudentInsights.fromJson(json['student_insights']),
+      aiRemarks: json['aiRemarks'] ?? json['ai_remarks'],
+      teacherRemarks: json['teacherRemarks'] ?? json['teacher_remarks'],
+      studentInsights: StudentInsights.fromJson(json['studentInsights'] ?? json['student_insights']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'student_id': studentId,
-      'student_name': studentName,
-      'report_period': reportPeriod,
-      'generation_date': generationDate,
-      'overall_performance': overallPerformance.toJson(),
-      'subject_performance': subjectPerformance.map((e) => e.toJson()).toList(),
-      'assignment_summaries': assignmentSummaries.map((e) => e.toJson()).toList(),
-      'ai_remarks': aiRemarks,
-      'teacher_remarks': teacherRemarks,
-      'student_insights': studentInsights.toJson(),
+      'studentId': studentId,
+      'studentName': studentName,
+      'reportPeriod': reportPeriod,
+      'generationDate': generationDate,
+      'overallPerformance': overallPerformance.toJson(),
+      'subjectPerformance': subjectPerformance.map((e) => e.toJson()).toList(),
+      'assignmentSummaries': assignmentSummaries.map((e) => e.toJson()).toList(),
+      'aiRemarks': aiRemarks,
+      'teacherRemarks': teacherRemarks,
+      'studentInsights': studentInsights.toJson(),
     };
   }
 }
@@ -103,21 +103,21 @@ class OverallPerformance {
 
   factory OverallPerformance.fromJson(Map<String, dynamic> json) {
     return OverallPerformance(
-      totalAssignmentsCompleted: json['total_assignments_completed'],
-      overallPercentage: (json['overall_percentage'] as num).toDouble(),
-      improvementTrend: json['improvement_trend'],
-      strongestQuestionType: json['strongest_question_type'],
-      weakestQuestionType: json['weakest_question_type'],
+      totalAssignmentsCompleted: json['totalAssignmentsCompleted'] ?? json['total_assignments_completed'],
+      overallPercentage: (json['overallPercentage'] ?? json['overall_percentage'] ?? 0).toDouble(),
+      improvementTrend: json['improvementTrend'] ?? json['improvement_trend'],
+      strongestQuestionType: json['strongestQuestionType'] ?? json['strongest_question_type'],
+      weakestQuestionType: json['weakestQuestionType'] ?? json['weakest_question_type'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'total_assignments_completed': totalAssignmentsCompleted,
-      'overall_percentage': overallPercentage,
-      'improvement_trend': improvementTrend,
-      'strongest_question_type': strongestQuestionType,
-      'weakest_question_type': weakestQuestionType,
+      'totalAssignmentsCompleted': totalAssignmentsCompleted,
+      'overallPercentage': overallPercentage,
+      'improvementTrend': improvementTrend,
+      'strongestQuestionType': strongestQuestionType,
+      'weakestQuestionType': weakestQuestionType,
     };
   }
 }
@@ -149,31 +149,31 @@ class SubjectPerformance {
 
   factory SubjectPerformance.fromJson(Map<String, dynamic> json) {
     return SubjectPerformance(
-      subjectName: json['subject_name'],
-      percentageScore: (json['percentage_score'] as num).toDouble(),
-      assignmentCount: json['assignment_count'],
-      mcqAccuracy: (json['mcq_accuracy'] as num).toDouble(),
-      msqAccuracy: (json['msq_accuracy'] as num).toDouble(),
-      natAccuracy: (json['nat_accuracy'] as num).toDouble(),
-      subjectiveAvgScore: (json['subjective_avg_score'] as num).toDouble(),
-      strengths: List<String>.from(json['strengths']),
-      weaknesses: List<String>.from(json['weaknesses']),
-      improvementTrend: json['improvement_trend'],
+      subjectName: json['subjectName'] ?? json['subject_name'],
+      percentageScore: (json['percentageScore'] ?? json['percentage_score'] ?? 0).toDouble(),
+      assignmentCount: json['assignmentCount'] ?? json['assignment_count'] ?? 0,
+      mcqAccuracy: (json['mcqAccuracy'] ?? json['mcq_accuracy'] ?? 0).toDouble(),
+      msqAccuracy: (json['msqAccuracy'] ?? json['msq_accuracy'] ?? 0).toDouble(),
+      natAccuracy: (json['natAccuracy'] ?? json['nat_accuracy'] ?? 0).toDouble(),
+      subjectiveAvgScore: (json['subjectiveAvgScore'] ?? json['subjective_avg_score'] ?? 0).toDouble(),
+      strengths: List<String>.from(json['strengths'] ?? []),
+      weaknesses: List<String>.from(json['weaknesses'] ?? []),
+      improvementTrend: json['improvementTrend'] ?? json['improvement_trend'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'subject_name': subjectName,
-      'percentage_score': percentageScore,
-      'assignment_count': assignmentCount,
-      'mcq_accuracy': mcqAccuracy,
-      'msq_accuracy': msqAccuracy,
-      'nat_accuracy': natAccuracy,
-      'subjective_avg_score': subjectiveAvgScore,
+      'subjectName': subjectName,
+      'percentageScore': percentageScore,
+      'assignmentCount': assignmentCount,
+      'mcqAccuracy': mcqAccuracy,
+      'msqAccuracy': msqAccuracy,
+      'natAccuracy': natAccuracy,
+      'subjectiveAvgScore': subjectiveAvgScore,
       'strengths': strengths,
       'weaknesses': weaknesses,
-      'improvement_trend': improvementTrend,
+      'improvementTrend': improvementTrend,
     };
   }
 }
@@ -193,18 +193,18 @@ class AssignmentSummary {
 
   factory AssignmentSummary.fromJson(Map<String, dynamic> json) {
     return AssignmentSummary(
-      assignmentId: json['assignment_id'],
-      assignmentTitle: json['assignment_title'],
-      percentageScore: (json['percentage_score'] as num).toDouble(),
-      subject: json['subject'],
+      assignmentId: json['assignmentId'] ?? json['assignment_id'] ?? '',
+      assignmentTitle: json['assignmentTitle'] ?? json['assignment_title'] ?? '',
+      percentageScore: (json['percentageScore'] ?? json['percentage_score'] ?? 0).toDouble(),
+      subject: json['subject'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'assignment_id': assignmentId,
-      'assignment_title': assignmentTitle,
-      'percentage_score': percentageScore,
+      'assignmentId': assignmentId,
+      'assignmentTitle': assignmentTitle,
+      'percentageScore': percentageScore,
       'subject': subject,
     };
   }
@@ -223,17 +223,17 @@ class StudentInsights {
 
   factory StudentInsights.fromJson(Map<String, dynamic> json) {
     return StudentInsights(
-      keyStrengths: List<String>.from(json['key_strengths']),
-      areasForImprovement: List<String>.from(json['areas_for_improvement']),
-      recommendedActions: List<String>.from(json['recommended_actions']),
+      keyStrengths: List<String>.from(json['keyStrengths'] ?? json['key_strengths'] ?? []),
+      areasForImprovement: List<String>.from(json['areasForImprovement'] ?? json['areas_for_improvement'] ?? []),
+      recommendedActions: List<String>.from(json['recommendedActions'] ?? json['recommended_actions'] ?? []),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'key_strengths': keyStrengths,
-      'areas_for_improvement': areasForImprovement,
-      'recommended_actions': recommendedActions,
+      'keyStrengths': keyStrengths,
+      'areasForImprovement': areasForImprovement,
+      'recommendedActions': recommendedActions,
     };
   }
 }
