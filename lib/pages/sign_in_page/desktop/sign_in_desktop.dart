@@ -34,6 +34,11 @@ class SignInDesktop extends StatelessWidget {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Image.asset(
+                          'assets/lumenslate_no_background_616x616.png',
+                          width: 250,
+                          height: 250,
+                        ),
                         Text(
                           AppConstants.appName,
                           style: GoogleFonts.jost(fontSize: 145, fontWeight: FontWeight.w400),
