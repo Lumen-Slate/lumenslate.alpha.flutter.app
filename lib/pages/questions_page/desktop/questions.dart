@@ -191,6 +191,7 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
                                     child: SearchDropdown(
                                       items: ["All", "MCQ", "MSQ", "NAT", "Subjective"],
                                       selectedValue: selectedType,
+                                      searchEnabled: false,
                                       onChanged: (value) => _updateQuestionType(value!),
                                     ),
                                   ),
