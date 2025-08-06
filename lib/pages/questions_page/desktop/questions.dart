@@ -56,10 +56,18 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
         bool matchesPoints = searchMode == "Filter by points"
             ? (question.points >= minPoints && question.points <= maxPoints)
             : true;
-        bool matchesType = selectedType == "All" || question.runtimeType.toString() == selectedType;
+        bool matchesType = selectedType == "All" || _getQuestionTypeName(question) == selectedType;
         return matchesSearch && matchesPoints && matchesType;
       }).toList();
     });
+  }
+
+  String _getQuestionTypeName(dynamic question) {
+    if (question is MCQ) return "MCQ";
+    if (question is MSQ) return "MSQ";
+    if (question is NAT) return "NAT";
+    if (question is Subjective) return "Subjective";
+    return question.runtimeType.toString();
   }
 
   // void _updateSearchMode(String mode) {
@@ -77,8 +85,10 @@ class QuestionsDesktopState extends State<QuestionsDesktop> {
   // }
 
   void _updateQuestionType(String type) {
-    selectedType = type;
-    _applyFilters();
+    setState(() {
+      selectedType = type;
+      _applyFilters();
+    });
   }
 
   Widget _buildQuestionTile(dynamic question) {
