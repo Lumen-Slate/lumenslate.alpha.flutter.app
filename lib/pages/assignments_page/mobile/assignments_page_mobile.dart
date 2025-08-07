@@ -15,10 +15,11 @@ class AssignmentsPageMobile extends StatefulWidget {
 class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
   final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
   final TextEditingController _searchController = TextEditingController();
+  String _currentSearchQuery = '';
 
   @override
   void initState() {
-    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
     super.initState();
   }
 
@@ -26,6 +27,22 @@ class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _performSearch(String query) {
+    if (query.isEmpty) {
+      // Reset to original list without search
+      context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
+    } else {
+      // Perform search
+      context.read<AssignmentBloc>().add(
+        SearchAssignments(
+          teacherId: _teacherId,
+          searchQuery: query,
+          extended: false,
+        ),
+      );
+    }
   }
 
   @override
@@ -70,7 +87,7 @@ class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -122,7 +139,10 @@ class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
               ? IconButton(
                   onPressed: () {
                     _searchController.clear();
-                    setState(() {});
+                    setState(() {
+                      _currentSearchQuery = '';
+                    });
+                    _performSearch('');
                   },
                   icon: Icon(Icons.clear, color: Colors.grey[500]),
                 )
@@ -130,9 +150,11 @@ class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
-        enabled: false, // Disabled for paginated list
         onChanged: (value) {
-          setState(() {});
+          setState(() {
+            _currentSearchQuery = value;
+          });
+          _performSearch(value);
         },
       ),
     );
@@ -231,7 +253,11 @@ class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
             state: state.pagingState,
             fetchNextPage: () {
               context.read<AssignmentBloc>().add(
-                FetchNextAssignmentPage(teacherId: _teacherId, extended: false),
+                FetchNextAssignmentPage(
+                  teacherId: _teacherId, 
+                  extended: false,
+                  searchQuery: _currentSearchQuery.isNotEmpty ? _currentSearchQuery : null,
+                ),
               );
             },
             builderDelegate: PagedChildBuilderDelegate<Assignment>(
@@ -335,7 +361,7 @@ class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+              context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
             },
             icon: const Icon(Icons.refresh),
             label: Text(

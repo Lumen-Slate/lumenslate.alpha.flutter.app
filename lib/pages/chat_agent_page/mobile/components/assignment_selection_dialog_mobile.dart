@@ -20,7 +20,7 @@ class _AssignmentSelectionDialogMobileState extends State<AssignmentSelectionDia
   @override
   void initState() {
     super.initState();
-    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: widget.teacherId));
   }
 
   @override

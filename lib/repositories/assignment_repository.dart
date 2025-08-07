@@ -30,6 +30,7 @@ class AssignmentRepository {
     int limit = 10,
     int offset = 0,
     bool extended = false,
+    String? searchQuery,
   }) async {
     try {
       Map<String, dynamic> queryParams = {
@@ -37,6 +38,11 @@ class AssignmentRepository {
         'offset': offset.toString(),
         'extended': extended.toString(),
       };
+      
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        queryParams['q'] = searchQuery;
+      }
+      
       return await _client.get('/assignments/', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
