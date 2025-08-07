@@ -29,21 +29,41 @@ class AssessorAgentTile extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (serializer.mcqResults != null && serializer.mcqResults!.isNotEmpty)
-              _buildSection('MCQ Results', serializer.mcqResults!.map((e) =>
-                'Q: ${e.questionId} | Your Ans: ${e.studentAnswer} | Correct: ${e.correctAnswer} | Points: ${e.pointsAwarded}/${e.maxPoints} | ${e.isCorrect ? "Correct" : "Wrong"}'
-              ).toList()),
+              _buildSection(
+                'MCQ Results',
+                serializer.mcqResults!.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final e = entry.value;
+                  return 'Q: ${i + 1} | Your Ans: ${e.studentAnswer} | Correct: ${e.correctAnswer} | Points: ${e.pointsAwarded}/${e.maxPoints} | ${e.isCorrect ? "Correct" : "Wrong"}';
+                }).toList(),
+              ),
             if (serializer.msqResults != null && serializer.msqResults!.isNotEmpty)
-              _buildSection('MSQ Results', serializer.msqResults!.map((e) =>
-                'Q: ${e.questionId} | Your Ans: ${e.studentAnswers.join(",")} | Correct: ${e.correctAnswers.join(",")} | Points: ${e.pointsAwarded}/${e.maxPoints} | ${e.isCorrect ? "Correct" : "Wrong"}'
-              ).toList()),
+              _buildSection(
+                'MSQ Results',
+                serializer.msqResults!.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final e = entry.value;
+                  return 'Q: ${i + 1} | Your Ans: ${e.studentAnswers.join(",")} | Correct: ${e.correctAnswers.join(",")} | Points: ${e.pointsAwarded}/${e.maxPoints} | ${e.isCorrect ? "Correct" : "Wrong"}';
+                }).toList(),
+              ),
             if (serializer.natResults != null && serializer.natResults!.isNotEmpty)
-              _buildSection('NAT Results', serializer.natResults!.map((e) =>
-                'Q: ${e.questionId} | Your Ans: ${e.studentAnswer} | Correct: ${e.correctAnswer} | Points: ${e.pointsAwarded}/${e.maxPoints} | ${e.isCorrect ? "Correct" : "Wrong"}'
-              ).toList()),
+              _buildSection(
+                'NAT Results',
+                serializer.natResults!.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final e = entry.value;
+                  return 'Q: ${i + 1} | Your Ans: ${e.studentAnswer} | Correct: ${e.correctAnswer} | Points: ${e.pointsAwarded}/${e.maxPoints} | ${e.isCorrect ? "Correct" : "Wrong"}';
+                }).toList(),
+              ),
             if (serializer.subjectiveResults != null && serializer.subjectiveResults!.isNotEmpty)
-              _buildSection('Subjective Results', serializer.subjectiveResults!.map((e) =>
-                'Q: ${e.questionId} | Points: ${e.pointsAwarded}/${e.maxPoints}\nFeedback: ${e.assessmentFeedback}'
-              ).toList()),
+              _buildSection(
+                'Subjective Results',
+                serializer.subjectiveResults!.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final e = entry.value;
+                  return 'Q: ${i + 1} | Points: ${e.pointsAwarded}/${e.maxPoints}\nFeedback: ${e.assessmentFeedback}';
+                }).toList(),
+              ),
           ],
         ),
       ),
@@ -67,4 +87,3 @@ class AssessorAgentTile extends StatelessWidget {
     );
   }
 }
-
