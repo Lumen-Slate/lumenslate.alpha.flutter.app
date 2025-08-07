@@ -38,7 +38,10 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/questions',
-          pageBuilder: (context, state) => MaterialPage(child: Questions()),
+          pageBuilder: (context, state) {
+            final bankId = state.uri.queryParameters['bank'];
+            return MaterialPage(child: Questions(bankId: bankId));
+          },
         ),
         GoRoute(
           path: '/classrooms',
