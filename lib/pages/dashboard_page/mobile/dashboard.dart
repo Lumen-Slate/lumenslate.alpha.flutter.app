@@ -119,17 +119,17 @@ class TeacherDashboardMobile extends StatelessWidget {
               backgroundColor: Colors.redAccent[100]!,
               onTap: () => context.push('/teacher-dashboard/question-banks'),
             ),
-            const SizedBox(height: 20),
-            WideTile(
-              title: AutoSizeText("Questions", style: GoogleFonts.poppins(fontSize: 30)),
-              subTitle: AutoSizeText("Add a new question", style: GoogleFonts.poppins(fontSize: 14)),
-              description: AutoSizeText(
-                "A special question entry powered by AI to help you create questions_page faster.",
-                style: GoogleFonts.poppins(fontSize: 14),
-              ),
-              backgroundColor: Colors.deepPurpleAccent[100]!,
-              onTap: () => context.push('/teacher-dashboard/questions'),
-            ),
+            // const SizedBox(height: 20),
+            // WideTile(
+            //   title: AutoSizeText("Questions", style: GoogleFonts.poppins(fontSize: 30)),
+            //   subTitle: AutoSizeText("Add a new question", style: GoogleFonts.poppins(fontSize: 14)),
+            //   description: AutoSizeText(
+            //     "A special question entry powered by AI to help you create questions_page faster.",
+            //     style: GoogleFonts.poppins(fontSize: 14),
+            //   ),
+            //   backgroundColor: Colors.deepPurpleAccent[100]!,
+            //   onTap: () => context.push('/teacher-dashboard/questions'),
+            // ),
             const SizedBox(height: 20),
             WideTile(
               title: AutoSizeText("Chat Agent", style: GoogleFonts.poppins(fontSize: 30)),
@@ -174,17 +174,17 @@ class TeacherDashboardMobile extends StatelessWidget {
               backgroundColor: Colors.greenAccent[200]!,
               onTap: () => context.push('/teacher-dashboard/assignments'),
             ),
-            const SizedBox(height: 20),
-            WideTile(
-              title: AutoSizeText("PDF Generator", style: GoogleFonts.poppins(fontSize: 30)),
-              subTitle: AutoSizeText("Generate question paper PDFs", style: GoogleFonts.poppins(fontSize: 14)),
-              description: AutoSizeText(
-                "Create professional question papers in PDF format with various question types and subjects.",
-                style: GoogleFonts.poppins(fontSize: 14),
-              ),
-              backgroundColor: Colors.blueAccent[100]!,
-              onTap: () => context.push('/teacher-dashboard/pdf-generator'),
-            ),
+            // const SizedBox(height: 20),
+            // WideTile(
+            //   title: AutoSizeText("PDF Generator", style: GoogleFonts.poppins(fontSize: 30)),
+            //   subTitle: AutoSizeText("Generate question paper PDFs", style: GoogleFonts.poppins(fontSize: 14)),
+            //   description: AutoSizeText(
+            //     "Create professional question papers in PDF format with various question types and subjects.",
+            //     style: GoogleFonts.poppins(fontSize: 14),
+            //   ),
+            //   backgroundColor: Colors.blueAccent[100]!,
+            //   onTap: () => context.push('/teacher-dashboard/pdf-generator'),
+            // ),
           ],
         ),
       ),
