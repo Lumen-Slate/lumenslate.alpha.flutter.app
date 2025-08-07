@@ -15,6 +15,8 @@ class AssignmentDetailPageMobile extends StatefulWidget {
 }
 
 class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile> {
+  final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
+  
   @override
   void initState() {
     context.read<AssignmentBloc>().add(FetchAssignmentById(id: widget.assignmentId, extended: true));
@@ -26,7 +28,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
     return PopScope(
       onPopInvokedWithResult: (result, __) {
         if (result) {
-          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
         }
       },
       child: Scaffold(

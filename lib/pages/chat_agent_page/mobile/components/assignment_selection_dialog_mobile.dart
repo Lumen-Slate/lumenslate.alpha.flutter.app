@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+
 import '../../../../blocs/assignment/assignment_bloc.dart';
 import '../../../../models/assignments.dart';
 
 class AssignmentSelectionDialogMobile extends StatefulWidget {
   final void Function(Assignment)? onAssignmentSelected;
-  final String teacherId = '0692d515-1621-44ea-85e7-a41335858ee2'; // TODO: Replace with actual teacher ID
+  final String teacherId =
+      '0692d515-1621-44ea-85e7-a41335858ee2'; // TODO: Replace with actual teacher ID
 
   const AssignmentSelectionDialogMobile({super.key, this.onAssignmentSelected});
 
   @override
-  State<AssignmentSelectionDialogMobile> createState() => _AssignmentSelectionDialogMobileState();
+  State<AssignmentSelectionDialogMobile> createState() =>
+      _AssignmentSelectionDialogMobileState();
 }
 
-class _AssignmentSelectionDialogMobileState extends State<AssignmentSelectionDialogMobile> {
+class _AssignmentSelectionDialogMobileState
+    extends State<AssignmentSelectionDialogMobile> {
   @override
   void initState() {
     super.initState();
-    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+    context.read<AssignmentBloc>().add(
+      InitializeAssignmentPaging(extended: false, teacherId: widget.teacherId),
+    );
   }
 
   @override
@@ -66,7 +72,7 @@ class _AssignmentSelectionDialogMobileState extends State<AssignmentSelectionDia
                           ),
                         ),
                         title: Text(
-                          assignment.title ?? 'Untitled Assignment',
+                          assignment.title,
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -74,7 +80,7 @@ class _AssignmentSelectionDialogMobileState extends State<AssignmentSelectionDia
                         ),
                         subtitle: assignment.body != null
                             ? Text(
-                                assignment.body!,
+                                assignment.body,
                                 style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   color: Colors.grey[600],
