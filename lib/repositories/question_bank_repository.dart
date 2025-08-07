@@ -29,6 +29,7 @@ class QuestionBankRepository {
     required String teacherId,
     int limit = 10,
     int offset = 0,
+    String? searchQuery,
   }) async {
     try {
       Map<String, dynamic> queryParams = {
@@ -36,6 +37,15 @@ class QuestionBankRepository {
         'offset': offset.toString(),
         'teacherId': teacherId,
       };
+      
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        queryParams['q'] = searchQuery;
+        print('QuestionBankRepository: Searching with query: "$searchQuery"'); // Debug print
+      } else {
+        print('QuestionBankRepository: Loading all question banks (no search)'); // Debug print
+      }
+      
+      print('QuestionBankRepository: Query params: $queryParams'); // Debug print
       return await _client.get('/question-banks', queryParameters: queryParams);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
