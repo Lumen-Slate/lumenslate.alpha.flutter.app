@@ -62,28 +62,28 @@ class SignInOptionsDesktop extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 50),
-          OutlinedButton(
-            onPressed: () => context.read<PhoneNumberFormCubit>().togglePhoneInput(),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              minimumSize: const Size(double.infinity, 80),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  "assets/phone_sms.svg",
-                  width: 35,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Phone', // Use localized string
-                  style: GoogleFonts.jost(fontSize: 30, color: Colors.black),
-                ),
-              ],
-            ),
-          ),
+          // const SizedBox(height: 50),
+          // OutlinedButton(
+          //   onPressed: () => context.read<PhoneNumberFormCubit>().togglePhoneInput(),
+          //   style: OutlinedButton.styleFrom(
+          //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          //     minimumSize: const Size(double.infinity, 80),
+          //   ),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       SvgPicture.asset(
+          //         "assets/phone_sms.svg",
+          //         width: 35,
+          //       ),
+          //       const SizedBox(width: 10),
+          //       Text(
+          //         'Phone', // Use localized string
+          //         style: GoogleFonts.jost(fontSize: 30, color: Colors.black),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

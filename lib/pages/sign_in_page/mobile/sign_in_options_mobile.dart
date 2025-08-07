@@ -58,28 +58,28 @@ class SignInOptionsMobile extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 24),
-        OutlinedButton(
-          onPressed: () => context.read<PhoneNumberFormCubit>().togglePhoneInput(),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            minimumSize: const Size(double.infinity, 48),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                "assets/phone_sms.svg",
-                width: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Phone',
-                style: GoogleFonts.jost(fontSize: 18, color: Colors.black),
-              ),
-            ],
-          ),
-        ),
+        // const SizedBox(height: 24),
+        // OutlinedButton(
+        //   onPressed: () => context.read<PhoneNumberFormCubit>().togglePhoneInput(),
+        //   style: OutlinedButton.styleFrom(
+        //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        //     minimumSize: const Size(double.infinity, 48),
+        //   ),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: [
+        //       SvgPicture.asset(
+        //         "assets/phone_sms.svg",
+        //         width: 24,
+        //       ),
+        //       const SizedBox(width: 8),
+        //       Text(
+        //         'Phone',
+        //         style: GoogleFonts.jost(fontSize: 18, color: Colors.black),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }
