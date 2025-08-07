@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../models/question_bank.dart';
@@ -44,7 +45,7 @@ class QuestionBankTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        onPressed: () {},
+        onPressed: () => context.go('/teacher-dashboard/questions?bank=${bank.id}'),
         child: Container(
           alignment: Alignment.centerLeft,
           child: Column(
