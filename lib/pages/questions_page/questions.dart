@@ -5,7 +5,10 @@ import 'desktop/questions.dart';
 import 'mobile/questions.dart';
 
 class Questions extends StatelessWidget {
-  const Questions({super.key});
+
+  final String? bankId;
+
+  const Questions({super.key, this.bankId});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +18,7 @@ class Questions extends StatelessWidget {
         if (isMobile) {
           return QuestionsMobile();
         } else {
-          return QuestionsDesktop();
+          return QuestionsDesktop(bankId: bankId);
         }
       },
     );

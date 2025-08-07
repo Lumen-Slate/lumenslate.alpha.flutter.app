@@ -119,10 +119,10 @@ class _QuestionsMobileState extends State<QuestionsMobile> {
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/add-question'),
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => context.go('/add-question'),
+      //   child: const Icon(Icons.add),
+      // ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
