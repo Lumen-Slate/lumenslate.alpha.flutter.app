@@ -72,5 +72,24 @@ class SubjectiveBloc extends Bloc<SubjectiveEvent, SubjectiveState> {
         emit(SubjectiveError(e.toString()));
       }
     });
+
+    on<SaveBulkSubjectives>((event, emit) async {
+      emit(SubjectiveLoading());
+      try {
+        final response = await repository.createBulkSubjectives(event.subjectives);
+
+        if (response.statusCode! >= 400) {
+          throw StateError(response.data['error'] ?? 'Failed to save bulk Subjectives.');
+        }
+
+        final subjectives = (response.data as List)
+            .map((item) => Subjective.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        emit(SubjectiveLoaded(subjectives));
+      } catch (e) {
+        emit(SubjectiveError(e.toString()));
+      }
+    });
   }
 }

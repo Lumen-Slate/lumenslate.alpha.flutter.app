@@ -44,3 +44,12 @@ class DeleteSubjective extends SubjectiveEvent {
   @override
   List<Object?> get props => [id];
 }
+
+class SaveBulkSubjectives extends SubjectiveEvent {
+  final List<Subjective> subjectives;
+
+  const SaveBulkSubjectives(this.subjectives);
+
+  @override
+  List<Object?> get props => [subjectives];
+}
