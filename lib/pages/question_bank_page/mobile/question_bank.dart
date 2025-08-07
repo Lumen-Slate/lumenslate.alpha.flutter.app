@@ -59,10 +59,10 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToAddQuestionBankPage,
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _navigateToAddQuestionBankPage,
+      //   child: const Icon(Icons.add),
+      // ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

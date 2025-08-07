@@ -34,10 +34,10 @@ class QuestionBankPageDesktopState extends State<QuestionBankPageDesktop> {
       width: AppConstants.desktopScaleWidth,
       child: Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => context.go('/add_question_bank'),
-          child: Icon(Icons.add),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () => context.go('/add_question_bank'),
+        //   child: Icon(Icons.add),
+        // ),
         body: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
