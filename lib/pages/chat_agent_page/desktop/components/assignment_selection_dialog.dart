@@ -18,7 +18,7 @@ class AssignmentSelectionDialog extends StatefulWidget {
 class _AssignmentSelectionDialogState extends State<AssignmentSelectionDialog> {
   @override
   void initState() {
-    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: widget.teacherId));
     super.initState();
   }
 

@@ -15,11 +15,28 @@ class AssignmentsPageDesktop extends StatefulWidget {
 
 class _AssignmentsPageDesktopState extends State<AssignmentsPageDesktop> {
   final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
+  String _currentSearchQuery = '';
 
   @override
   void initState() {
-    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+    context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
     super.initState();
+  }
+
+  void _performSearch(String query) {
+    if (query.isEmpty) {
+      // Reset to original list without search
+      context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
+    } else {
+      // Perform search
+      context.read<AssignmentBloc>().add(
+        SearchAssignments(
+          teacherId: _teacherId,
+          searchQuery: query,
+          extended: false,
+        ),
+      );
+    }
   }
 
   @override
@@ -60,12 +77,17 @@ class _AssignmentsPageDesktopState extends State<AssignmentsPageDesktop> {
                   ),
                   child: Column(
                     children: [
-                      // Search Bar (disabled for now, as pagination is server-side)
+                      // Search Bar
                       Row(
                         children: [
                           Expanded(
                             child: SearchBar(
-                              onChanged: (_) {},
+                              onChanged: (value) {
+                                setState(() {
+                                  _currentSearchQuery = value;
+                                });
+                                _performSearch(value);
+                              },
                               leading: const Padding(
                                 padding: EdgeInsets.only(left: 12.0),
                                 child: Icon(Icons.search),
@@ -75,7 +97,17 @@ class _AssignmentsPageDesktopState extends State<AssignmentsPageDesktop> {
                               hintStyle: WidgetStateProperty.all(
                                 GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                               ),
-                              enabled: false, // Disabled for paginated list
+                              trailing: _currentSearchQuery.isNotEmpty ? [
+                                IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    setState(() {
+                                      _currentSearchQuery = '';
+                                    });
+                                    _performSearch('');
+                                  },
+                                ),
+                              ] : null,
                             ),
                           ),
                         ],
@@ -91,7 +123,11 @@ class _AssignmentsPageDesktopState extends State<AssignmentsPageDesktop> {
                                 state: state.pagingState,
                                 fetchNextPage: () {
                                   context.read<AssignmentBloc>().add(
-                                    FetchNextAssignmentPage(teacherId: _teacherId, extended: false),
+                                    FetchNextAssignmentPage(
+                                      teacherId: _teacherId, 
+                                      extended: false,
+                                      searchQuery: _currentSearchQuery.isNotEmpty ? _currentSearchQuery : null,
+                                    ),
                                   );
                                 },
                                 builderDelegate: PagedChildBuilderDelegate(
@@ -123,7 +159,7 @@ class _AssignmentsPageDesktopState extends State<AssignmentsPageDesktop> {
                                         ElevatedButton(
                                           onPressed: () {
                                             context.read<AssignmentBloc>().add(
-                                              InitializeAssignmentPaging(extended: false),
+                                              InitializeAssignmentPaging(extended: false, teacherId: _teacherId),
                                             );
                                           },
                                           child: const Text('Retry'),
@@ -149,7 +185,7 @@ class _AssignmentsPageDesktopState extends State<AssignmentsPageDesktop> {
                                     ElevatedButton(
                                       onPressed: () {
                                         context.read<AssignmentBloc>().add(
-                                          InitializeAssignmentPaging(extended: false),
+                                          InitializeAssignmentPaging(extended: false, teacherId: _teacherId),
                                         );
                                       },
                                       child: const Text('Retry'),

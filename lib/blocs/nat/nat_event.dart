@@ -44,3 +44,12 @@ class DeleteNAT extends NATEvent {
   @override
   List<Object?> get props => [id];
 }
+
+class SaveBulkNATs extends NATEvent {
+  final List<NAT> nats;
+
+  const SaveBulkNATs(this.nats);
+
+  @override
+  List<Object?> get props => [nats];
+}

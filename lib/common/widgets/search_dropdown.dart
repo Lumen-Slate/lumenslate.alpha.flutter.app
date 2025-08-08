@@ -3,12 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SearchDropdown extends StatefulWidget {
-  const SearchDropdown({super.key, required this.items, this.selectedValue, this.onChanged, this.backgroundColor = Colors.white});
+  const SearchDropdown({
+    super.key,
+    required this.items,
+    this.selectedValue,
+    this.onChanged,
+    this.backgroundColor = Colors.white,
+    this.searchEnabled = true,
+  });
 
   final List<String> items;
   final String? selectedValue;
   final ValueChanged<String?>? onChanged;
   final Color backgroundColor;
+  final bool searchEnabled;
 
   @override
   State<SearchDropdown> createState() => _SearchDropdownState();
@@ -35,18 +43,13 @@ class _SearchDropdownState extends State<SearchDropdown> {
             borderRadius: BorderRadius.circular(24),
             child: Ink(
               height: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-              ),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18.0),
                 child: Center(
                   child: Text(
                     selectedValue ?? widget.items.first,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.black,
-                    ),
+                    style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -64,52 +67,40 @@ class _SearchDropdownState extends State<SearchDropdown> {
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: Text(
                     item,
-                    style: GoogleFonts.poppins(
-                      fontSize: 21,
-                      color: Colors.black,
-                    ),
+                    style: GoogleFonts.poppins(fontSize: 21, color: Colors.black),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
             )
             .toList(),
-        dropdownSearchData: DropdownSearchData(
-          searchController: searchController,
-          searchInnerWidgetHeight: 50,
-          searchInnerWidget: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            height: 78,
-            padding: const EdgeInsets.all(12),
-            child: TextFormField(
-              expands: true,
-              maxLines: null,
-              controller: searchController,
-              style: GoogleFonts.jost(
-                fontSize: 18,
-                color: Colors.black,
-              ),
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
+        dropdownSearchData: widget.searchEnabled
+            ? DropdownSearchData(
+                searchController: searchController,
+                searchInnerWidgetHeight: 50,
+                searchInnerWidget: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  height: 78,
+                  padding: const EdgeInsets.all(12),
+                  child: TextFormField(
+                    expands: true,
+                    maxLines: null,
+                    controller: searchController,
+                    style: GoogleFonts.jost(fontSize: 18, color: Colors.black),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      hintText: 'Search for an item...',
+                      hintStyle: GoogleFonts.jost(fontSize: 18, color: Colors.black54),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                  ),
                 ),
-                hintText: 'Search for an item...',
-                hintStyle: GoogleFonts.jost(
-                  fontSize: 18,
-                  color: Colors.black54,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-            ),
-          ),
-          searchMatchFn: (item, searchValue) {
-            return item.value.toString().toLowerCase().contains(searchValue.toLowerCase());
-          },
-        ),
+                searchMatchFn: (item, searchValue) {
+                  return item.value.toString().toLowerCase().contains(searchValue.toLowerCase());
+                },
+              )
+            : null,
         value: selectedValue,
         onChanged: (value) {
           setState(() {
@@ -123,17 +114,13 @@ class _SearchDropdownState extends State<SearchDropdown> {
           padding: const EdgeInsets.only(left: 14, right: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: Colors.black26,
-            ),
+            border: Border.all(color: Colors.black26),
             color: Colors.redAccent,
           ),
           elevation: 2,
         ),
         iconStyleData: const IconStyleData(
-          icon: Icon(
-            Icons.arrow_forward_ios_outlined,
-          ),
+          icon: Icon(Icons.arrow_forward_ios_outlined),
           iconSize: 14,
           iconEnabledColor: Colors.yellow,
           iconDisabledColor: Colors.grey,
@@ -141,20 +128,14 @@ class _SearchDropdownState extends State<SearchDropdown> {
         dropdownStyleData: DropdownStyleData(
           maxHeight: 500,
           width: 300,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(35),
-            color: Colors.white
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(35), color: Colors.white),
           scrollbarTheme: ScrollbarThemeData(
             radius: const Radius.circular(40),
             thickness: WidgetStateProperty.all(6),
             thumbVisibility: WidgetStateProperty.all(true),
           ),
         ),
-        menuItemStyleData: MenuItemStyleData(
-          height: 70,
-          padding: EdgeInsets.only(left: 14, right: 14),
-        ),
+        menuItemStyleData: MenuItemStyleData(height: 70, padding: EdgeInsets.only(left: 14, right: 14)),
       ),
     );
   }

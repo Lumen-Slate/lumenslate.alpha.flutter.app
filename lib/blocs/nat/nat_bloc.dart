@@ -72,5 +72,24 @@ class NATBloc extends Bloc<NATEvent, NATState> {
         emit(NATError(e.toString()));
       }
     });
+
+    on<SaveBulkNATs>((event, emit) async {
+      emit(NATLoading());
+      try {
+        final response = await repository.createBulkNATs(event.nats);
+
+        if (response.statusCode! >= 400) {
+          throw StateError(response.data['error'] ?? 'Failed to save bulk NATs.');
+        }
+
+        final nats = (response.data as List)
+            .map((item) => NAT.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        emit(NATLoaded(nats));
+      } catch (e) {
+        emit(NATError(e.toString()));
+      }
+    });
   }
 }

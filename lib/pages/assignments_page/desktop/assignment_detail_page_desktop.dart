@@ -19,6 +19,8 @@ class AssignmentDetailPageDesktop extends StatefulWidget {
 }
 
 class _AssignmentDetailPageDesktopState extends State<AssignmentDetailPageDesktop> {
+  final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
+  
   @override
   void initState() {
     context.read<AssignmentBloc>().add(FetchAssignmentById(id: widget.assignmentId, extended: true));
@@ -30,19 +32,18 @@ class _AssignmentDetailPageDesktopState extends State<AssignmentDetailPageDeskto
     return PopScope(
       onPopInvokedWithResult: (result, __) {
         if (result) {
-          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false));
+          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
         }
       },
       child: ResponsiveScaledBox(
         width: AppConstants.desktopScaleWidth,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppBar(backgroundColor: Colors.white),
           body: BlocBuilder<AssignmentBloc, AssignmentState>(
             builder: (context, state) {
               if (state is AssignmentSingleExtendedSuccess) {
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 46),
                   child: Column(
                     spacing: 30,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,21 +100,32 @@ class _AssignmentDetailPageDesktopState extends State<AssignmentDetailPageDeskto
                           title: "Multiple Choice Questions",
                           description: "Choose the correct option. Only one answer is correct.",
                           backgroundColor: Colors.blue,
-                          children: state.assignment.mcqs!.map((q) => MCQTile(mcq: q, viewOnly: true)).toList(),
+                          children: state.assignment.mcqs!
+                              .map(
+                                (q) => Container(
+                                  margin: const EdgeInsets.only(bottom: 40),
+                                  child: MCQTile(mcq: q, viewOnly: true),
+                                ),
+                              )
+                              .toList(),
                         ),
                       if (state.assignment.msqs != null && state.assignment.msqs!.isNotEmpty)
                         _buildQuestionSection(
                           title: "Multiple Select Questions",
                           description: "Select all correct options. More than one may apply.",
                           backgroundColor: Colors.green,
-                          children: state.assignment.msqs!.map((q) => MSQTile(msq: q, viewOnly: true)).toList(),
+                          children: state.assignment.msqs!.map((q) => Container(
+                              margin: const EdgeInsets.only(bottom: 40),
+                              child: MSQTile(msq: q, viewOnly: true))).toList(),
                         ),
                       if (state.assignment.nats != null && state.assignment.nats!.isNotEmpty)
                         _buildQuestionSection(
                           title: "Numerical Answer Type",
                           description: "Type the numerical answer without options.",
                           backgroundColor: Colors.orange,
-                          children: state.assignment.nats!.map((q) => NATTile(nat: q, viewOnly: true)).toList(),
+                          children: state.assignment.nats!.map((q) => Container(
+                              margin: const EdgeInsets.only(bottom: 40),
+                              child: NATTile(nat: q, viewOnly: true))).toList(),
                         ),
                       if (state.assignment.subjectives != null && state.assignment.subjectives!.isNotEmpty)
                         _buildQuestionSection(
@@ -121,7 +133,9 @@ class _AssignmentDetailPageDesktopState extends State<AssignmentDetailPageDeskto
                           description: "Write descriptive answers in your own words.",
                           backgroundColor: Colors.purple,
                           children: state.assignment.subjectives!
-                              .map((q) => SubjectiveTile(subjective: q, viewOnly: true))
+                              .map((q) => Container(
+                              margin: const EdgeInsets.only(bottom: 40),
+                              child: SubjectiveTile(subjective: q, viewOnly: true)))
                               .toList(),
                         ),
 
@@ -157,7 +171,10 @@ class _AssignmentDetailPageDesktopState extends State<AssignmentDetailPageDeskto
                 );
               } else if (state is AssignmentSingleFailure) {
                 return Center(
-                  child: Text('Failed to load assignment: ${state.error}', style: GoogleFonts.poppins(color: Colors.red)),
+                  child: Text(
+                    'Failed to load assignment: ${state.error}',
+                    style: GoogleFonts.poppins(color: Colors.red),
+                  ),
                 );
               } else {
                 return const Center(child: CircularProgressIndicator());

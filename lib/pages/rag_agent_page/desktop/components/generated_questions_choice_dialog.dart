@@ -1,4 +1,7 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lumen_slate/lib.dart';
+import '../../../../blocs/nat/nat_bloc.dart';
+import '../../../../blocs/subjective/subjective_bloc.dart';
 import '../../../../serializers/rag_agent_serializers/rag_generated_questions_serializer.dart';
 import '../../../../models/questions/mcq.dart';
 import '../../../../models/questions/msq.dart';
@@ -30,13 +33,19 @@ class _GeneratedQuestionsChoiceDialogState
   @override
   void initState() {
     super.initState();
-    mcqSelected = List.filled(widget.serializer.mcqs.length, true);
-    msqSelected = List.filled(widget.serializer.msqs.length, true);
-    natSelected = List.filled(widget.serializer.nats.length, true);
+    mcqSelected = List.filled(widget.serializer.mcqs.length, false);
+    msqSelected = List.filled(widget.serializer.msqs.length, false);
+    natSelected = List.filled(widget.serializer.nats.length, false);
     subjectiveSelected = List.filled(
       widget.serializer.subjectives.length,
-      true,
+      false,
     );
+  }
+
+  void _toggleSelection(List<bool> selected, int index) {
+    setState(() {
+      selected[index] = !selected[index];
+    });
   }
 
   void _saveSelectedQuestions() {
@@ -55,8 +64,9 @@ class _GeneratedQuestionsChoiceDialogState
       if (natSelected[i]) selectedNats.add(widget.serializer.nats[i]);
     }
     for (int i = 0; i < subjectiveSelected.length; i++) {
-      if (subjectiveSelected[i])
+      if (subjectiveSelected[i]) {
         selectedSubjectives.add(widget.serializer.subjectives[i]);
+      }
     }
 
     if (selectedMcqs.isNotEmpty) {
@@ -65,12 +75,12 @@ class _GeneratedQuestionsChoiceDialogState
     if (selectedMsqs.isNotEmpty) {
       context.read<MSQBloc>().add(SaveBulkMSQs(selectedMsqs));
     }
-    // if (selectedNats.isNotEmpty) {
-    //   context.read<NATBloc>().add(SaveBulkNATs(selectedNats));
-    // }
-    // if (selectedSubjectives.isNotEmpty) {
-    //   context.read<SubjectiveBloc>().add(SaveBulkSubjectives(selectedSubjectives));
-    // }
+    if (selectedNats.isNotEmpty) {
+      context.read<NATBloc>().add(SaveBulkNATs(selectedNats));
+    }
+    if (selectedSubjectives.isNotEmpty) {
+      context.read<SubjectiveBloc>().add(SaveBulkSubjectives(selectedSubjectives));
+    }
 
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -82,77 +92,345 @@ class _GeneratedQuestionsChoiceDialogState
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
       width: AppConstants.desktopScaleWidth,
-      child: AlertDialog(
-        title: const Text('Select Questions to Save'),
-        content: SizedBox(
-          width: 500,
-          height: 400,
-          child: SingleChildScrollView(
+      child: Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: SizedBox(
+          width: 1300,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 55),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildSection('MCQs', widget.serializer.mcqs, mcqSelected),
-                _buildSection('MSQs', widget.serializer.msqs, msqSelected),
-                _buildSection('NATs', widget.serializer.nats, natSelected),
-                _buildSection(
-                  'Subjectives',
-                  widget.serializer.subjectives,
-                  subjectiveSelected,
+                Text('Select Generated Questions', style: GoogleFonts.jost(fontSize: 56, fontWeight: FontWeight.w400)),
+                Text(
+                  'Select which generated questions you want to save to your bank.',
+                  style: GoogleFonts.jost(fontSize: 20, fontWeight: FontWeight.w300),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSection(
+                          'MCQs',
+                          widget.serializer.mcqs,
+                          mcqSelected,
+                          (q, i) => _buildMCQTile(q as MCQ, mcqSelected, i),
+                        ),
+                        _buildSection(
+                          'MSQs',
+                          widget.serializer.msqs,
+                          msqSelected,
+                          (q, i) => _buildMSQTile(q as MSQ, msqSelected, i),
+                        ),
+                        _buildSection(
+                          'NATs',
+                          widget.serializer.nats,
+                          natSelected,
+                          (q, i) => _buildNATTile(q as NAT, natSelected, i),
+                        ),
+                        _buildSection(
+                          'Subjectives',
+                          widget.serializer.subjectives,
+                          subjectiveSelected,
+                          (q, i) => _buildSubjectiveTile(q as Subjective, subjectiveSelected, i),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent.shade200,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      ),
+                      child: Text(
+                        'Close',
+                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.save),
+                      label: Text(
+                        'Save Selected',
+                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400),
+                      ),
+                      onPressed: _saveSelectedQuestions,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal.shade300,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.save),
-            label: const Text('Save Selected'),
-            onPressed: _saveSelectedQuestions,
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildSection(String label, List questions, List<bool> selected) {
+  Widget _buildSection(
+    String label,
+    List questions,
+    List<bool> selected,
+    Widget Function(dynamic, int) tileBuilder,
+  ) {
     if (questions.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 22),
         ),
-        ...List.generate(questions.length, (i) {
-          final q = questions[i];
-          return CheckboxListTile(
-            value: selected[i],
-            onChanged: (val) {
-              setState(() {
-                selected[i] = val ?? false;
-              });
-            },
-            title: Text(
-              q is MCQ
-                  ? q.question
-                  : q is MSQ
-                  ? q.question
-                  : q is NAT
-                  ? q.question
-                  : q is Subjective
-                  ? q.question
-                  : q.toString(),
-            ),
-            dense: true,
-            controlAffinity: ListTileControlAffinity.leading,
-          );
-        }),
-        const Divider(),
+        const SizedBox(height: 10),
+        ...List.generate(questions.length, (i) => tileBuilder(questions[i], i)),
+        const Divider(height: 40),
       ],
+    );
+  }
+
+  Widget _buildMCQTile(MCQ mcq, List<bool> selected, int i) {
+    final isSelected = selected[i];
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: isSelected ? Colors.teal : Colors.grey, width: 2),
+        borderRadius: BorderRadius.circular(10),
+        color: isSelected ? Colors.teal.withValues(alpha: 0.08) : Colors.white,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => _toggleSelection(selected, i),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Q. ${mcq.question}',
+                style: GoogleFonts.jost(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(height: 10),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 10,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: mcq.options.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: (index == mcq.answerIndex)
+                          ? Colors.green.shade100
+                          : Colors.grey.shade200,
+                    ),
+                    child: Center(
+                      child: Text(
+                        mcq.options[index],
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  isSelected ? "Selected" : "Tap to select",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.teal : Colors.grey,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMSQTile(MSQ msq, List<bool> selected, int i) {
+    final isSelected = selected[i];
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: isSelected ? Colors.teal : Colors.grey, width: 2),
+        borderRadius: BorderRadius.circular(10),
+        color: isSelected ? Colors.teal.withValues(alpha: 0.08) : Colors.white,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => _toggleSelection(selected, i),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Q. ${msq.question}',
+                style: GoogleFonts.jost(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(height: 10),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 10,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: msq.options.length,
+                itemBuilder: (context, index) {
+                  final isAnswer = msq.answerIndices.contains(index);
+                  return Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: isAnswer
+                          ? Colors.green.shade100
+                          : Colors.grey.shade200,
+                    ),
+                    child: Center(
+                      child: Text(
+                        msq.options[index],
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  isSelected ? "Selected" : "Tap to select",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.teal : Colors.grey,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNATTile(NAT nat, List<bool> selected, int i) {
+    final isSelected = selected[i];
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: isSelected ? Colors.teal : Colors.grey, width: 2),
+        borderRadius: BorderRadius.circular(10),
+        color: isSelected ? Colors.teal.withValues(alpha: 0.08) : Colors.white,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => _toggleSelection(selected, i),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Q. ${nat.question}',
+                style: GoogleFonts.jost(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Answer: ${nat.answer}',
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.blueGrey),
+              ),
+              SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  isSelected ? "Selected" : "Tap to select",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.teal : Colors.grey,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubjectiveTile(Subjective subj, List<bool> selected, int i) {
+    final isSelected = selected[i];
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: isSelected ? Colors.teal : Colors.grey, width: 2),
+        borderRadius: BorderRadius.circular(10),
+        color: isSelected ? Colors.teal.withValues(alpha: 0.08) : Colors.white,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => _toggleSelection(selected, i),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Q. ${subj.question}',
+                style: GoogleFonts.jost(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              // SizedBox(height: 10),
+              // Text(
+              //   'Expected Answer: ${subj.answer}',
+              //   style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.blueGrey),
+              // ),
+              SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  isSelected ? "Selected" : "Tap to select",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.teal : Colors.grey,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

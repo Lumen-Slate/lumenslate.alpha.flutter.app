@@ -158,14 +158,13 @@ class ContextGenerationDialogState extends State<ContextGenerationDialog> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: SizedBox(
             width: 1300,
-            // height: 800,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 55),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Context Generation', style: GoogleFonts.jost(fontSize: 56, fontWeight: FontWeight.w400)),
+                  Text('Story Generation', style: GoogleFonts.jost(fontSize: 56, fontWeight: FontWeight.w400)),
                   Text(
                     'Generate a story around your question',
                     style: GoogleFonts.jost(fontSize: 20, fontWeight: FontWeight.w300),

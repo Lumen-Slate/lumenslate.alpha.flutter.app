@@ -7,6 +7,8 @@ import '../../../constants/dummy_data/questions/nat.dart';
 import '../../../constants/dummy_data/questions/subjective.dart';
 import '../../../models/questions/mcq.dart';
 import '../../../models/questions/msq.dart';
+import '../../../models/questions/nat.dart';
+import '../../../models/questions/subjective.dart';
 import 'components/context_genenration_dialog.dart';
 import 'components/mcq_variation_dialog.dart';
 import 'components/msq_variation_dialog.dart';
@@ -44,13 +46,21 @@ class _QuestionsMobileState extends State<QuestionsMobile> {
     setState(() {
       filteredQuestions = allQuestions.where((question) {
         bool matchesSearch =
-        searchMode == "Search by question" ? question.mcq.toLowerCase().contains(searchQuery) : true;
+        searchMode == "Search by question" ? question.question.toLowerCase().contains(searchQuery) : true;
         bool matchesPoints =
         searchMode == "Filter by points" ? (question.points >= minPoints && question.points <= maxPoints) : true;
-        bool matchesType = selectedType == "All" || question.runtimeType.toString() == selectedType;
+        bool matchesType = selectedType == "All" || _getQuestionTypeName(question) == selectedType;
         return matchesSearch && matchesPoints && matchesType;
       }).toList();
     });
+  }
+
+  String _getQuestionTypeName(dynamic question) {
+    if (question is MCQ) return "MCQ";
+    if (question is MSQ) return "MSQ";
+    if (question is NAT) return "NAT";
+    if (question is Subjective) return "Subjective";
+    return question.runtimeType.toString();
   }
 
   void _updateSearchMode(String mode) {
@@ -109,10 +119,10 @@ class _QuestionsMobileState extends State<QuestionsMobile> {
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/add-question'),
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => context.go('/add-question'),
+      //   child: const Icon(Icons.add),
+      // ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -149,6 +159,57 @@ class _QuestionsMobileState extends State<QuestionsMobile> {
                 .map((type) => DropdownMenuItem(value: type, child: Text(type)))
                 .toList(),
           ),
+          // Points range filter (only show when "Filter by points" is selected)
+          if (searchMode == "Filter by points") ...[
+            const SizedBox(height: 10),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Points Range:', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Min Points',
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                minPoints = double.tryParse(value) ?? 0;
+                                _applyFilters();
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Max Points',
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                maxPoints = double.tryParse(value) ?? 100;
+                                _applyFilters();
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 20),
           ...filteredQuestions.map((question) {
             return Card(

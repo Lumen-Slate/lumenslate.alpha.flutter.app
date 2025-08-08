@@ -60,12 +60,20 @@ class SubjectiveTile extends StatelessWidget {
                 Spacer(),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.grey[100]),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.white),
                   child: Row(
+                    spacing: 20,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
+                      TextButton.icon(
                         icon: Icon(Icons.lightbulb_outline_rounded, color: Colors.orange[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.orange[700],
+                          backgroundColor: Colors.orange.shade50,
+                          overlayColor: Colors.orange.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () async {
                           await showDialog(
                             context: context,
@@ -76,10 +84,20 @@ class SubjectiveTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: _iconSize,
+                        label: Text(
+                          'Story Generation',
+                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.orange[700]),
+                        ),
                       ),
-                      IconButton(
+                      TextButton.icon(
                         icon: Icon(Icons.auto_fix_high_outlined, color: Colors.green[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.green[700],
+                          backgroundColor: Colors.green.shade50,
+                          overlayColor: Colors.green.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () async {
                           await showDialog(
                             context: context,
@@ -90,10 +108,20 @@ class SubjectiveTile extends StatelessWidget {
                             ),
                           );
                         },
-                        iconSize: _iconSize,
+                        label: Text(
+                          'Segment',
+                          style: GoogleFonts.poppins(fontSize: 16, color: Colors.green[700]),
+                        ),
                       ),
-                      IconButton(
+                      TextButton.icon(
                         icon: Icon(Icons.edit_outlined, color: Colors.blue[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.blue[700],
+                          backgroundColor: Colors.blue.shade50,
+                          overlayColor: Colors.blue.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () async {
                           final updatedSubjective = await showDialog<Subjective>(
                             context: context,
@@ -121,10 +149,17 @@ class SubjectiveTile extends StatelessWidget {
                             }
                           }
                         },
-                        iconSize: _iconSize,
+                        label: Text('Edit', style: GoogleFonts.poppins(fontSize: 16, color: Colors.blue[700])),
                       ),
-                      IconButton(
+                      TextButton.icon(
                         icon: Icon(Icons.delete_outline_rounded, color: Colors.red[700]),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          foregroundColor: Colors.red[700],
+                          backgroundColor: Colors.red.shade50,
+                          overlayColor: Colors.red.shade200,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
                         onPressed: () async {
                           final confirmed = await showDialog<bool>(
                             context: context,
@@ -164,7 +199,7 @@ class SubjectiveTile extends StatelessWidget {
                             }
                           }
                         },
-                        iconSize: _iconSize,
+                        label: Text('Delete', style: GoogleFonts.poppins(fontSize: 16, color: Colors.red[700])),
                       ),
                     ],
                   ),

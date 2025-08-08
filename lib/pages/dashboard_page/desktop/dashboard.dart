@@ -30,64 +30,64 @@ class TeacherDashboardDesktop extends StatelessWidget {
           width: AppConstants.desktopScaleWidth,
           child: Scaffold(
             backgroundColor: Colors.white,
-            floatingActionButtonLocation: ExpandableFab.location,
-            floatingActionButton: Container(
-              margin: const EdgeInsets.only(bottom: 20, right: 28),
-              child: ExpandableFab(
-                key: _fabKey,
-                childrenAnimation: ExpandableFabAnimation.none,
-                type: ExpandableFabType.up,
-                openButtonBuilder: RotateFloatingActionButtonBuilder(
-                  child: Icon(Icons.dashboard, color: Colors.black),
-                  fabSize: ExpandableFabSize.regular,
-                  foregroundColor: Colors.blue,
-                  backgroundColor: Colors.white,
-                  shape: CircleBorder(),
-                ),
-                closeButtonBuilder: DefaultFloatingActionButtonBuilder(
-                  child: const Icon(Icons.close),
-                  fabSize: ExpandableFabSize.small,
-                  foregroundColor: Colors.red,
-                  backgroundColor: Colors.white,
-                  shape: CircleBorder(),
-                ),
-                children: [
-                  FloatingActionButton.extended(
-                    heroTag: null,
-                    label: Row(
-                      children: [
-                        const Icon(Icons.add),
-                        const SizedBox(width: 10),
-                        Text('Add Question', style: GoogleFonts.jost(fontSize: 18)),
-                      ],
-                    ),
-                    onPressed: () => context.go('/add-question'),
-                  ),
-                  // FloatingActionButton.extended(
-                  //   heroTag: null,
-                  //   label: Row(
-                  //     children: [
-                  //       const Icon(Icons.book_rounded),
-                  //       const SizedBox(width: 10),
-                  //       Text('Create Assignment', style: GoogleFonts.jost(fontSize: 18)),
-                  //     ],
-                  //   ),
-                  //   onPressed: () {},
-                  // ),
-                  // FloatingActionButton.extended(
-                  //   heroTag: null,
-                  //   label: Row(
-                  //     children: [
-                  //       const Icon(Icons.business_center_rounded),
-                  //       const SizedBox(width: 10),
-                  //       Text('Add Question Bank', style: GoogleFonts.jost(fontSize: 18)),
-                  //     ],
-                  //   ),
-                  //   onPressed: () {},
-                  // ),
-                ],
-              ),
-            ),
+            // floatingActionButtonLocation: ExpandableFab.location,
+            // floatingActionButton: Container(
+            //   margin: const EdgeInsets.only(bottom: 20, right: 28),
+            //   child: ExpandableFab(
+            //     key: _fabKey,
+            //     childrenAnimation: ExpandableFabAnimation.none,
+            //     type: ExpandableFabType.up,
+            //     openButtonBuilder: RotateFloatingActionButtonBuilder(
+            //       child: Icon(Icons.dashboard, color: Colors.black),
+            //       fabSize: ExpandableFabSize.regular,
+            //       foregroundColor: Colors.blue,
+            //       backgroundColor: Colors.white,
+            //       shape: CircleBorder(),
+            //     ),
+            //     closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+            //       child: const Icon(Icons.close),
+            //       fabSize: ExpandableFabSize.small,
+            //       foregroundColor: Colors.red,
+            //       backgroundColor: Colors.white,
+            //       shape: CircleBorder(),
+            //     ),
+            //     children: [
+            //       FloatingActionButton.extended(
+            //         heroTag: null,
+            //         label: Row(
+            //           children: [
+            //             const Icon(Icons.add),
+            //             const SizedBox(width: 10),
+            //             Text('Add Question', style: GoogleFonts.jost(fontSize: 18)),
+            //           ],
+            //         ),
+            //         onPressed: () => context.go('/add-question'),
+            //       ),
+            //       // FloatingActionButton.extended(
+            //       //   heroTag: null,
+            //       //   label: Row(
+            //       //     children: [
+            //       //       const Icon(Icons.book_rounded),
+            //       //       const SizedBox(width: 10),
+            //       //       Text('Create Assignment', style: GoogleFonts.jost(fontSize: 18)),
+            //       //     ],
+            //       //   ),
+            //       //   onPressed: () {},
+            //       // ),
+            //       // FloatingActionButton.extended(
+            //       //   heroTag: null,
+            //       //   label: Row(
+            //       //     children: [
+            //       //       const Icon(Icons.business_center_rounded),
+            //       //       const SizedBox(width: 10),
+            //       //       Text('Add Question Bank', style: GoogleFonts.jost(fontSize: 18)),
+            //       //     ],
+            //       //   ),
+            //       //   onPressed: () {},
+            //       // ),
+            //     ],
+            //   ),
+            // ),
             body: SingleChildScrollView(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),
@@ -198,19 +198,37 @@ class TeacherDashboardDesktop extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
+                              // GestureDetector(
+                              //   onTap: () => context.go('/teacher-dashboard/questions'),
+                              //   child: WideTile(
+                              //     title: AutoSizeText("Questions", style: GoogleFonts.poppins(fontSize: 46)),
+                              //     subTitle: AutoSizeText(
+                              //       "Browse all questions",
+                              //       style: GoogleFonts.poppins(fontSize: 16),
+                              //     ),
+                              //     description: AutoSizeText(
+                              //       "A special question entry powered by AI to help you create questions faster.",
+                              //       style: GoogleFonts.poppins(fontSize: 16),
+                              //     ),
+                              //     backgroundColor: Colors.deepPurpleAccent[100]!,
+                              //   ),
+                              // ),
                               GestureDetector(
-                                onTap: () => context.go('/teacher-dashboard/questions'),
+                                onTap: () => context.go('/teacher-dashboard/rag-agent'),
                                 child: WideTile(
-                                  title: AutoSizeText("Questions", style: GoogleFonts.poppins(fontSize: 46)),
+                                  title: AutoSizeText(
+                                    "Knowledge Based Generation",
+                                    style: GoogleFonts.poppins(fontSize: 46),
+                                  ),
                                   subTitle: AutoSizeText(
-                                    "Browse your questions",
+                                    "Generate questions",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   description: AutoSizeText(
-                                    "A special question entry powered by AI to help you create questions faster.",
+                                    "Generate questions based on your knowledge base like curriculum, syllabus etc. using AI.",
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
-                                  backgroundColor: Colors.deepPurpleAccent[100]!,
+                                  backgroundColor: Colors.lightBlueAccent[100]!,
                                 ),
                               ),
                               GestureDetector(
@@ -229,8 +247,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
                           ),
                           SizedBox(height: 50),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            spacing: 50,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               GestureDetector(
                                 onTap: () => context.go('/teacher-dashboard/assignments'),
@@ -245,24 +262,6 @@ class TeacherDashboardDesktop extends StatelessWidget {
                                     style: GoogleFonts.poppins(fontSize: 16),
                                   ),
                                   backgroundColor: Colors.greenAccent[200]!,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => context.go('/teacher-dashboard/rag-agent'),
-                                child: WideTile(
-                                  title: AutoSizeText(
-                                    "Knowledge Based Generation",
-                                    style: GoogleFonts.poppins(fontSize: 46),
-                                  ),
-                                  subTitle: AutoSizeText(
-                                    "Generate questions",
-                                    style: GoogleFonts.poppins(fontSize: 16),
-                                  ),
-                                  description: AutoSizeText(
-                                    "Generate questions based on your knowledge base like curriculum, syllabus etc. using AI.",
-                                    style: GoogleFonts.poppins(fontSize: 16),
-                                  ),
-                                  backgroundColor: Colors.lightBlueAccent[100]!,
                                 ),
                               ),
 

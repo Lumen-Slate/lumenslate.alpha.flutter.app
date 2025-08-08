@@ -25,16 +25,16 @@ class SignInPageMobile extends StatelessWidget {
         }
       },
       child: Scaffold(
-        body: Container(
+        body: SizedBox(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFFE0F7FA), Color(0xFFFFFFFF)],
-            ),
-          ),
+          // decoration: const BoxDecoration(
+          //   gradient: LinearGradient(
+          //     begin: Alignment.topCenter,
+          //     end: Alignment.bottomCenter,
+          //     colors: [Color(0xFFE0F7FA), Color(0xFFFFFFFF)],
+          //   ),
+          // ),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
@@ -54,15 +54,14 @@ class SignInPageMobile extends StatelessWidget {
                       child: Column(
                         children: [
                           // If you have a logo asset, uncomment below:
-                          // SvgPicture.asset('assets/logo.svg', width: 100, height: 100),
-                          Icon(Icons.flash_on, color: Colors.teal, size: 72),
+                          Image.asset('assets/lumenslate_no_background_616x616.png', width: 100, height: 100),
+                          // Icon(Icons.flash_on, color: Colors.teal, size: 72),
                           const SizedBox(height: 12),
                           Text(
                             AppConstants.appName,
                             style: GoogleFonts.jost(
                               fontSize: 44,
                               fontWeight: FontWeight.w700,
-                              color: Colors.teal[700],
                               letterSpacing: 1.2,
                             ),
                             textAlign: TextAlign.center,
@@ -105,18 +104,18 @@ class SignInPageMobile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 36),
-                    Divider(
-                      color: Colors.grey[300],
-                      thickness: 1.2,
-                      indent: 60,
-                      endIndent: 60,
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: const TermsAndPrivacyText(),
-                    ),
-                    const SizedBox(height: 16),
+                    // Divider(
+                    //   color: Colors.grey[300],
+                    //   thickness: 1.2,
+                    //   indent: 60,
+                    //   endIndent: 60,
+                    // ),
+                    // const SizedBox(height: 24),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 8),
+                    //   child: const TermsAndPrivacyText(),
+                    // ),
+                    // const SizedBox(height: 16),
                   ],
                 ),
               ),
