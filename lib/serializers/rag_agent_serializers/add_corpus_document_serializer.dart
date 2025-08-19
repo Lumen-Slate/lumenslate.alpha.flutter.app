@@ -1,44 +1,32 @@
 // lib/serializers/rag_agent_serializers/add_corpus_serializer.dart
 class AddCorpusDocumentSerializer {
-  final String corpusName;
-  final String displayName;
   final String fileId;
-  final String gcsObject;
+  final String status;
   final String message;
-  final String ragFileId;
-  final int size;
+  final String responseTime;
 
   AddCorpusDocumentSerializer({
-    required this.corpusName,
-    required this.displayName,
     required this.fileId,
-    required this.gcsObject,
+    required this.status,
     required this.message,
-    required this.ragFileId,
-    required this.size,
+    required this.responseTime,
   });
 
   factory AddCorpusDocumentSerializer.fromJson(Map<String, dynamic> json) {
     return AddCorpusDocumentSerializer(
-      corpusName: json['corpusName'],
-      displayName: json['displayName'],
       fileId: json['fileId'],
-      gcsObject: json['gcsObject'],
+      status: json['status'],
       message: json['message'],
-      ragFileId: json['ragFileId'],
-      size: json['size'],
+      responseTime: json['responseTime'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'corpusName': corpusName,
-      'displayName': displayName,
       'fileId': fileId,
-      'gcsObject': gcsObject,
+      'status': status,
       'message': message,
-      'ragFileId': ragFileId,
-      'size': size,
+      'responseTime': responseTime,
     };
   }
 }
