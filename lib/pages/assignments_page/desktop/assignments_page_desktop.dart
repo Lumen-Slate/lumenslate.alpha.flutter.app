@@ -45,14 +45,14 @@ class _AssignmentsPageDesktopState extends State<AssignmentsPageDesktop> {
       width: AppConstants.desktopScaleWidth,
       child: Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // TODO: Add create assignment functionality
-          },
-          backgroundColor: Colors.orange[600],
-          foregroundColor: Colors.white,
-          child: const Icon(Icons.add),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     // TODO: Add create assignment functionality
+        //   },
+        //   backgroundColor: Colors.orange[600],
+        //   foregroundColor: Colors.white,
+        //   child: const Icon(Icons.add),
+        // ),
         body: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 50),

@@ -77,14 +77,14 @@ class _AssignmentsPageMobileState extends State<AssignmentsPageMobile> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Add create assignment functionality
-        },
-        backgroundColor: Colors.orange[600],
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // TODO: Add create assignment functionality
+      //   },
+      //   backgroundColor: Colors.orange[600],
+      //   foregroundColor: Colors.white,
+      //   child: const Icon(Icons.add),
+      // ),
       body: RefreshIndicator(
         onRefresh: () async {
           context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));

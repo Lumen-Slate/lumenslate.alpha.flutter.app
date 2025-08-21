@@ -26,12 +26,10 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
     );
     selectedAnswerIndex = widget.mcq.answerIndex;
 
-    // Initialize option controllers
     optionControllers = widget.mcq.options
         .map((option) => TextEditingController(text: option))
         .toList();
 
-    // Ensure we have at least 2 options
     while (optionControllers.length < 2) {
       optionControllers.add(TextEditingController());
     }
@@ -59,7 +57,6 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
         optionControllers[index].dispose();
         optionControllers.removeAt(index);
 
-        // Adjust answer index if necessary
         if (selectedAnswerIndex == index) {
           selectedAnswerIndex = 0;
         } else if (selectedAnswerIndex > index) {
@@ -99,202 +96,239 @@ class _EditMCQDialogState extends State<EditMCQDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        width: 600,
-        constraints: const BoxConstraints(maxHeight: 700),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              children: [
-                Icon(Icons.quiz, color: Colors.blue[600]),
-                const SizedBox(width: 12),
-                Text(
-                  'Edit MCQ Question',
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: SizedBox(
+        width: 1300,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 55),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Text(
+                    'Edit MCQ Question',
+                    style: GoogleFonts.jost(
+                      fontSize: 56,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Update the question and its options below.',
+                style: GoogleFonts.jost(fontSize: 18, fontWeight: FontWeight.w300),
+              ),
+              const SizedBox(height: 24),
 
-            // Form content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Question field
-                    Text(
-                      'Question',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: questionController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your question here...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+              // Question field
+              Text(
+                'Question',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: questionController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Enter your question here...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                ),
+              ),
+              const SizedBox(height: 20),
 
-                    // Points field
-                    Row(
+              // Points and Add Option
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Points',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              TextField(
-                                controller: pointsController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  hintText: 'Points',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ],
+                        Text(
+                          'Points',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 20),
-                        ElevatedButton.icon(
-                          onPressed: _addOption,
-                          icon: const Icon(Icons.add),
-                          label: const Text('Add Option'),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: pointsController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Points',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-
-                    // Options
-                    Text(
-                      'Options (Select the correct answer)',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  ),
+                  const SizedBox(width: 20),
+                  ElevatedButton.icon(
+                    onPressed: _addOption,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Option'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal.shade300,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                     ),
-                    const SizedBox(height: 12),
-                    ...optionControllers.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      TextEditingController controller = entry.value;
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
 
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            // Radio button for correct answer
-                            Radio<int>(
-                              value: index,
-                              groupValue: selectedAnswerIndex,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedAnswerIndex = value!;
-                                });
-                              },
-                            ),
-                            // Option letter
-                            Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                color: selectedAnswerIndex == index
-                                    ? Colors.green[100]
-                                    : Colors.grey[200],
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  String.fromCharCode(
-                                    65 + index,
-                                  ), // A, B, C, D...
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    color: selectedAnswerIndex == index
-                                        ? Colors.green[800]
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Option text field
-                            Expanded(
-                              child: TextField(
-                                controller: controller,
-                                decoration: InputDecoration(
-                                  hintText:
-                                      'Option ${String.fromCharCode(65 + index)}',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Remove button
-                            if (optionControllers.length > 2)
-                              IconButton(
-                                onPressed: () => _removeOption(index),
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                              ),
-                          ],
-                        ),
-                      );
-                    }),
-                  ],
+              // Options
+              Text(
+                'Options (Select the correct answer)',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+              ...optionControllers.asMap().entries.map((entry) {
+                int index = entry.key;
+                TextEditingController controller = entry.value;
 
-            // Action buttons
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Cancel', style: GoogleFonts.poppins()),
-                ),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: _isValid()
-                      ? () => Navigator.of(context).pop(_buildUpdatedMCQ())
-                      : null,
-                  child: Text('Save Changes', style: GoogleFonts.poppins()),
-                ),
-              ],
-            ),
-          ],
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 14),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: selectedAnswerIndex == index ? Colors.teal : Colors.grey.shade300,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    color: selectedAnswerIndex == index ? Colors.teal.withValues(alpha: 0.08) : Colors.white,
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      setState(() {
+                        selectedAnswerIndex = index;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      child: Row(
+                        children: [
+                          Radio<int>(
+                            value: index,
+                            groupValue: selectedAnswerIndex,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedAnswerIndex = value!;
+                              });
+                            },
+                            activeColor: Colors.teal,
+                          ),
+                          Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: selectedAnswerIndex == index
+                                  ? Colors.green[100]
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Center(
+                              child: Text(
+                                String.fromCharCode(65 + index),
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  color: selectedAnswerIndex == index
+                                      ? Colors.green[800]
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextField(
+                              controller: controller,
+                              decoration: InputDecoration(
+                                hintText: 'Option ${String.fromCharCode(65 + index)}',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                              ),
+                            ),
+                          ),
+                          if (optionControllers.length > 2)
+                            IconButton(
+                              onPressed: () => _removeOption(index),
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+
+              // Action buttons
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent.shade200,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton.icon(
+                    onPressed: _isValid()
+                        ? () => Navigator.of(context).pop(_buildUpdatedMCQ())
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal.shade300,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                    ),
+                    icon: const Icon(Icons.save),
+                    label: Text(
+                      'Save Changes',
+                      style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
