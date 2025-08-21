@@ -50,6 +50,7 @@ class RagFileItem {
   final bool inRAGEngine;
   final RagEngineInfo? ragEngineInfo;
   final String ragFileId;
+  final String status;
 
   RagFileItem({
     required this.fileId,
@@ -61,6 +62,7 @@ class RagFileItem {
     required this.inRAGEngine,
     required this.ragEngineInfo,
     required this.ragFileId,
+    required this.status,
   });
 
   factory RagFileItem.fromJson(Map<String, dynamic> json) {
@@ -76,6 +78,7 @@ class RagFileItem {
           ? RagEngineInfo.fromJson(json['ragEngineInfo'])
           : null,
       ragFileId: json['ragFileId'],
+      status: json['status'] ?? 'error',
     );
   }
 
@@ -90,6 +93,7 @@ class RagFileItem {
       'inRAGEngine': inRAGEngine,
       'ragEngineInfo': ragEngineInfo?.toJson(),
       'ragFileId': ragFileId,
+      'status': status,
     };
   }
 }

@@ -19,6 +19,7 @@ class DeleteCorpusDocument extends RagDocumentEvent {
 
 class ListCorpusContent extends RagDocumentEvent {
   final String corpusName;
+  final bool async;
 
-  ListCorpusContent({required this.corpusName});
+  ListCorpusContent({required this.corpusName, this.async = false});
 }

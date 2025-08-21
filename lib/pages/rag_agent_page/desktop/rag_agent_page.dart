@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -29,16 +31,36 @@ class RagAgentPageDesktop extends StatefulWidget {
 
 class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
   final TextEditingController _textController = TextEditingController();
+  Timer? _refreshTimer;
+
+  final Map<String, (Color, Color)> _statusColors = {
+    'completed': (Colors.green.shade100, Colors.green.shade700),
+    'error': (Colors.red.shade100, Colors.red.shade700),
+    'pending': (Colors.blue.shade100, Colors.blue.shade700),
+    'failed': (Colors.grey.shade100, Colors.grey.shade700),
+  };
 
   @override
   void initState() {
     context.read<RagAgentBloc>().add(FetchRagAgentChatHistory(teacherId: widget.teacherId, pageSize: 20));
     context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: widget.corpusName));
+    _startPeriodicRefresh();
     super.initState();
+  }
+
+  void _startPeriodicRefresh() {
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      final state = context.read<RagDocumentBloc>().state;
+      if(state is RagListCorpusContentSuccess) {
+        context.read<RagDocumentBloc>().add(ListCorpusContent(corpusName: widget.corpusName, async: true));
+      }
+    });
   }
 
   @override
   void dispose() {
+    _refreshTimer?.cancel();
     _textController.dispose();
     super.dispose();
   }
@@ -291,6 +313,17 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                                     ],
                                                   ),
                                                 ),
+                                                Chip(
+                                                  label: Text(
+                                                    doc.status,
+                                                    style: GoogleFonts.poppins(fontSize: 12, color: _statusColors[doc.status]?.$2 ?? Colors.black),
+                                                  ),
+                                                  backgroundColor: _statusColors[doc.status]?.$1,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(16),
+                                                  ),
+                                                  side: BorderSide.none,
+                                                ),
                                                 // View Document Button
                                                 IconButton(
                                                   padding: const EdgeInsets.all(14.0),
@@ -430,8 +463,9 @@ class _RagAgentPageDesktopState extends State<RagAgentPageDesktop> {
                                       ),
                                       onPressed: () {
                                         context.read<RagDocumentBloc>().add(
-                                          ListCorpusContent(corpusName: widget.corpusName),
+                                          ListCorpusContent(corpusName: widget.corpusName, async: true),
                                         );
+                                        _startPeriodicRefresh(); // Reset timer on manual refresh
                                       },
                                       child: Row(
                                         spacing: 10,
