@@ -1,10 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:universal_html/html.dart' as html;
-import 'package:path_provider/path_provider.dart';
+
 import '../models/questions/mcq.dart';
 import '../models/questions/msq.dart';
 import '../models/questions/nat.dart';
@@ -32,8 +34,29 @@ class AssignmentExportService {
 
     pdf.addPage(
       pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(40),
+        pageTheme: pw.PageTheme(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(40),
+          buildBackground: (pw.Context context) => pw.Center(
+            child: pw.Opacity(
+              opacity: 0.20,
+              child: pw.Transform.rotate(
+                angle: -0.7, // ~-40 degrees, diagonal
+                child: pw.Text(
+                  'LUMEN SLATE',
+                  textAlign: pw.TextAlign.center,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: pw.TextStyle(
+                    fontSize: 80,
+                    color: PdfColors.grey600,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
         build: (pw.Context context) {
           List<pw.Widget> content = [];
 
@@ -124,22 +147,30 @@ class AssignmentExportService {
           //   content.add(_buildCommentsSection(assignment));
           // }
 
+          // Just return the content list, no Stack needed
           return content;
         },
       ),
     );
 
     // Save PDF to file
-    final fileName = '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+    final fileName =
+        '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf';
     return await _savePdfToFile(pdf, fileName);
   }
 
   /// Build assignment header
-  static pw.Widget _buildAssignmentHeader(AssignmentExtended assignment, int totalPoints) {
+  static pw.Widget _buildAssignmentHeader(
+    AssignmentExtended assignment,
+    int totalPoints,
+  ) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(assignment.title.toUpperCase(), style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+        pw.Text(
+          assignment.title.toUpperCase(),
+          style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+        ),
         pw.SizedBox(height: 8),
         pw.Text(assignment.body, style: const pw.TextStyle(fontSize: 14)),
         pw.SizedBox(height: 12),
@@ -150,7 +181,10 @@ class AssignmentExportService {
               "Due Date: ${assignment.dueDate.toLocal().toString().split(' ')[0]}",
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
-            pw.Text("Total Points: $totalPoints", style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              "Total Points: $totalPoints",
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
           ],
         ),
         pw.Divider(thickness: 2),
@@ -162,11 +196,17 @@ class AssignmentExportService {
   static pw.Widget _buildInstructions() {
     return pw.Container(
       padding: const pw.EdgeInsets.all(15),
-      decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(5)),
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(),
+        borderRadius: pw.BorderRadius.circular(5),
+      ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text("INSTRUCTIONS:", style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14)),
+          pw.Text(
+            "INSTRUCTIONS:",
+            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 14),
+          ),
           pw.SizedBox(height: 8),
           pw.Text("1. Read all questions carefully before answering"),
           pw.Text("2. Answer all questions to the best of your ability"),
@@ -184,11 +224,17 @@ class AssignmentExportService {
     return pw.Container(
       width: double.infinity,
       padding: const pw.EdgeInsets.all(10),
-      decoration: pw.BoxDecoration(color: PdfColors.grey300, borderRadius: pw.BorderRadius.circular(5)),
+      decoration: pw.BoxDecoration(
+        color: PdfColors.grey300,
+        borderRadius: pw.BorderRadius.circular(5),
+      ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text(title, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16)),
+          pw.Text(
+            title,
+            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
+          ),
           pw.SizedBox(height: 4),
           pw.Text(description, style: const pw.TextStyle(fontSize: 12)),
         ],
@@ -215,7 +261,10 @@ class AssignmentExportService {
         pw.SizedBox(height: 10),
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(),
+            borderRadius: pw.BorderRadius.circular(3),
+          ),
           child: pw.Text("Answer: ___________"),
         ),
       ],
@@ -241,7 +290,10 @@ class AssignmentExportService {
         pw.SizedBox(height: 10),
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(),
+            borderRadius: pw.BorderRadius.circular(3),
+          ),
           child: pw.Text("Selected Options: ___________"),
         ),
       ],
@@ -261,7 +313,10 @@ class AssignmentExportService {
         pw.Container(
           width: 200,
           padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(),
+            borderRadius: pw.BorderRadius.circular(3),
+          ),
           child: pw.Text("Answer: ___________"),
         ),
       ],
@@ -269,7 +324,10 @@ class AssignmentExportService {
   }
 
   /// Build Subjective question
-  static pw.Widget _buildSubjectiveQuestion(int questionNumber, Subjective subjective) {
+  static pw.Widget _buildSubjectiveQuestion(
+    int questionNumber,
+    Subjective subjective,
+  ) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -281,7 +339,10 @@ class AssignmentExportService {
         pw.Container(
           width: double.infinity,
           height: 150,
-          decoration: pw.BoxDecoration(border: pw.Border.all(), borderRadius: pw.BorderRadius.circular(3)),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(),
+            borderRadius: pw.BorderRadius.circular(3),
+          ),
           child: pw.Padding(
             padding: const pw.EdgeInsets.all(8),
             child: pw.Column(
@@ -292,7 +353,10 @@ class AssignmentExportService {
                 // Lines for writing
                 ...List.generate(
                   6,
-                  (index) => pw.Padding(padding: const pw.EdgeInsets.only(bottom: 15), child: pw.Divider()),
+                  (index) => pw.Padding(
+                    padding: const pw.EdgeInsets.only(bottom: 15),
+                    child: pw.Divider(),
+                  ),
                 ),
               ],
             ),
@@ -373,10 +437,14 @@ class AssignmentExportService {
     // CSV Headers
     csvContent.writeln('Assignment Title,${assignment.title}');
     csvContent.writeln('Assignment Description,${assignment.body}');
-    csvContent.writeln('Due Date,${assignment.dueDate.toLocal().toString().split(' ')[0]}');
+    csvContent.writeln(
+      'Due Date,${assignment.dueDate.toLocal().toString().split(' ')[0]}',
+    );
     csvContent.writeln('Total Points,${assignment.points}');
     csvContent.writeln('');
-    csvContent.writeln('Question Type,Question Number,Question,Options,Points,Answer');
+    csvContent.writeln(
+      'Question Type,Question Number,Question,Options,Points,Answer',
+    );
 
     int questionNumber = 1;
 
@@ -384,21 +452,29 @@ class AssignmentExportService {
     for (final mcq in mcqs) {
       final options = mcq.options.join('; ');
       final correctAnswer = mcq.options[mcq.answerIndex];
-      csvContent.writeln('MCQ,$questionNumber,"${mcq.question}","$options",${mcq.points},"$correctAnswer"');
+      csvContent.writeln(
+        'MCQ,$questionNumber,"${mcq.question}","$options",${mcq.points},"$correctAnswer"',
+      );
       questionNumber++;
     }
 
     // Add MSQs
     for (final msq in msqs) {
       final options = msq.options.join('; ');
-      final correctAnswers = msq.answerIndices.map((i) => msq.options[i]).join('; ');
-      csvContent.writeln('MSQ,$questionNumber,"${msq.question}","$options",${msq.points},"$correctAnswers"');
+      final correctAnswers = msq.answerIndices
+          .map((i) => msq.options[i])
+          .join('; ');
+      csvContent.writeln(
+        'MSQ,$questionNumber,"${msq.question}","$options",${msq.points},"$correctAnswers"',
+      );
       questionNumber++;
     }
 
     // Add NATs
     for (final nat in nats) {
-      csvContent.writeln('NAT,$questionNumber,"${nat.question}","N/A",${nat.points},${nat.answer}');
+      csvContent.writeln(
+        'NAT,$questionNumber,"${nat.question}","N/A",${nat.points},${nat.answer}',
+      );
       questionNumber++;
     }
 
@@ -411,7 +487,8 @@ class AssignmentExportService {
     }
 
     // Save CSV to file
-    final fileName = '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
+    final fileName =
+        '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
 
     if (kIsWeb) {
       // For web platform
