@@ -60,8 +60,6 @@ class RagAgentBloc extends Bloc<RagAgentEvent, RagAgentState> {
         final response = await repository.callRagAgent(
           payload: RAGAgentPayload(
             message: event.messageString,
-
-            /// TODO: Hardcoded data
             teacherId: 'my_test_corpus',
             role: 'user',
             file: event.file,

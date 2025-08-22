@@ -38,7 +38,9 @@ class RagDocumentBloc extends Bloc<RagDocumentEvent, RagDocumentState> {
     });
 
     on<ListCorpusContent>((event, emit) async {
-      emit(RagDocumentsLoading());
+      if (!event.async) {
+        emit(RagDocumentsLoading());
+      }
       try {
         final result = await ragAgentRepository.listCorpusContent(corpusName: event.corpusName);
         emit(RagListCorpusContentSuccess(result));
