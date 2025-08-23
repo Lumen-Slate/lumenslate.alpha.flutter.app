@@ -4,7 +4,7 @@ class AppConstants {
   static const double mobileScaleWidth = 450;
 
   // static const String backendDomain = 'http://localhost:8080';
-  static const String backendDomain = 'http://web/api/v1';
+  static const String backendDomain = 'http://34.72.222.77/api/v1';
 
   static Duration otpTimeOutDuration = const Duration(minutes: 2);
 }
