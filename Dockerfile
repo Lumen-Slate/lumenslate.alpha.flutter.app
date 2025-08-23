@@ -33,7 +33,6 @@ RUN flutter build web
 # Stage 2: Serve with nginx
 FROM nginx:alpine AS serve
 COPY --from=build-env /app/build/web /usr/share/nginx/html
+COPY --from=build-env /app/logs /app/logs
+COPY ./my_app.conf /etc/nginx/conf.d/default.conf
 EXPOSE 8000
-# Update nginx config to listen on port 8000
-RUN sed -i 's/listen       80;/listen       8000;/g' /etc/nginx/conf.d/default.conf
-CMD ["nginx", "-g", "daemon off;"]
