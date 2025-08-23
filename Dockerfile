@@ -35,4 +35,4 @@ FROM nginx:alpine AS serve
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 COPY --from=build-env /app/logs /app/logs
 COPY ./my_app.conf /etc/nginx/conf.d/default.conf
-EXPOSE 8000
+EXPOSE 80
