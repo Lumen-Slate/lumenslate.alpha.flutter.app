@@ -1,151 +1,143 @@
 import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 
+import '../../lib.dart';
 import '../../models/teacher.dart';
-import '../../repositories/teacher_repository.dart';
-import '../../services/google_auth_services.dart';
-import '../../services/phone_auth_services.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final GoogleAuth googleAuthServices;
+  final GoogleAuthService googleAuthService;
   final PhoneAuth phoneAuthServices;
   final TeacherRepository teacherRepository;
   final _logger = Logger();
+  StreamSubscription<User?>? _userSub;
 
-  AuthBloc({required this.googleAuthServices, required this.phoneAuthServices, required this.teacherRepository})
-    : super(AuthInitial()) {
-    on<GoogleSignIn>((event, emit) async {
-      emit(Loading());
-      try {
-        Map<String, dynamic>? response = await googleAuthServices.signInGoogle();
-        if (response == null) {
-          emit(AuthPending());
-          return;
-        }
+  AuthBloc({
+    required this.googleAuthService,
+    required this.phoneAuthServices,
+    required this.teacherRepository,
+  }) : super(AuthInitial()) {
+    on<AuthCheck>(_onAuthCheck);
+    on<GoogleSignIn>(_onGoogleSignIn);
+    on<SignOut>(_onSignOut);
 
-        final checkTeacherResponse = await teacherRepository.getAllTeachers({
-          "email": response['email'],
-          "limit": "10",
-          "offset": "0",
-        });
+    // Firebase auth state listener
+    _userSub = FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user == null) {
+        add(SignOut());
+      }
+    });
+  }
 
-        Teacher? teacher;
-
-        if (checkTeacherResponse.data == null) {
-          try {
-            final createTeacherResponse = await teacherRepository.createTeacher(
-              // Teacher(id: response['id'], name: response['displayName'], email: response['email']),
-              {"name": response['displayName'], "email": response['email']},
-            );
-            if (createTeacherResponse.statusCode! >= 200) {
-              teacher = Teacher.fromJson(createTeacherResponse.data);
-            } else {
-              _logger.e('Failed to create teacher: ${createTeacherResponse.data}');
-            }
-          } catch (e) {
-            _logger.e('Error creating teacher: $e');
-          }
-        } else {
-          teacher = Teacher.fromJson(checkTeacherResponse.data[0]);
-        }
-
-        if (teacher == null) {
-          throw Exception('Failed to fetch teacher');
-        }
-
-        emit(
-          AuthSuccess(
-            id: response['id'],
-            displayName: response['displayName'],
-            email: response['email'],
-            photoUrl: response['photoUrl'],
-            message: 'User is logged in. ${response['displayName']}',
-            teacher: teacher,
-          ),
-        );
-      } catch (e) {
-        Logger().e(e);
+  Future<void> _onGoogleSignIn(
+    GoogleSignIn event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(Loading());
+    try {
+      final response = await googleAuthService.signIn();
+      if (response == null) {
         emit(AuthPending());
         return;
       }
-    });
 
-    on<AuthCheck>((event, emit) async {
-      final userCompleter = Completer<User?>();
-
-      googleAuthServices.userListener().listen((user) {
-        if (user != null && userCompleter.isCompleted == false) {
-          userCompleter.complete(user);
-        }
+      final email = response['email'];
+      final checkTeacherResponse = await teacherRepository.getAllTeachers({
+        "email": email,
+        "limit": "10",
+        "offset": "0",
       });
 
-      final user = await userCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => null);
+      Teacher? teacher;
 
-      if (user != null) {
-        final checkTeacherResponse = await teacherRepository.getAllTeachers({
-          "email": user.email!,
-          "limit": "10",
-          "offset": "0",
-        });
-        Teacher? teacher;
-
-        if (checkTeacherResponse.data == null) {
-          emit(AuthPending());
-        } else {
-          teacher = Teacher.fromJson(checkTeacherResponse.data[0]);
+      if (checkTeacherResponse.data == null ||
+          checkTeacherResponse.data.isEmpty) {
+        try {
+          final createTeacherResponse = await teacherRepository.createTeacher({
+            "name": response['displayName'],
+            "email": email,
+          });
+          if (createTeacherResponse.statusCode! >= 200) {
+            teacher = Teacher.fromJson(createTeacherResponse.data);
+          } else {
+            _logger.e(
+              'Failed to create teacher: ${createTeacherResponse.data}',
+            );
+          }
+        } catch (e) {
+          _logger.e('Error creating teacher: $e');
         }
-
-        if (teacher == null) {
-          throw Exception('Failed to fetch teacher');
-        }
-
-        emit(
-          AuthSuccess(
-            id: user.uid,
-            displayName: user.displayName ?? '',
-            email: user.email ?? '',
-            photoUrl: user.photoURL,
-            message: 'User is logged in. ${user.displayName}',
-            teacher: teacher,
-          ),
-        );
-        event.onSuccess?.call();
       } else {
-        emit(AuthPending());
+        teacher = Teacher.fromJson(checkTeacherResponse.data[0]);
       }
-    });
 
-    // on<OTPSignIn>((event, emit) {
-    //   emit(Loading());
-    //   try {
-    //     final response = phoneAuthServices.signInOTP(event.countryCode, event.phoneNumber);
-    //     _logger.i(response);
-    //     emit(AuthSuccess(id: '', displayName: '', email: '', message: 'OTP sent to ${event.phoneNumber}'));
-    //   } catch (e) {
-    //     emit(AuthFailure(e.toString()));
-    //   }
-    // });
-    //
-    // on<OTPVerify>((event, emit) {
-    //   emit(Loading());
-    //   try {
-    //     final response = phoneAuthServices.verifyOTP(event.otp);
-    //     _logger.i(response);
-    //     emit(AuthSuccess(id: '', displayName: '', email: '', message: 'OTP verified'));
-    //   } catch (e) {
-    //     emit(AuthFailure(e.toString()));
-    //   }
-    // });
+      if (teacher == null) {
+        throw Exception('Failed to fetch teacher');
+      }
 
-    on<SignOut>((event, emit) async {
-      await googleAuthServices.signOut();
+      emit(
+        AuthSuccess(
+          id: response['id'],
+          displayName: response['displayName'],
+          email: email,
+          photoUrl: response['photoUrl'],
+          message: 'User is logged in. ${response['displayName']}',
+          teacher: teacher,
+        ),
+      );
+    } catch (e) {
+      _logger.e(e);
       emit(AuthPending());
-    });
+    }
+  }
+
+  Future<void> _onAuthCheck(AuthCheck event, Emitter<AuthState> emit) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final checkTeacherResponse = await teacherRepository.getAllTeachers({
+        "email": user.email!,
+        "limit": "10",
+        "offset": "0",
+      });
+
+      Teacher? teacher;
+      if (checkTeacherResponse.data == null ||
+          checkTeacherResponse.data.isEmpty) {
+        emit(AuthPending());
+        return;
+      } else {
+        teacher = Teacher.fromJson(checkTeacherResponse.data[0]);
+      }
+
+      emit(
+        AuthSuccess(
+          id: user.uid,
+          displayName: user.displayName ?? '',
+          email: user.email ?? '',
+          photoUrl: user.photoURL,
+          message: 'User is logged in. ${user.displayName}',
+          teacher: teacher,
+        ),
+      );
+      event.onSuccess?.call();
+    } else {
+      emit(AuthPending());
+    }
+  }
+
+  Future<void> _onSignOut(SignOut event, Emitter<AuthState> emit) async {
+    await googleAuthService.signOut();
+    emit(AuthPending());
+  }
+
+  @override
+  Future<void> close() {
+    _userSub?.cancel();
+    return super.close();
   }
 }
