@@ -109,9 +109,14 @@ class TeacherDashboardDesktop extends StatelessWidget {
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             if (state is AuthSuccess && state.photoUrl != null) {
-                              return CircleAvatar(
-                                radius: 30,
-                                child: ClipOval(child: Image.network(state.photoUrl ?? '')),
+                              return GestureDetector(
+                                onTap: () {
+                                  context.go('/profile');
+                                },
+                                child: CircleAvatar(
+                                  radius: 30,
+                                  child: ClipOval(child: Image.network(state.photoUrl ?? '')),
+                                ),
                               );
                             }
                             return SizedBox.shrink();

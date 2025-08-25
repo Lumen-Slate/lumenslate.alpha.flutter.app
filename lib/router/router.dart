@@ -13,6 +13,7 @@ import '../pages/questions_page/questions.dart';
 import '../pages/rag_agent_page/rag_agent_page.dart';
 import '../pages/sign_in_page/sign_in_page.dart';
 import '../pages/pdf_generator_page/pdf_generator_page.dart';
+import '../pages/profile_page/profile_page.dart';
 import '../pages/students_page/students.dart';
 import '../pages/student_detail_page/student_detail.dart';
 
@@ -26,6 +27,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/sign-in',
       pageBuilder: (context, state) => const MaterialPage(child: SignInPage()),
+    ),
+    GoRoute(
+      path: '/profile',
+      pageBuilder: (context, state) => MaterialPage(child: ProfilePage()),
     ),
     GoRoute(
       path: '/teacher-dashboard',
