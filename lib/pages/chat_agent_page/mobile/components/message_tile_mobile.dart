@@ -8,7 +8,7 @@ import 'assignment_generator_tile_mobile.dart';
 import 'assessor_agent_tile_mobile.dart';
 
 class MessageTileMobile extends StatelessWidget {
-  final AgentResponse message;
+  final AIRawResponse message;
 
   const MessageTileMobile({super.key, required this.message});
 

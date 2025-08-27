@@ -4,7 +4,7 @@ import 'package:lumen_slate/serializers/agent_serializers/report_card_agent.dart
 import 'assignment_generator_general_serializer.dart';
 import 'assignment_generator_tailored_serializer.dart';
 
-class AgentResponse {
+class AIRawResponse {
   final String message;
   final String teacherId;
   final String agentName;
@@ -16,7 +16,7 @@ class AgentResponse {
   final String role;
   final String feedback;
 
-  AgentResponse({
+  AIRawResponse({
     required this.message,
     required this.teacherId,
     required this.agentName,
@@ -29,7 +29,7 @@ class AgentResponse {
     required this.feedback,
   });
 
-  factory AgentResponse.fromJson(Map<String, dynamic> json) {
+  factory AIRawResponse.fromJson(Map<String, dynamic> json) {
     if (json['data'] == null) {
       throw ArgumentError('Data field cannot be null');
     }
@@ -51,7 +51,7 @@ class AgentResponse {
       throw ArgumentError('Unknown agent name: $agentName');
     }
 
-    return AgentResponse(
+    return AIRawResponse(
       message: json['message'] as String,
       teacherId: json['teacherId'] as String,
       agentName: json['agentName'] as String,
