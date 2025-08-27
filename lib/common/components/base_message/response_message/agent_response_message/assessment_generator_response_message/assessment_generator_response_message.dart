@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../serializers/agent_serializers/assessor_agent_serializer.dart';
+import '../../../../../../serializers/agent_serializers/assessor_agent_serializer.dart';
+import '../agent_response_message.dart';
 
-class AssessorAgentTile extends StatelessWidget {
+final class AssessmentGeneratorResponseMessage extends StatelessWidget implements AgentResponseMessage {
   final AssessorAgentSerializer serializer;
 
-  const AssessorAgentTile({super.key, required this.serializer});
+  const AssessmentGeneratorResponseMessage({super.key, required this.serializer});
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +79,12 @@ class AssessorAgentTile extends StatelessWidget {
         children: [
           Text(title, style: GoogleFonts.jost(fontWeight: FontWeight.w600, fontSize: 16)),
           const SizedBox(height: 4),
-          ...items.map((e) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0),
-            child: Text(e, style: GoogleFonts.jost(fontSize: 13)),
-          )),
+          ...items.map(
+            (e) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Text(e, style: GoogleFonts.jost(fontSize: 13)),
+            ),
+          ),
         ],
       ),
     );

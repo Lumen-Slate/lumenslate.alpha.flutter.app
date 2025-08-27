@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../serializers/agent_serializers/assignment_generator_general_serializer.dart';
+import '../../../../../../serializers/agent_serializers/assignment_generator_general_serializer.dart';
+import '../agent_response_message.dart';
 
-class AssignmentGeneratorTile extends StatelessWidget {
-  final AssignmentGeneratorSerializer serializer;
+final class AssignmentGeneratorGeneralResponseMessage extends StatelessWidget implements AgentResponseMessage {
+  final AssignmentGeneratorSerializer response;
 
-  const AssignmentGeneratorTile({super.key, required this.serializer});
+  const AssignmentGeneratorGeneralResponseMessage({super.key, required this.response});
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +20,17 @@ class AssignmentGeneratorTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 12,
           children: [
-            Text(serializer.title, style: GoogleFonts.jost(fontWeight: FontWeight.bold, fontSize: 18)),
-            Text(serializer.body, style: GoogleFonts.jost(fontSize: 14)),
+            Text(response.title, style: GoogleFonts.jost(fontWeight: FontWeight.bold, fontSize: 18)),
+            Text(response.body, style: GoogleFonts.jost(fontSize: 14)),
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 8,
               children: [
-                _buildCount('MCQ count:', serializer.mcqCount),
-                _buildCount('NAT count:', serializer.natCount),
-                _buildCount('MSQ count:', serializer.msqCount),
-                _buildCount('Subjective count:', serializer.subjectiveCount),
+                _buildCount('MCQ count:', response.mcqCount),
+                _buildCount('NAT count:', response.natCount),
+                _buildCount('MSQ count:', response.msqCount),
+                _buildCount('Subjective count:', response.subjectiveCount),
               ],
             ),
             FilledButton.tonal(
@@ -38,7 +39,7 @@ class AssignmentGeneratorTile extends StatelessWidget {
                 backgroundColor: Colors.blue[100],
               ),
               onPressed: () {
-                // context.go('/assignments/${serializer.assignmentId}');
+                // context.go('/assignments/${response.assignmentId}');
                 context.go('/teacher-dashboard/assignments/');
               },
               child: Row(
