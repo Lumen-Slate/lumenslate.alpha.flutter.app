@@ -2,8 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup/flutter_popup.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lumen_slate/common/components/base_message/message_barrel.dart';
 import 'package:lumen_slate/pages/chat_agent_page/desktop/components/attachment_popup.dart';
-import 'package:lumen_slate/serializers/agent_serializers/agent_response.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -13,7 +13,6 @@ import '../../../blocs/chat_agent/chat_agent_bloc.dart';
 import '../../../constants/app_constants.dart';
 import '../../../models/assignments.dart';
 import '../../../models/students.dart';
-import 'components/message_tile.dart';
 
 class ChatAgentPageDesktop extends StatefulWidget {
   /// TODO - Replace with actual teacher ID
@@ -61,9 +60,10 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
       }
     }
 
-
     if (text.isNotEmpty) {
-      context.read<ChatAgentBloc>().add(CallAgent(teacherId: widget.teacherId, messageString: text, file: _selectedFile, attachments: attachments));
+      context.read<ChatAgentBloc>().add(
+        CallAgent(teacherId: widget.teacherId, messageString: text, file: _selectedFile, attachments: attachments),
+      );
       _textController.clear();
     }
 
@@ -109,8 +109,8 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                         height: 580,
                         child: BlocBuilder<ChatAgentBloc, ChatAgentState>(
                           builder: (context, state) {
-                            if (state is ChatAgentStateUpdate) {
-                              return PagedListView<int, AgentResponse>(
+                            if (state is ChatAgentStateUpdated) {
+                              return PagedListView<int, BaseMessage>(
                                 state: state.state,
                                 reverse: true,
                                 fetchNextPage: () {
@@ -119,7 +119,10 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                   );
                                 },
                                 builderDelegate: PagedChildBuilderDelegate(
-                                  itemBuilder: (context, item, index) => MessageTile(message: item),
+                                  itemBuilder: (context, item, index) => Align(
+                                    alignment: (item is ResponseMessage) ? Alignment.centerLeft : Alignment.centerRight,
+                                    child: item,
+                                  ),
                                   noItemsFoundIndicatorBuilder: (context) => Center(
                                     child: Text(
                                       'Start Your Chat',
@@ -170,7 +173,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                           ),
                         ),
 
-                      if(_selectedStudent != null)
+                      if (_selectedStudent != null)
                         Container(
                           decoration: BoxDecoration(color: Colors.green[50], borderRadius: BorderRadius.circular(30)),
                           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 21),
@@ -202,7 +205,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                           ),
                         ),
 
-                      if(_selectedAssignment != null)
+                      if (_selectedAssignment != null)
                         Container(
                           decoration: BoxDecoration(color: Colors.orange[50], borderRadius: BorderRadius.circular(30)),
                           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 21),
@@ -212,7 +215,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                               const Icon(Icons.assignment_outlined, color: Colors.orange),
                               Expanded(
                                 child: Text(
-                                  _selectedAssignment!.title ?? 'Untitled Assignment',
+                                  _selectedAssignment!.title,
                                   style: GoogleFonts.jost(fontSize: 16, color: Colors.orange[800]),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -233,7 +236,6 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                             ],
                           ),
                         ),
-
 
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -297,7 +299,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                     backgroundColor: Colors.green[100],
                                     shape: CircleBorder(),
                                   ),
-                                  icon: (state is ChatAgentStateUpdate && state.state.isLoading)
+                                  icon: (state is ChatAgentStateUpdated && state.state.isLoading)
                                       ? Center(
                                           child: SizedBox(
                                             width: 24,
@@ -306,7 +308,7 @@ class _ChatAgentPageDesktopState extends State<ChatAgentPageDesktop> {
                                           ),
                                         )
                                       : const Icon(Icons.send, color: Colors.green),
-                                  onPressed: (state is! ChatAgentStateUpdate || (state.state.isLoading))
+                                  onPressed: (state is! ChatAgentStateUpdated || (state.state.isLoading))
                                       ? () {}
                                       : () => _sendMessage(context),
                                 );

@@ -4,12 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lumen_slate/common/components/base_message/base_message.dart';
 
 import '../../../blocs/chat_agent/chat_agent_bloc.dart';
-import '../../../serializers/agent_serializers/agent_response.dart';
 import '../../../models/assignments.dart';
 import '../../../models/students.dart';
-import 'components/message_tile_mobile.dart';
 import 'components/attachment_bottom_sheet.dart';
 
 class ChatAgentPageMobile extends StatefulWidget {
@@ -154,17 +153,16 @@ class _ChatAgentPageMobileState extends State<ChatAgentPageMobile> {
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: BlocBuilder<ChatAgentBloc, ChatAgentState>(
                   builder: (context, state) {
-                    if (state is ChatAgentStateUpdate) {
-                      return PagedListView<int, AgentResponse>(
+                    if (state is ChatAgentStateUpdated) {
+                      return PagedListView<int, BaseMessage>(
                         scrollController: _scrollController,
                         state: state.state,
                         fetchNextPage: () {
                           // Implement pagination if needed
                         },
                         builderDelegate:
-                            PagedChildBuilderDelegate<AgentResponse>(
-                              itemBuilder: (context, message, index) =>
-                                  MessageTileMobile(message: message),
+                            PagedChildBuilderDelegate<BaseMessage>(
+                              itemBuilder: (context, item, index) => item,
                               noItemsFoundIndicatorBuilder: (context) => Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -310,7 +308,7 @@ class _ChatAgentPageMobileState extends State<ChatAgentPageMobile> {
                     BlocBuilder<ChatAgentBloc, ChatAgentState>(
                       builder: (context, state) {
                         final isLoading =
-                            state is ChatAgentStateUpdate &&
+                            state is ChatAgentStateUpdated &&
                             state.state.isLoading;
                         return IconButton(
                           onPressed: isLoading
