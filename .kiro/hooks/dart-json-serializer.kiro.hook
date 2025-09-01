@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Dart JSON Serializer Generator",
+  "description": "Automatically generates JSON serializer and deserializer methods (toJson/fromJson) whenever a new Dart class is created in the models directory",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "lib/models/**/*.dart"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A new Dart class has been created or modified in the models directory. Please analyze the class structure and generate appropriate JSON serialization methods (toJson() and fromJson()) for this class. Make sure to handle all properties correctly, including nested objects, lists, and optional fields. Follow Dart conventions and ensure the serialization is compatible with the existing codebase structure."
+  }
+}
