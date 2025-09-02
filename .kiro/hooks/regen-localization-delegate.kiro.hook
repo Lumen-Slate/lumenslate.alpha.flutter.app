@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Regenerate Localization Delegate",
+  "description": "Automatically regenerates the localization delegate when translation files (ARB files) are updated to ensure the app reflects the latest translations",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "lib/l10n/*.arb",
+      "lib/l10n/app_*.arb",
+      "assets/l10n/*.arb"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Translation files have been updated. Please regenerate the localization delegate by running 'flutter gen-l10n' to ensure the app reflects the latest translations. Check that all new translation keys are properly integrated and that the generated delegate files are updated correctly."
+  }
+}
