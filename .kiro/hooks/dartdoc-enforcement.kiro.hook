@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "DartDoc Enforcement",
+  "description": "Monitors Dart files for public classes and methods without DartDoc comments and provides guidance on adding proper documentation",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "lib/**/*.dart"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the modified Dart files and identify any public classes, methods, or functions that are missing DartDoc comments (/// documentation). For each missing documentation case, provide specific guidance on what should be documented including:\n\n1. Brief description of the class/method purpose\n2. Parameter descriptions using @param tags\n3. Return value descriptions using @returns tags  \n4. Usage examples where helpful\n5. Any important notes about behavior or constraints\n\nFocus on public APIs (classes, methods, functions without underscore prefix) and ensure documentation follows Dart documentation standards. Provide concrete examples of proper DartDoc formatting for the identified cases."
+  }
+}
