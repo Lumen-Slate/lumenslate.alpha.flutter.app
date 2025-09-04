@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Sync Image Assets",
+  "description": "Automatically syncs assets when new image files are added to the assets directory to ensure they are properly integrated into the Flutter web application",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "assets/*.png",
+      "assets/*.jpg",
+      "assets/*.jpeg",
+      "assets/*.gif",
+      "assets/*.svg",
+      "assets/*.webp"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "New image files have been added to the assets directory. Please update the pubspec.yaml file to include these new assets if needed, and ensure they are properly referenced in the Flutter web application. Check if any code changes are required to utilize these new image assets."
+  }
+}
