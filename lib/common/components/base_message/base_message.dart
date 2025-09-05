@@ -4,7 +4,3 @@ import 'package:flutter/material.dart';
 abstract class BaseMessage extends Widget {
   const BaseMessage({super.key});
 }
-
-
-
-
