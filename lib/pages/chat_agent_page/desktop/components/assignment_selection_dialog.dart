@@ -72,7 +72,7 @@ class _AssignmentSelectionDialogState extends State<AssignmentSelectionDialog> {
                                       style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w500),
                                     ),
                                     subtitle: assignment.body != null
-                                        ? Text(assignment.body!, style: GoogleFonts.poppins(fontSize: 16))
+                                        ? Text(assignment.body, style: GoogleFonts.poppins(fontSize: 16))
                                         : null,
                                     onTap: () {
                                       if (widget.onAssignmentSelected != null) {

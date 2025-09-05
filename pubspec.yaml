@@ -62,6 +62,7 @@ dependencies:
   flutter_popup: ^3.3.9
   just_the_tooltip: ^0.0.12
   url_launcher: ^6.3.2
+  flutter_context_menu: ^0.3.0
 
 
 dev_dependencies:
