@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Screen Navigation Registration",
+  "description": "Monitors for new screen/page files and ensures they are properly registered in the navigation router configuration",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "lib/pages/**/*.dart",
+      "lib/router/**/*.dart"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A new screen or page file has been created or modified. Please analyze the changes and ensure that:\n\n1. Any new screens/pages in lib/pages/ are properly registered in the navigation router (lib/router/)\n2. Route definitions are added with appropriate paths and navigation logic\n3. The go_router configuration includes the new routes\n4. Navigation methods are updated if needed\n5. Check for any missing imports or route conflicts\n\nFocus on the navigation registration aspect and provide specific code suggestions for proper route integration."
+  }
+}
