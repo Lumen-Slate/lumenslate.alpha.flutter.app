@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lumen_slate/pages/sign_in_page/choose_role_page.dart';
 
 import '../pages/add_question_page/add_question_page.dart';
 import '../pages/assignments_page/assignment_detail_page.dart';
@@ -26,6 +27,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/sign-in',
       pageBuilder: (context, state) => const MaterialPage(child: SignInPage()),
+    ),
+    GoRoute(
+      path: '/choose-role',
+      pageBuilder: (context, state) => const MaterialPage(child: ChooseRolePage()),
     ),
     GoRoute(
       path: '/teacher-dashboard',
