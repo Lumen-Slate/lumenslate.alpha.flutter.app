@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:lumen_slate/models/lumen_user.dart';
 import '../constants/app_constants.dart';
-import '../models/teacher.dart';
 
 class UserRepository {
   final Dio _client = Dio(
@@ -64,9 +64,9 @@ class UserRepository {
     }
   }
 
-  Future<Response> updateTeacher(String id, Teacher teacher) async {
+  Future<Response> updateUser(LumenUser user) async {
     try {
-      return await _client.put('/users/$id', data: teacher.toJson());
+      return await _client.put('/users/${user.id}', data: user.toJson());
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error updating teacher: Status code ${dioError.response?.statusCode}',
