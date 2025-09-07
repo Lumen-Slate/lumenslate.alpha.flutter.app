@@ -38,7 +38,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/student-dashboard',
-      pageBuilder: (context, state) => MaterialPage(child: TeacherDashboardPage()),
+      pageBuilder: (context, state) => MaterialPage(child: Placeholder()),
     ),
     GoRoute(
       path: '/teacher-dashboard',
