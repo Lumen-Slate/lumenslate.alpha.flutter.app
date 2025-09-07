@@ -82,7 +82,7 @@ class _StudentSelectionDialogMobileState extends State<StudentSelectionDialogMob
                                 color: Colors.grey[600],
                               ),
                             ),
-                            if (student.rollNo.isNotEmpty)
+                            if (student.rollNo != null)
                               Text(
                                 'Roll No: ${student.rollNo}',
                                 style: GoogleFonts.poppins(

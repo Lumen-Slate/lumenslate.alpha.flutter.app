@@ -2,7 +2,7 @@ class Student {
   String id;
   String name;
   String email;
-  String rollNo;
+  String? rollNo;
   List<String> classIds;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -12,7 +12,7 @@ class Student {
     required this.id,
     required this.name,
     required this.email,
-    required this.rollNo,
+    this.rollNo,
     required this.classIds,
     this.createdAt,
     this.updatedAt,
