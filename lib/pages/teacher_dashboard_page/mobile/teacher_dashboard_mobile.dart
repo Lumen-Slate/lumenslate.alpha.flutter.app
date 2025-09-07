@@ -18,7 +18,7 @@ class TeacherDashboardMobile extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthPending) {
+        if (state is AuthNotSignedIn) {
           context.go('/sign-in');
         }
       },

@@ -1,12 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import '../../../../models/questions/mcq.dart';
 import '../../../../repositories/mcq_repository.dart';
 
 part 'mcq_event.dart';
-
 part 'mcq_state.dart';
 
 class MCQBloc extends Bloc<MCQEvent, MCQState> {
