@@ -269,8 +269,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           student = Student.fromJson(response.data[0]);
         }
 
-        emit(AuthSignedInAsStudent(user: event.user, student: student));
-        return;
+        // update the user role to student
+
+        try {
+          final updateUserResponse = await userRepository.updateUser(event.user.copyWith(role: 'student'));
+          if (updateUserResponse.statusCode! >= 200) {
+            emit(
+              AuthSignedInAsStudent(
+                user: event.user.copyWith(role: 'student'),
+                student: student,
+              ),
+            );
+            return;
+          } else {
+            _logger.e('Failed to update user role: ${updateUserResponse.data}');
+            emit(AuthNotSignedIn());
+            return;
+          }
+        } catch (e) {
+          _logger.e('Error choosing student role: $e');
+          emit(AuthNotSignedIn());
+          return;
+        }
+
+
       } catch (e) {
         _logger.e('Error choosing student role: $e');
         emit(AuthNotSignedIn());
