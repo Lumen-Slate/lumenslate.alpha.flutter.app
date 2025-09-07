@@ -14,10 +14,11 @@ import '../../services/google_auth_services.dart';
 import '../../services/phone_auth_services.dart';
 
 part 'auth_event.dart';
+
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final GoogleAuth googleAuthServices;
+  final GoogleAuthService googleAuthServices;
   final PhoneAuth phoneAuthServices;
   final TeacherRepository teacherRepository;
   final UserRepository userRepository = UserRepository();
@@ -26,10 +27,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required this.googleAuthServices, required this.phoneAuthServices, required this.teacherRepository})
     : super(AuthInitial()) {
+    googleAuthServices.firebaseUserStream().listen((user) {
+      if (user == null) {
+        add(SignOut());
+      }
+    });
+
     on<GoogleSignIn>((event, emit) async {
       emit(Loading());
       try {
-        Map<String, dynamic>? response = await googleAuthServices.signInGoogle();
+        Map<String, dynamic>? response = await googleAuthServices.signIn();
         if (response == null) {
           emit(AuthNotSignedIn());
           return;
@@ -147,7 +154,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheck>((event, emit) async {
       final userCompleter = Completer<User?>();
 
-      googleAuthServices.userListener().listen((user) {
+      googleAuthServices.firebaseUserStream().listen((user) {
         if (user != null && userCompleter.isCompleted == false) {
           userCompleter.complete(user);
         }
