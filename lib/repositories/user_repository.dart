@@ -14,7 +14,7 @@ class UserRepository {
 
   Future<Response> createUser(Map<String,dynamic> data) async {
     try {
-      return await _client.post('/users/', data: data);
+      return await _client.post('/users', data: data);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating user: Status code ${dioError.response?.statusCode}',
@@ -53,7 +53,7 @@ class UserRepository {
 
   Future<Response> getAllUsers(Map<String, String> filters) async {
     try {
-      return await _client.get('/users/', queryParameters: filters);
+      return await _client.get('/users', queryParameters: filters);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error fetching users: Status code ${dioError.response?.statusCode}',
