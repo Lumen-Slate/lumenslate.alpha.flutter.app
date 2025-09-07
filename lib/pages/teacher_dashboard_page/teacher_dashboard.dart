@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'desktop/dashboard.dart';
-import 'mobile/dashboard.dart';
+import 'desktop/teacher_dashboard_desktop.dart';
+import 'mobile/teacher_dashboard_mobile.dart';
 
 class TeacherDashboardPage extends StatelessWidget {
   const TeacherDashboardPage({super.key});
