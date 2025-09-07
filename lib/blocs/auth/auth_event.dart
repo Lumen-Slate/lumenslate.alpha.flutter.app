@@ -12,6 +12,18 @@ class OTPSignIn extends AuthEvent {
   OTPSignIn({required this.countryCode, required this.phoneNumber});
 }
 
+class ChooseTeacherRole extends AuthEvent {
+  final LumenUser user;
+
+  ChooseTeacherRole({required this.user});
+}
+
+class ChooseStudentRole extends AuthEvent {
+  final LumenUser user;
+
+  ChooseStudentRole({required this.user});
+}
+
 class AuthCheck extends AuthEvent {
   final Function()? onSuccess;
 

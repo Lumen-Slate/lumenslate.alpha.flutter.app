@@ -1,0 +1,20 @@
+// Root
+export 'base_message.dart';
+
+// Request Messages
+export 'request_message/request_message.dart';
+export 'request_message/text_request_message/text_request_message.dart';
+export 'request_message/agent_request_message/agent_request_message.dart';
+export 'request_message/agent_request_message/assignment_generator_general_request_message/assignment_generator_general_request_message.dart';
+export 'request_message/agent_request_message/assignment_generator_tailored_request_message/assignment_generator_tailored_request_message.dart';
+export 'request_message/agent_request_message/assessment_generator_request_message/assessment_generator_request_message.dart';
+export 'request_message/agent_request_message/report_card_generator_request_message/report_card_generator_request_message.dart';
+
+// Response Messages
+export 'response_message/response_message.dart';
+export 'response_message/text_response_message/text_response_message.dart';
+export 'response_message/agent_response_message/agent_response_message.dart';
+export 'response_message/agent_response_message/assignment_generator_general_response_message/assignment_generator_general_response_message.dart';
+export 'response_message/agent_response_message/assignment_generator_tailored_response_message/assignment_generator_tailored_response_message.dart';
+export 'response_message/agent_response_message/assessment_generator_response_message/assessment_generator_response_message.dart';
+export 'response_message/agent_response_message/report_card_generator_response_message/report_card_generator_response_message.dart';

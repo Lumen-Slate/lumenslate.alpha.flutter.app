@@ -26,11 +26,20 @@ class _LoadingPageState extends State<LoadingPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
-        if (state is AuthPending) {
+        if (state is AuthNotSignedIn) {
           context.go('/sign-in');
         }
-        if (state is AuthSuccess) {
+
+        if (state is AuthSignedInAsTeacher) {
           context.go('/teacher-dashboard');
+        }
+
+        if (state is AuthSignedInAsStudent) {
+          context.go('/student-dashboard');
+        }
+
+        if (state is AuthSignedInAsAnonymous) {
+          context.go('/choose-role');
         }
       },
       child: const Scaffold(

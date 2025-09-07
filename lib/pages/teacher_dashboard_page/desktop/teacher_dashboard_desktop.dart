@@ -18,7 +18,7 @@ class TeacherDashboardDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthPending) {
+        if (state is AuthNotSignedIn) {
           context.go('/sign-in');
         }
       },
@@ -108,14 +108,14 @@ class TeacherDashboardDesktop extends StatelessWidget {
                         Spacer(),
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
-                            if (state is AuthSuccess && state.photoUrl != null) {
+                            if (state is AuthSignedInAsTeacher && state.user.photoUrl != null) {
                               return GestureDetector(
                                 onTap: () {
                                   context.go('/profile');
                                 },
                                 child: CircleAvatar(
                                   radius: 30,
-                                  child: ClipOval(child: Image.network(state.photoUrl ?? '')),
+                                  child: ClipOval(child: Image.network(state.user.photoUrl ?? '')),
                                 ),
                               );
                             }

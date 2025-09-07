@@ -20,8 +20,16 @@ class SignInPageMobile extends StatelessWidget {
     final media = MediaQuery.of(context);
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthSuccess) {
+        if (state is AuthSignedInAsTeacher) {
           context.go('/teacher-dashboard');
+        }
+
+        if (state is AuthSignedInAsStudent) {
+          context.go('/student-dashboard');
+        }
+
+        if (state is AuthSignedInAsAnonymous) {
+          context.go('/choose-role');
         }
       },
       child: Scaffold(

@@ -52,49 +52,49 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
       //     emit(StudentFailure(error));
       //   }
       // } else {
-        PagingState<int, Student> pagingState = currentState is StudentOriginalSuccess
-            ? currentState.pagingState
-            : PagingState<int, Student>();
+      PagingState<int, Student> pagingState = currentState is StudentOriginalSuccess
+          ? currentState.pagingState
+          : PagingState<int, Student>();
 
-        emit(StudentOriginalSuccess(pagingState.copyWith(isLoading: true)));
+      emit(StudentOriginalSuccess(pagingState.copyWith(isLoading: true)));
 
-        try {
-          final int nextOffset = (pagingState.keys?.last ?? 0) + (pagingState.pages?.lastOrNull?.length ?? 0);
-          final response = await repository.getStudents(
-            limit: event.pageSize,
-            offset: nextOffset,
-            extended: false,
-            classIds: event.classIds,
-            email: event.email,
-            rollNo: event.rollNo,
-            q: event.searchQuery,
-          );
+      try {
+        final int nextOffset = (pagingState.keys?.last ?? 0) + (pagingState.pages?.lastOrNull?.length ?? 0);
+        final response = await repository.getStudents({
+          'limit': event.pageSize.toString(),
+          'offset': nextOffset.toString(),
+          'extended': 'false',
+          if (event.classIds != null && event.classIds!.isNotEmpty) 'classIds': ?event.classIds,
+          if (event.email != null) 'email': event.email!,
+          if (event.rollNo != null) 'rollNo': event.rollNo!,
+          if (event.searchQuery != null) 'q': event.searchQuery!,
+        });
 
-          if (response.statusCode == 200) {
-            final List<Student> students = [];
-            if (response.data != null) {
-              for (var item in response.data) {
-                students.add(Student.fromJson(item));
-              }
+        if (response.statusCode == 200) {
+          final List<Student> students = [];
+          if (response.data != null) {
+            for (var item in response.data) {
+              students.add(Student.fromJson(item));
             }
-            final isLastPage = students.length < event.pageSize;
-
-            emit(
-              StudentOriginalSuccess(
-                pagingState.copyWith(
-                  pages: [...?pagingState.pages, students],
-                  keys: [...?pagingState.keys, nextOffset],
-                  hasNextPage: !isLastPage,
-                  isLoading: false,
-                ),
-              ),
-            );
-          } else {
-            emit(StudentFailure(Exception('Failed to load students')));
           }
-        } catch (error) {
-          emit(StudentFailure(error));
+          final isLastPage = students.length < event.pageSize;
+
+          emit(
+            StudentOriginalSuccess(
+              pagingState.copyWith(
+                pages: [...?pagingState.pages, students],
+                keys: [...?pagingState.keys, nextOffset],
+                hasNextPage: !isLastPage,
+                isLoading: false,
+              ),
+            ),
+          );
+        } else {
+          emit(StudentFailure(Exception('Failed to load students')));
         }
+      } catch (error) {
+        emit(StudentFailure(error));
+      }
       // }
     });
 
@@ -102,7 +102,7 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
       // if (event.extended) {
       //   emit(StudentExtendedSuccess(PagingState<int, StudentExtended>(isLoading: true)));
       // } else {
-        emit(StudentOriginalSuccess(PagingState<int, Student>(isLoading: true)));
+      emit(StudentOriginalSuccess(PagingState<int, Student>(isLoading: true)));
       // }
     });
 
@@ -115,8 +115,8 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
           //   final student = StudentExtended.fromJson(response.data);
           //   emit(StudentSingleExtendedSuccess(student));
           // } else {
-            final student = Student.fromJson(response.data);
-            emit(StudentSingleOriginalSuccess(student));
+          final student = Student.fromJson(response.data);
+          emit(StudentSingleOriginalSuccess(student));
           // }
         } else {
           emit(StudentSingleFailure(Exception('Failed to load student')));
@@ -131,15 +131,15 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
       emit(StudentOriginalSuccess(PagingState<int, Student>(isLoading: true)));
 
       try {
-        final response = await repository.getStudents(
-          limit: 10, // First page size for search
-          offset: 0,
-          extended: event.extended,
-          classIds: event.classIds,
-          email: event.email,
-          rollNo: event.rollNo,
-          q: event.searchQuery,
-        );
+        final response = await repository.getStudents({
+          'limit': '10',
+          'offset': '0',
+          'extended': 'false',
+          if (event.classIds != null && event.classIds!.isNotEmpty) 'classIds': ?event.classIds,
+          if (event.email != null) 'email': event.email!,
+          if (event.rollNo != null) 'rollNo': event.rollNo!,
+          if (event.searchQuery != null) 'q': event.searchQuery!,
+        });
 
         if (response.statusCode == 200) {
           final List<Student> students = [];
@@ -152,12 +152,7 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
 
           emit(
             StudentOriginalSuccess(
-              PagingState<int, Student>(
-                pages: [students],
-                keys: [0],
-                hasNextPage: !isLastPage,
-                isLoading: false,
-              ),
+              PagingState<int, Student>(pages: [students], keys: [0], hasNextPage: !isLastPage, isLoading: false),
             ),
           );
         } else {
