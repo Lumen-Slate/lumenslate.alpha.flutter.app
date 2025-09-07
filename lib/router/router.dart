@@ -7,7 +7,6 @@ import '../pages/assignments_page/assignment_detail_page.dart';
 import '../pages/assignments_page/assignments_page.dart';
 import '../pages/chat_agent_page/chat_agent_page.dart';
 import '../pages/classrooms_page/classrooms.dart';
-import '../pages/dashboard_page/dashboard.dart';
 import '../pages/loading_page/loading.dart';
 import '../pages/question_bank_page/question_bank.dart';
 import '../pages/questions_page/questions.dart';
@@ -16,9 +15,9 @@ import '../pages/sign_in_page/sign_in_page.dart';
 import '../pages/pdf_generator_page/pdf_generator_page.dart';
 import '../pages/students_page/students.dart';
 import '../pages/student_detail_page/student_detail.dart';
+import '../pages/teacher_dashboard_page/teacher_dashboard.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/sign-in',
   routes: [
     GoRoute(
       path: '/',
@@ -33,13 +32,16 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) => const MaterialPage(child: ChooseRolePage()),
     ),
     GoRoute(
+      path: '/student-dashboard',
+      pageBuilder: (context, state) => MaterialPage(child: TeacherDashboardPage()),
+    ),
+    GoRoute(
       path: '/teacher-dashboard',
-      pageBuilder: (context, state) => MaterialPage(child: DashboardPage()),
+      pageBuilder: (context, state) => MaterialPage(child: TeacherDashboardPage()),
       routes: [
         GoRoute(
           path: '/question-banks',
-          pageBuilder: (context, state) =>
-              MaterialPage(child: QuestionBankPage()),
+          pageBuilder: (context, state) => MaterialPage(child: QuestionBankPage()),
         ),
         GoRoute(
           path: '/questions',
@@ -50,16 +52,13 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/classrooms',
-          pageBuilder: (context, state) =>
-              MaterialPage(child: ClassroomsPage()),
+          pageBuilder: (context, state) => MaterialPage(child: ClassroomsPage()),
           routes: [
             GoRoute(
               path: '/:classroomId/students',
               pageBuilder: (context, state) {
                 final classroomId = state.pathParameters['classroomId'];
-                return MaterialPage(
-                  child: StudentsPage(classroomId: classroomId!),
-                );
+                return MaterialPage(child: StudentsPage(classroomId: classroomId!));
               },
               routes: [
                 GoRoute(
@@ -68,10 +67,7 @@ final GoRouter router = GoRouter(
                     final classroomId = state.pathParameters['classroomId'];
                     final studentId = state.pathParameters['studentId'];
                     return MaterialPage(
-                      child: StudentDetailPage(
-                        studentId: studentId!,
-                        classroomId: classroomId!,
-                      ),
+                      child: StudentDetailPage(studentId: studentId!, classroomId: classroomId!),
                     );
                   },
                 ),
@@ -81,24 +77,20 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/assignments',
-          pageBuilder: (context, state) =>
-              MaterialPage(child: AssignmentsPage()),
+          pageBuilder: (context, state) => MaterialPage(child: AssignmentsPage()),
           routes: [
             GoRoute(
               path: '/:assignmentId',
               pageBuilder: (context, state) {
                 final assignmentId = state.pathParameters['assignmentId'];
-                return MaterialPage(
-                  child: AssignmentDetailPage(assignmentId: assignmentId!),
-                );
+                return MaterialPage(child: AssignmentDetailPage(assignmentId: assignmentId!));
               },
             ),
           ],
         ),
         GoRoute(
           path: '/pdf-generator',
-          pageBuilder: (context, state) =>
-              MaterialPage(child: PdfGeneratorPage()),
+          pageBuilder: (context, state) => MaterialPage(child: PdfGeneratorPage()),
         ),
         GoRoute(
           path: '/agent',
