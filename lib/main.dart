@@ -59,7 +59,6 @@ class LumenSlate extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        // RepositoryProvider.value(value: googleAuthService),
         RepositoryProvider(
           create: (context) => GoogleAuthService()..initialize(clientId: AppConstants.googleSingInClientId),
         ),

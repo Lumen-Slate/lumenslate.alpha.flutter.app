@@ -10,7 +10,7 @@ class StudentRepository {
 
   Future<Response> createStudent(Map<String,dynamic> data) async {
     try {
-      return await _client.post('/students/', data: data);
+      return await _client.post('/students', data: data);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating Student: Status code ${dioError.response?.statusCode}',

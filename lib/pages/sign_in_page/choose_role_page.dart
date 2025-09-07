@@ -79,7 +79,9 @@ class ChooseRolePage extends StatelessWidget {
                   Container(width: 1, height: 800, color: Colors.grey.withValues(alpha: 0.5)),
                   Expanded(
                     child: FilledButton.tonal(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<AuthBloc>().add(ChooseStudentRole(user: (state as AuthSignedInAsAnonymous).user));
+                      },
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black,
