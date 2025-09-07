@@ -14,17 +14,17 @@ class ProfilePageMobile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthSuccess) {
+            if (state is AuthSignedInAsTeacher) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 32),
                   CircleAvatar(
                     radius: 50,
-                    child: state.photoUrl != null
+                    child: state.user.photoUrl != null
                         ? ClipOval(
                             child: Image.network(
-                              state.photoUrl!,
+                              state.user.photoUrl!,
                               errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, size: 50),
                             ),
                           )
@@ -32,14 +32,14 @@ class ProfilePageMobile extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    state.displayName,
+                    state.user.name,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(state.email, style: const TextStyle(fontSize: 16)),
+                  Text(state.user.email, style: const TextStyle(fontSize: 16)),
                   const Spacer(),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.logout),

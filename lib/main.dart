@@ -83,7 +83,7 @@ class LumenSlate extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => AuthBloc(
-              googleAuthService: RepositoryProvider.of<GoogleAuthService>(context),
+              googleAuthServices: RepositoryProvider.of<GoogleAuthService>(context),
               teacherRepository: RepositoryProvider.of<TeacherRepository>(context),
               phoneAuthServices: RepositoryProvider.of<PhoneAuth>(context),
             ),

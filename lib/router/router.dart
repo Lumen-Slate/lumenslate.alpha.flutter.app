@@ -8,6 +8,7 @@ import '../pages/assignments_page/assignments_page.dart';
 import '../pages/chat_agent_page/chat_agent_page.dart';
 import '../pages/classrooms_page/classrooms.dart';
 import '../pages/loading_page/loading.dart';
+import '../pages/profile_page/profile_page.dart';
 import '../pages/question_bank_page/question_bank.dart';
 import '../pages/questions_page/questions.dart';
 import '../pages/rag_agent_page/rag_agent_page.dart';
