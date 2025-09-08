@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:lumen_slate/pages/classrooms_page/mobile/widget/classroom_card.dart';
 
+import '../../../blocs/auth/auth_bloc.dart';
 import '../../../blocs/classroom/classroom_bloc.dart';
 import '../../../models/classroom.dart';
 
@@ -23,10 +24,16 @@ class _ClassroomsPageMobileState extends State<ClassroomsPageMobile> {
   @override
   void initState() {
     super.initState();
-    context.read<ClassroomBloc>().add(InitializeClassroomPaging(extended: false));
+    context.read<ClassroomBloc>().add(
+      InitializeClassroomPaging(extended: false),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ClassroomBloc>().add(
-        FetchNextClassroomPage(teacherId: _teacherId, pageSize: _pageSize, extended: false),
+        FetchNextClassroomPage(
+          teacherId: _teacherId,
+          pageSize: _pageSize,
+          extended: false,
+        ),
       );
     });
   }
@@ -44,75 +51,184 @@ class _ClassroomsPageMobileState extends State<ClassroomsPageMobile> {
           },
           child: Scaffold(
             key: _scaffoldKey,
-          drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                DrawerHeader(
-                  decoration: BoxDecoration(color: Colors.teal),
-                  child: Text('Classrooms',
-                      style: GoogleFonts.poppins(fontSize: 24, color: Colors.white)),
-                ),
-                ListTile(
-                  leading: Icon(Icons.home),
-                  title: Text('Dashboard', style: GoogleFonts.poppins(fontSize: 16)),
-                  onTap: () => context.go('/teacher-dashboard'),
-                ),
-              ],
-            ),
-          ),
-          appBar: AppBar(
-            title: Text("Your Classrooms", style: GoogleFonts.poppins()),
-            leading: IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // Navigate to classroom creation page
-            },
-            child: const Icon(Icons.add),
-          ),
-          body: Builder(
-            builder: (_) {
-              if (state is ClassroomOriginalSuccess) {
-                return PagedListView<int, Classroom>(
-                  state: state.pagingState,
-                  fetchNextPage: () {
-                    context.read<ClassroomBloc>().add(
-                      FetchNextClassroomPage(teacherId: _teacherId, pageSize: _pageSize, extended: false),
-                    );
-                  },
-                  builderDelegate: PagedChildBuilderDelegate<Classroom>(
-                    itemBuilder: (context, classroom, index) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: SizedBox(
-                        height: 400,
-                        child: ClassroomCardMobile(
-                          classroom: classroom,
-                          teacherNames: const [], // Will be updated when teacher data is available
-                          classroomAssignments: const [], // Will be updated when assignment data is available
-                          index: index,
-                        ),
+            drawer: Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.teal),
+                    child: Text(
+                      'Classrooms',
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        color: Colors.white,
                       ),
                     ),
-                    noItemsFoundIndicatorBuilder: (context) =>
-                        const Center(child: Text("No classrooms found.")),
-                    firstPageErrorIndicatorBuilder: (context) =>
-                        const Center(child: Text("Error loading classrooms")),
                   ),
+                  ListTile(
+                    leading: Icon(Icons.home),
+                    title: Text(
+                      'Dashboard',
+                      style: GoogleFonts.poppins(fontSize: 16),
+                    ),
+                    onTap: () => context.go('/teacher-dashboard'),
+                  ),
+                ],
+              ),
+            ),
+            appBar: AppBar(
+              title: Text("Your Classrooms", style: GoogleFonts.poppins()),
+              leading: IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () async {
+                await showDialog(
+                  context: context,
+                  builder: (context) {
+                    final nameController = TextEditingController();
+                    final creditsController = TextEditingController();
+                    final tagsController = TextEditingController();
+                    final subjectController = TextEditingController();
+                    final authState = context.read<AuthBloc>().state;
+                    String teacherId = '';
+                    if (authState is AuthSignedInAsTeacher) {
+                      teacherId = authState.teacher.id;
+                    }
+                    return AlertDialog(
+                      title: const Text('Create Classroom'),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: nameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Name',
+                              ),
+                            ),
+                            TextField(
+                              controller: creditsController,
+                              decoration: const InputDecoration(
+                                labelText: 'Credits',
+                              ),
+                              keyboardType: TextInputType.number,
+                            ),
+                            TextField(
+                              controller: tagsController,
+                              decoration: const InputDecoration(
+                                labelText: 'Tags (comma separated)',
+                              ),
+                            ),
+                            TextField(
+                              controller: subjectController,
+                              decoration: const InputDecoration(
+                                labelText: 'Classroom Subject',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (nameController.text.isEmpty ||
+                                teacherId.isEmpty ||
+                                creditsController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Name, teacherId, and credits are required',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                            final classroom = Classroom(
+                              id: '',
+                              name: nameController.text,
+                              teacherIds: [teacherId],
+                              assignmentIds: [],
+                              credits:
+                                  int.tryParse(creditsController.text) ?? 0,
+                              tags: tagsController.text
+                                  .split(',')
+                                  .map((e) => e.trim())
+                                  .where((e) => e.isNotEmpty)
+                                  .toList(),
+                              classroomSubject: subjectController.text.isNotEmpty ? subjectController.text : null,
+                            );
+                            context.read<ClassroomBloc>().add(
+                              CreateClassroom(
+                                teacherId: teacherId,
+                                classroom: classroom,
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Create'),
+                        ),
+                      ],
+                    );
+                  },
                 );
-              }
-              if (state is ClassroomFailure) {
-                return Center(child: Text('Error loading classrooms'));
-              }
-              if (state is ClassroomInitial) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return const SizedBox.shrink();
-            },
-          ),
+              },
+              child: const Icon(Icons.add),
+            ),
+            body: Builder(
+              builder: (_) {
+                if (state is ClassroomOriginalSuccess) {
+                  return PagedListView<int, Classroom>(
+                    state: state.pagingState,
+                    fetchNextPage: () {
+                      context.read<ClassroomBloc>().add(
+                        FetchNextClassroomPage(
+                          teacherId: _teacherId,
+                          pageSize: _pageSize,
+                          extended: false,
+                        ),
+                      );
+                    },
+                    builderDelegate: PagedChildBuilderDelegate<Classroom>(
+                      itemBuilder: (context, classroom, index) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        child: SizedBox(
+                          height: 400,
+                          child: ClassroomCardMobile(
+                            classroom: classroom,
+                            teacherNames:
+                                const [], // Will be updated when teacher data is available
+                            classroomAssignments:
+                                const [], // Will be updated when assignment data is available
+                            index: index,
+                          ),
+                        ),
+                      ),
+                      noItemsFoundIndicatorBuilder: (context) =>
+                          const Center(child: Text("No classrooms found.")),
+                      firstPageErrorIndicatorBuilder: (context) =>
+                          const Center(child: Text("Error loading classrooms")),
+                    ),
+                  );
+                }
+                if (state is ClassroomFailure) {
+                  return Center(child: Text('Error loading classrooms'));
+                }
+                if (state is ClassroomInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         );
       },

@@ -3,6 +3,7 @@ part of 'classroom_bloc.dart';
 @immutable
 sealed class ClassroomEvent {}
 
+/// Fetch classrooms with pagination
 final class FetchNextClassroomPage extends ClassroomEvent {
   final String teacherId;
   final int pageSize;
@@ -15,20 +16,42 @@ final class FetchNextClassroomPage extends ClassroomEvent {
   });
 }
 
-class InitializeClassroomPaging extends ClassroomEvent {
+/// Initialize paging
+final class InitializeClassroomPaging extends ClassroomEvent {
   final bool extended;
 
-  InitializeClassroomPaging({
-    this.extended = false,
-  });
+  InitializeClassroomPaging({this.extended = false});
 }
 
-class FetchClassroomById extends ClassroomEvent {
+/// Fetch a single classroom by ID
+final class FetchClassroomById extends ClassroomEvent {
   final String id;
   final bool extended;
 
-  FetchClassroomById({
+  FetchClassroomById({required this.id, this.extended = false});
+}
+
+/// Create a new classroom
+final class CreateClassroom extends ClassroomEvent {
+  final Classroom classroom;
+  final String teacherId;
+  CreateClassroom({required this.classroom, required this.teacherId});
+}
+
+/// Update a classroom
+final class UpdateClassroom extends ClassroomEvent {
+  final String id;
+  final Classroom classroom;
+  final String teacherId;
+  UpdateClassroom({
     required this.id,
-    this.extended = false,
+    required this.classroom,
+    required this.teacherId,
   });
+}
+
+/// Delete a classroom
+final class DeleteClassroom extends ClassroomEvent {
+  final String id;
+  DeleteClassroom(this.id);
 }
