@@ -10,7 +10,10 @@ class ClassroomRepository {
 
   Future<Response> createClassroom(Classroom classroom) async {
     try {
-      return await _client.post('/classrooms', data: classroom.toJson());
+      // Ensure teacherIds is sent as a list
+      final data = classroom.toJson();
+      data['teacherIds'] = classroom.teacherIds;
+      return await _client.post('/classrooms', data: data);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating Classroom: Status code ${dioError.response?.statusCode}',
@@ -22,13 +25,14 @@ class ClassroomRepository {
   }
 
   Future<Response> getClassrooms({
-    required String teacherId,
+    required List<String> teacherIds,
     int limit = 10,
     int offset = 0,
     bool extended = false,
   }) async {
     try {
       Map<String, dynamic> queryParams = {
+        'teacherIds': teacherIds,
         'limit': limit.toString(),
         'offset': offset.toString(),
         'extended': extended.toString()
@@ -59,7 +63,9 @@ class ClassroomRepository {
 
   Future<Response> updateClassroom(String id, Classroom classroom) async {
     try {
-      return await _client.put('/classrooms/$id', data: classroom.toJson());
+      final data = classroom.toJson();
+      data['teacherIds'] = classroom.teacherIds;
+      return await _client.put('/classrooms/$id', data: data);
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error updating Classroom: Status code ${dioError.response?.statusCode}',

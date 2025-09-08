@@ -4,7 +4,9 @@ class Classroom {
   List<String> teacherIds;
   List<String> assignmentIds;
   int credits;
-  List<String> tags;
+  List<String>? tags;
+  String? classroomCode;
+  String? classroomSubject;
 
   Classroom({
     required this.id,
@@ -12,7 +14,9 @@ class Classroom {
     required this.teacherIds,
     required this.assignmentIds,
     required this.credits,
-    required this.tags,
+    this.tags,
+    this.classroomCode,
+    this.classroomSubject,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +27,8 @@ class Classroom {
       'assignmentIds': assignmentIds,
       'credits': credits,
       'tags': tags,
+      'classroomCode': classroomCode,
+      'classroomSubject': classroomSubject,
     };
   }
 
@@ -33,7 +39,9 @@ class Classroom {
       teacherIds: List<String>.from(json['teacherIds']),
       assignmentIds: List<String>.from(json['assignmentIds']),
       credits: json['credits'],
-      tags: List<String>.from(json['tags'] ?? []),
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
+      classroomCode: json['classroomCode'],
+      classroomSubject: json['classroomSubject'],
     );
   }
 }
