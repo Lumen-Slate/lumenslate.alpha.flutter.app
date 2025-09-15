@@ -18,7 +18,7 @@
 | ⚙️ Backend (Go + MongoDB) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gin.server)           |
 | 🤖 AI Microservice (gRPC) | [GitHub](https://github.com/Lumen-Slate/lumenslate.alpha.gRPC.microservice.ai) |
 | 📹 Demo Video (3 min)     | [Watch on Vimeo](https://vimeo.com/1094177673/9b0442be5d)                      |
-| 🌐 Live MVP               | [Visit](https://lumen-slate.firebaseapp.com)                                   |
+| 🌐 Live MVP               | [Visit](http://34.9.202.17/teacher-dashboard)                                   |
 
 ---
 
