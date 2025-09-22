@@ -1,0 +1,15 @@
+# ConfigMap for production
+# Contains non-sensitive environment variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config-prod
+  namespace: default
+  labels:
+    app: backend
+    environment: prod
+data:
+  # Example non-sensitive environment variables
+  APP_ENV: "production"
+  LOG_LEVEL: "info"
+  API_URL: "https://api.example.com"

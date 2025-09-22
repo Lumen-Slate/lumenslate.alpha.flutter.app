@@ -65,3 +65,7 @@ firebase-adminsdk-*.json
 # Temporary files
 *.tmp
 *.temp
+
+# Ignore Kubernetes secret manifests
+k8s/secret-local.yaml
+k8s/secret-prod.yaml

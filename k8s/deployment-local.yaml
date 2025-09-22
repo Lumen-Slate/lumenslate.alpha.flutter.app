@@ -1,0 +1,48 @@
+# Deployment and Service for local development
+# Uses local Docker image, references local ConfigMap and Secret
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-local
+  labels:
+    app: backend
+    environment: local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+      environment: local
+  template:
+    metadata:
+      labels:
+        app: backend
+        environment: local
+    spec:
+      containers:
+        - name: backend
+          image: backend:local # Local Docker image
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: backend-config-local
+            - secretRef:
+                name: backend-secret-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service-local
+  labels:
+    app: backend
+    environment: local
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+    environment: local
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

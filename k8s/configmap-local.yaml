@@ -1,0 +1,15 @@
+# ConfigMap for local development
+# Contains non-sensitive environment variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config-local
+  namespace: default
+  labels:
+    app: backend
+    environment: local
+data:
+  # Example non-sensitive environment variables
+  APP_ENV: "local"
+  LOG_LEVEL: "debug"
+  API_URL: "http://localhost:8080"
