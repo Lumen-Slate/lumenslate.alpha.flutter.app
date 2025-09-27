@@ -18,12 +18,7 @@ class GoogleAuthService {
     if (_isInitialized) return;
     try {
       await _gs.initialize(clientId: clientId, serverClientId: serverClientId);
-
-      _eventsSub = _gs.authenticationEvents.listen((event) {
-        _logger.i('GoogleAuthService Auth Event: $event');
-      });
-
-      // Try lightweight auth automatically
+      
       _gs.attemptLightweightAuthentication();
       _isInitialized = true;
     } catch (e) {

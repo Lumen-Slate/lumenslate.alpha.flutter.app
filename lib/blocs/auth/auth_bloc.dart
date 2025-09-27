@@ -33,11 +33,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.emailAuthService,
     required this.teacherRepository
   }) : super(AuthInitial()) {
-    googleAuthServices.firebaseUserStream().listen((user) {
-      if (user == null) {
-        add(SignOut());
-      }
-    });
+    // googleAuthServices.firebaseUserStream().listen((user) {
+    //   if (user == null) {
+    //     add(SignOut());
+    //   }
+    // });
 
     on<GoogleSignIn>((event, emit) async {
       emit(Loading());
