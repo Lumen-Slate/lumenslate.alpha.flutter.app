@@ -2,9 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:lumen_slate/blocs/student_classroom/student_classroom_bloc.dart';
 import 'package:lumen_slate/repositories/ai/context_generator.dart';
 import 'package:lumen_slate/repositories/ai/question_segmentation_repository.dart';
 import 'package:lumen_slate/repositories/ai/variation_generator.dart';
+import 'package:lumen_slate/repositories/student_classroom_repository.dart';
 import 'package:lumen_slate/router/router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -77,6 +79,7 @@ class LumenSlate extends StatelessWidget {
         RepositoryProvider(create: (context) => AssignmentRepository()),
         RepositoryProvider(create: (context) => RagAgentRepository()),
         RepositoryProvider(create: (context) => StudentRepository()),
+        RepositoryProvider(create: (context) => StudentClassroomRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -131,6 +134,9 @@ class LumenSlate extends StatelessWidget {
                 RagDocumentBloc(ragAgentRepository: RepositoryProvider.of<RagAgentRepository>(context)),
           ),
           BlocProvider(create: (context) => StudentBloc(repository: RepositoryProvider.of<StudentRepository>(context))),
+          BlocProvider(
+            create: (context) => StudentClassroomBloc(repository: RepositoryProvider.of<StudentClassroomRepository>(context)),
+          ),
         ],
         child: MaterialApp.router(
           title: AppConstants.appName,
