@@ -39,6 +39,7 @@ import 'repositories/subjective_repository.dart';
 import 'repositories/teacher_repository.dart';
 import 'services/google_auth_services.dart';
 import 'services/phone_auth_services.dart';
+import 'services/email_auth_services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,6 +64,7 @@ class LumenSlate extends StatelessWidget {
           create: (context) => GoogleAuthService()..initialize(clientId: AppConstants.googleSingInClientId),
         ),
         RepositoryProvider(create: (context) => PhoneAuth()),
+        RepositoryProvider(create: (context) => EmailAuthService()),
         RepositoryProvider(create: (context) => AIRepository()),
         RepositoryProvider(create: (context) => VariationRepository()),
         RepositoryProvider(create: (context) => QuestionSegmentationRepository()),
@@ -85,6 +87,7 @@ class LumenSlate extends StatelessWidget {
               googleAuthServices: RepositoryProvider.of<GoogleAuthService>(context),
               teacherRepository: RepositoryProvider.of<TeacherRepository>(context),
               phoneAuthServices: RepositoryProvider.of<PhoneAuth>(context),
+              emailAuthService: RepositoryProvider.of<EmailAuthService>(context),
             ),
           ),
           BlocProvider(create: (context) => PhoneNumberFormCubit()),

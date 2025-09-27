@@ -37,3 +37,24 @@ class OTPVerify extends AuthEvent {
 
   OTPVerify({required this.otp});
 }
+
+class EmailSignIn extends AuthEvent {
+  final String email;
+  final String password;
+
+  EmailSignIn({required this.email, required this.password});
+}
+
+class EmailSignUp extends AuthEvent {
+  final String email;
+  final String password;
+  final String displayName;
+
+  EmailSignUp({required this.email, required this.password, required this.displayName});
+}
+
+class SendPasswordResetEmail extends AuthEvent {
+  final String email;
+
+  SendPasswordResetEmail({required this.email});
+}
