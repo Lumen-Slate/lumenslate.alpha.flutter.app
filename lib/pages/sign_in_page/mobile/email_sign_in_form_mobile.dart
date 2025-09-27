@@ -101,7 +101,6 @@ class _EmailSignInFormMobileState extends State<EmailSignInFormMobile> {
         }
       },
       child: Container(
-        margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -453,6 +452,7 @@ class _EmailSignInFormMobileState extends State<EmailSignInFormMobile> {
                   border: Border.all(color: Colors.grey.shade200),
                 ),
                 child: Row(
+                  spacing: 2,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
@@ -461,7 +461,7 @@ class _EmailSignInFormMobileState extends State<EmailSignInFormMobile> {
                           : "Don't have an account? ",
                       style: GoogleFonts.poppins(
                         color: Colors.grey.shade700,
-                        fontSize: 16,
+                        fontSize: 12,
                       ),
                     ),
                     GestureDetector(
@@ -471,7 +471,7 @@ class _EmailSignInFormMobileState extends State<EmailSignInFormMobile> {
                         style: GoogleFonts.poppins(
                           color: Colors.blue.shade600,
                           fontWeight: FontWeight.w700,
-                          fontSize: 16,
+                          fontSize: 12,
                         ),
                       ),
                     ),
