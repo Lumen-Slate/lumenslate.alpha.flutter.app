@@ -17,6 +17,7 @@ import '../pages/pdf_generator_page/pdf_generator_page.dart';
 import '../pages/students_page/students.dart';
 import '../pages/student_detail_page/student_detail.dart';
 import '../pages/teacher_dashboard_page/teacher_dashboard.dart';
+import '../pages/sign_in_page/mobile/email_sign_in_page.dart';
 
 final GoRouter router = GoRouter(
   routes: [
@@ -27,6 +28,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/sign-in',
       pageBuilder: (context, state) => const MaterialPage(child: SignInPage()),
+    ),
+    GoRoute(
+      path: '/sign-in/email',
+      pageBuilder: (context, state) => const MaterialPage(child: EmailSignInFormMobile()),
     ),
     GoRoute(
       path: '/profile',
