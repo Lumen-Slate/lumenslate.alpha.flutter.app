@@ -33,27 +33,19 @@ class SignInPageMobile extends StatelessWidget {
         }
       },
       child: Scaffold(
-        body: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          // decoration: const BoxDecoration(
-          //   gradient: LinearGradient(
-          //     begin: Alignment.topCenter,
-          //     end: Alignment.bottomCenter,
-          //     colors: [Color(0xFFE0F7FA), Color(0xFFFFFFFF)],
-          //   ),
-          // ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: media.size.width < 400 ? 8 : 24,
-                  vertical: 32,
-                ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: media.size.width < 400 ? 8 : 24,
+                vertical: 32,
+              ),
+              child: IntrinsicHeight(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SizedBox(height: media.size.height * 0.1),
                     // --- Logo and App Name ---
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 700),
@@ -69,7 +61,7 @@ class SignInPageMobile extends StatelessWidget {
                             AppConstants.appName,
                             style: GoogleFonts.jost(
                               fontSize: 44,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w500,
                               letterSpacing: 1.2,
                             ),
                             textAlign: TextAlign.center,

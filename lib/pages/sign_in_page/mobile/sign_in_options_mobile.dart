@@ -1,50 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../blocs/auth/auth_bloc.dart';
 
-import 'email_sign_in_form_mobile.dart';
-
-class SignInOptionsMobile extends StatefulWidget {
+class SignInOptionsMobile extends StatelessWidget {
   const SignInOptionsMobile({super.key});
 
   @override
-  State<SignInOptionsMobile> createState() => _SignInOptionsMobileState();
-}
-
-class _SignInOptionsMobileState extends State<SignInOptionsMobile> {
-  bool _showEmailForm = false;
-
-  void _toggleEmailForm() {
-    setState(() {
-      _showEmailForm = !_showEmailForm;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (_showEmailForm) {
-      return Column(
-        children: [
-          const EmailSignInFormMobile(),
-          const SizedBox(height: 20),
-          TextButton(
-            onPressed: _toggleEmailForm,
-            child: Text(
-              'Back to other sign-in options',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Colors.blue,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -99,7 +65,9 @@ class _SignInOptionsMobileState extends State<SignInOptionsMobile> {
         
         // Email Sign In Button
         OutlinedButton(
-          onPressed: _toggleEmailForm,
+          onPressed: () {
+            context.go('/sign-in/email');
+          },
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             minimumSize: const Size(double.infinity, 48),
