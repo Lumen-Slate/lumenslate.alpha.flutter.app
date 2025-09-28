@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 
 class GoogleAuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
   final GoogleSignIn _gs = GoogleSignIn.instance;
   final Logger _logger = Logger();
 
@@ -18,7 +18,7 @@ class GoogleAuthService {
     if (_isInitialized) return;
     try {
       await _gs.initialize(clientId: clientId, serverClientId: serverClientId);
-      
+
       _gs.attemptLightweightAuthentication();
       _isInitialized = true;
     } catch (e) {
@@ -37,7 +37,11 @@ class GoogleAuthService {
         return _toUserMap(account, uc);
       } else if (kIsWeb) {
         // Use FirebaseAuth popup on Web
-        final uc = await _auth.signInWithPopup(GoogleAuthProvider().setCustomParameters({'prompt': 'select_account'}));
+        final uc = await _auth.signInWithPopup(
+          GoogleAuthProvider().setCustomParameters({
+            'prompt': 'select_account',
+          }),
+        );
         final user = uc.user;
         if (user == null) return null;
         return {
@@ -68,19 +72,29 @@ class GoogleAuthService {
   Stream<User?> firebaseUserStream() => _auth.authStateChanges();
 
   /// Build Firebase credential from Google account
-  Future<AuthCredential> _firebaseCredential(GoogleSignInAccount account) async {
+  Future<AuthCredential> _firebaseCredential(
+    GoogleSignInAccount account,
+  ) async {
     final basic = account.authentication; // synchronous
     const scopes = <String>['email'];
     final client = account.authorizationClient;
     final existing = await client.authorizationForScopes(scopes);
     final auths = existing ?? await client.authorizeScopes(scopes);
 
-    return GoogleAuthProvider.credential(idToken: basic.idToken, accessToken: auths.accessToken);
+    return GoogleAuthProvider.credential(
+      idToken: basic.idToken,
+      accessToken: auths.accessToken,
+    );
   }
 
   /// Convert account and userCredential to map
   Map<String, dynamic> _toUserMap(GoogleSignInAccount a, UserCredential uc) {
-    return {'id': uc.user?.uid ?? '', 'email': a.email, 'displayName': a.displayName ?? '', 'photoUrl': a.photoUrl};
+    return {
+      'id': uc.user?.uid ?? '',
+      'email': a.email,
+      'displayName': a.displayName ?? '',
+      'photoUrl': a.photoUrl,
+    };
   }
 
   Future<void> dispose() async {

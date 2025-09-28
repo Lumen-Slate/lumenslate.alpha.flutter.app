@@ -37,9 +37,9 @@ import 'repositories/question_bank_repository.dart';
 import 'repositories/student_repository.dart';
 import 'repositories/subjective_repository.dart';
 import 'repositories/teacher_repository.dart';
+import 'services/email_auth_services.dart';
 import 'services/google_auth_services.dart';
 import 'services/phone_auth_services.dart';
-import 'services/email_auth_services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +50,57 @@ Future<void> main() async {
   // For clean URLs on web
   usePathUrlStrategy();
 
-  runApp(LumenSlate());
+  runApp(const AppInitializer());
+}
+
+class AppInitializer extends StatefulWidget {
+  const AppInitializer({super.key});
+
+  @override
+  State<AppInitializer> createState() => _AppInitializerState();
+}
+
+class _AppInitializerState extends State<AppInitializer> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // Small delay to ensure Firebase is fully ready
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Initializing LumenSlate...'),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const LumenSlate();
+  }
 }
 
 class LumenSlate extends StatelessWidget {
@@ -61,13 +111,17 @@ class LumenSlate extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (context) => GoogleAuthService()..initialize(clientId: AppConstants.googleSingInClientId),
+          create: (context) =>
+              GoogleAuthService()
+                ..initialize(clientId: AppConstants.googleSingInClientId),
         ),
         RepositoryProvider(create: (context) => PhoneAuth()),
         RepositoryProvider(create: (context) => EmailAuthService()),
         RepositoryProvider(create: (context) => AIRepository()),
         RepositoryProvider(create: (context) => VariationRepository()),
-        RepositoryProvider(create: (context) => QuestionSegmentationRepository()),
+        RepositoryProvider(
+          create: (context) => QuestionSegmentationRepository(),
+        ),
         RepositoryProvider(create: (context) => MCQRepository()),
         RepositoryProvider(create: (context) => MSQRepository()),
         RepositoryProvider(create: (context) => NATRepository()),
@@ -84,10 +138,16 @@ class LumenSlate extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => AuthBloc(
-              googleAuthServices: RepositoryProvider.of<GoogleAuthService>(context),
-              teacherRepository: RepositoryProvider.of<TeacherRepository>(context),
+              googleAuthServices: RepositoryProvider.of<GoogleAuthService>(
+                context,
+              ),
+              teacherRepository: RepositoryProvider.of<TeacherRepository>(
+                context,
+              ),
               phoneAuthServices: RepositoryProvider.of<PhoneAuth>(context),
-              emailAuthService: RepositoryProvider.of<EmailAuthService>(context),
+              emailAuthService: RepositoryProvider.of<EmailAuthService>(
+                context,
+              ),
             ),
           ),
           BlocProvider(create: (context) => PhoneNumberFormCubit()),
@@ -100,45 +160,86 @@ class LumenSlate extends StatelessWidget {
               RepositoryProvider.of<SubjectiveRepository>(context),
             ),
           ),
-          BlocProvider(create: (context) => MCQVariationBloc(RepositoryProvider.of<VariationRepository>(context))),
-          BlocProvider(create: (context) => MSQVariationBloc(RepositoryProvider.of<VariationRepository>(context))),
+          BlocProvider(
+            create: (context) => MCQVariationBloc(
+              RepositoryProvider.of<VariationRepository>(context),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => MSQVariationBloc(
+              RepositoryProvider.of<VariationRepository>(context),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => QuestionSegmentationBloc(
+              RepositoryProvider.of<QuestionSegmentationRepository>(context),
+            ),
+          ),
           BlocProvider(
             create: (context) =>
-                QuestionSegmentationBloc(RepositoryProvider.of<QuestionSegmentationRepository>(context)),
+                MCQBloc(RepositoryProvider.of<MCQRepository>(context)),
           ),
-          BlocProvider(create: (context) => MCQBloc(RepositoryProvider.of<MCQRepository>(context))),
-          BlocProvider(create: (context) => MSQBloc(RepositoryProvider.of<MSQRepository>(context))),
+          BlocProvider(
+            create: (context) =>
+                MSQBloc(RepositoryProvider.of<MSQRepository>(context)),
+          ),
           BlocProvider(
             create: (context) => QuestionsBloc(
               mcqRepository: RepositoryProvider.of<MCQRepository>(context),
               msqRepository: RepositoryProvider.of<MSQRepository>(context),
               natRepository: RepositoryProvider.of<NATRepository>(context),
-              subjectiveRepository: RepositoryProvider.of<SubjectiveRepository>(context),
+              subjectiveRepository: RepositoryProvider.of<SubjectiveRepository>(
+                context,
+              ),
             ),
           ),
           BlocProvider(
-            create: (context) => QuestionBankBloc(repository: RepositoryProvider.of<QuestionBankRepository>(context)),
-          ),
-          BlocProvider(create: (context) => ChatAgentBloc(repository: RepositoryProvider.of<AgentRepository>(context))),
-          BlocProvider(
-            create: (context) => RagAgentBloc(repository: RepositoryProvider.of<RagAgentRepository>(context)),
-          ),
-          BlocProvider(
-            create: (context) => ClassroomBloc(repository: RepositoryProvider.of<ClassroomRepository>(context)),
+            create: (context) => QuestionBankBloc(
+              repository: RepositoryProvider.of<QuestionBankRepository>(
+                context,
+              ),
+            ),
           ),
           BlocProvider(
-            create: (context) => AssignmentBloc(repository: RepositoryProvider.of<AssignmentRepository>(context)),
+            create: (context) => ChatAgentBloc(
+              repository: RepositoryProvider.of<AgentRepository>(context),
+            ),
           ),
           BlocProvider(
-            create: (context) =>
-                RagDocumentBloc(ragAgentRepository: RepositoryProvider.of<RagAgentRepository>(context)),
+            create: (context) => RagAgentBloc(
+              repository: RepositoryProvider.of<RagAgentRepository>(context),
+            ),
           ),
-          BlocProvider(create: (context) => StudentBloc(repository: RepositoryProvider.of<StudentRepository>(context))),
+          BlocProvider(
+            create: (context) => ClassroomBloc(
+              repository: RepositoryProvider.of<ClassroomRepository>(context),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => AssignmentBloc(
+              repository: RepositoryProvider.of<AssignmentRepository>(context),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => RagDocumentBloc(
+              ragAgentRepository: RepositoryProvider.of<RagAgentRepository>(
+                context,
+              ),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => StudentBloc(
+              repository: RepositoryProvider.of<StudentRepository>(context),
+            ),
+          ),
         ],
         child: MaterialApp.router(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
           routerConfig: router,
           builder: (context, child) => ResponsiveBreakpoints.builder(
             child: child!,
