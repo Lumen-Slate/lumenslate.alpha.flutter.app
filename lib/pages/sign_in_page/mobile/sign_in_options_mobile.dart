@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../blocs/auth/auth_bloc.dart';
-import '../../../cubit/phone_form/phone_number_form_cubit.dart';
 
 class SignInOptionsMobile extends StatelessWidget {
   const SignInOptionsMobile({super.key});
@@ -19,9 +19,11 @@ class SignInOptionsMobile extends StatelessWidget {
           style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 32),
+        
+        // Google Sign In Button
         OutlinedButton(
           onPressed: () {
-            context.read<AuthBloc>().add(GoogleSignIn());
+            context.read<AuthBloc>().add(AttemptGoogleSignIn());
           },
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -58,28 +60,34 @@ class SignInOptionsMobile extends StatelessWidget {
             ],
           ),
         ),
-        // const SizedBox(height: 24),
-        // OutlinedButton(
-        //   onPressed: () => context.read<PhoneNumberFormCubit>().togglePhoneInput(),
-        //   style: OutlinedButton.styleFrom(
-        //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        //     minimumSize: const Size(double.infinity, 48),
-        //   ),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: [
-        //       SvgPicture.asset(
-        //         "assets/phone_sms.svg",
-        //         width: 24,
-        //       ),
-        //       const SizedBox(width: 8),
-        //       Text(
-        //         'Phone',
-        //         style: GoogleFonts.jost(fontSize: 18, color: Colors.black),
-        //       ),
-        //     ],
-        //   ),
-        // ),
+        
+        const SizedBox(height: 24),
+        
+        // Email Sign In Button
+        OutlinedButton(
+          onPressed: () {
+            context.go('/sign-in/email');
+          },
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            minimumSize: const Size(double.infinity, 48),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.email,
+                size: 24,
+                color: Colors.black,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Email',
+                style: GoogleFonts.jost(fontSize: 18, color: Colors.black),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

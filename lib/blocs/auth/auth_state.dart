@@ -52,3 +52,9 @@ class AuthFailure extends AuthState {
 
   AuthFailure(this.message);
 }
+
+class PasswordResetEmailSent extends AuthState {
+  final String email;
+
+  PasswordResetEmailSent(this.email);
+}

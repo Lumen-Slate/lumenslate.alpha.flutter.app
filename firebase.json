@@ -3,18 +3,18 @@
     "platforms": {
       "android": {
         "default": {
-          "projectId": "lumen-slate",
-          "appId": "1:352355856094:android:010e419f1c95d942b99c4f",
+          "projectId": "lumenslate-30f66",
+          "appId": "1:287658179545:android:b06e76e9ffb0ac0d87f7c8",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "dart": {
         "lib/firebase_options.dart": {
-          "projectId": "lumen-slate",
+          "projectId": "lumenslate-30f66",
           "configurations": {
-            "android": "1:352355856094:android:010e419f1c95d942b99c4f",
-            "ios": "1:352355856094:ios:7ee3bf6d7ee94cd1b99c4f",
-            "web": "1:352355856094:web:1fe14860975a1247b99c4f"
+            "android": "1:287658179545:android:b06e76e9ffb0ac0d87f7c8",
+            "ios": "1:287658179545:ios:f3d6da77805e464987f7c8",
+            "web": "1:287658179545:web:6fc8a5eea7ad7ecc87f7c8"
           }
         }
       }

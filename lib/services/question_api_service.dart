@@ -9,7 +9,7 @@ import '../models/questions/nat.dart';
 import '../models/questions/subjective.dart';
 
 class QuestionApiService {
-  static const String baseUrl =
+  static final String baseUrl =
       AppConstants.backendDomain; // Update with your server URL
 
   // Helper function to compare lists

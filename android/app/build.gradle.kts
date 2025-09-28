@@ -21,7 +21,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.harentortoise.lumenslate"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.2.12479018"
+    ndkVersion = "27.3.13750724"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -34,8 +34,8 @@ android {
 
     defaultConfig {
         applicationId = "com.harentortoise.lumenslate"
-        minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        minSdk = flutter.minSdkVersion
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         
@@ -44,17 +44,13 @@ android {
     }
 
     signingConfigs {
-        getByName("debug") {
-            keyAlias = keystoreProperties.getProperty("debugKeyAlias") ?: "lumenslate-debug"
-            keyPassword = keystoreProperties.getProperty("debugKeyPassword") ?: "android"
-            storeFile = keystoreProperties.getProperty("debugStoreFile")?.let { File(it) }
-            storePassword = keystoreProperties.getProperty("debugStorePassword") ?: "android"
-        }
         create("release") {
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = keystoreProperties.getProperty("storeFile")?.let { File(it) }
-            storePassword = keystoreProperties.getProperty("storePassword")
+            if (keystoreProperties.getProperty("keyAlias") != null) {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = keystoreProperties.getProperty("storeFile")?.let { File(it) }
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
         }
     }
 
@@ -73,12 +69,20 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            // Only use release signing if keystore properties are available
+            if (keystoreProperties.getProperty("keyAlias") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             
             // Production app name
             resValue("string", "app_name", "LumenSlate")
         }
     }
+}
+
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }
 
 flutter {

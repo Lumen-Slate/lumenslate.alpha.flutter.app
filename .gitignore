@@ -69,3 +69,5 @@ firebase-adminsdk-*.json
 # Ignore Kubernetes secret manifests
 k8s/secret-local.yaml
 k8s/secret-prod.yaml
+android/app/google-services.json
+android/build/

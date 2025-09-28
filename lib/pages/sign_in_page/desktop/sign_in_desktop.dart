@@ -69,7 +69,10 @@ class SignInDesktop extends StatelessWidget {
                           builder: (context, state) {
                             return Container(
                               width: 750,
-                              height: 550,
+                              constraints: const BoxConstraints(
+                                minHeight: 550,
+                                maxHeight: 800,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),

@@ -39,6 +39,7 @@ import 'repositories/question_bank_repository.dart';
 import 'repositories/student_repository.dart';
 import 'repositories/subjective_repository.dart';
 import 'repositories/teacher_repository.dart';
+import 'services/email_auth_services.dart';
 import 'services/google_auth_services.dart';
 import 'services/phone_auth_services.dart';
 
@@ -51,7 +52,53 @@ Future<void> main() async {
   // For clean URLs on web
   usePathUrlStrategy();
 
-  runApp(LumenSlate());
+  runApp(const AppInitializer());
+}
+
+class AppInitializer extends StatefulWidget {
+  const AppInitializer({super.key});
+
+  @override
+  State<AppInitializer> createState() => _AppInitializerState();
+}
+
+class _AppInitializerState extends State<AppInitializer> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // Small delay to ensure Firebase is fully ready
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [CircularProgressIndicator(), SizedBox(height: 16), Text('Initializing LumenSlate...')],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const LumenSlate();
+  }
 }
 
 class LumenSlate extends StatelessWidget {
@@ -65,6 +112,7 @@ class LumenSlate extends StatelessWidget {
           create: (context) => GoogleAuthService()..initialize(clientId: AppConstants.googleSingInClientId),
         ),
         RepositoryProvider(create: (context) => PhoneAuth()),
+        RepositoryProvider(create: (context) => EmailAuthService()),
         RepositoryProvider(create: (context) => AIRepository()),
         RepositoryProvider(create: (context) => VariationRepository()),
         RepositoryProvider(create: (context) => QuestionSegmentationRepository()),
@@ -88,6 +136,7 @@ class LumenSlate extends StatelessWidget {
               googleAuthServices: RepositoryProvider.of<GoogleAuthService>(context),
               teacherRepository: RepositoryProvider.of<TeacherRepository>(context),
               phoneAuthServices: RepositoryProvider.of<PhoneAuth>(context),
+              emailAuthService: RepositoryProvider.of<EmailAuthService>(context),
             ),
           ),
           BlocProvider(create: (context) => PhoneNumberFormCubit()),
@@ -143,13 +192,21 @@ class LumenSlate extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
           routerConfig: router,
-          builder: (context, child) => ResponsiveBreakpoints.builder(
-            child: child!,
-            breakpoints: const [
-              Breakpoint(start: 0, end: 450, name: MOBILE),
-              Breakpoint(start: 451, end: 800, name: TABLET),
-              Breakpoint(start: 801, end: 1920, name: DESKTOP),
-            ],
+          builder: (context, child) => BlocListener<AuthBloc, AuthState>(
+            listenWhen: (previous, current) => previous != current,
+            listener: (context, state) {
+              if (state is AuthNotSignedIn) {
+                router.go('/');
+              }
+            },
+            child: ResponsiveBreakpoints.builder(
+              child: child!,
+              breakpoints: const [
+                Breakpoint(start: 0, end: 450, name: MOBILE),
+                Breakpoint(start: 451, end: 800, name: TABLET),
+                Breakpoint(start: 801, end: 1920, name: DESKTOP),
+              ],
+            ),
           ),
         ),
       ),

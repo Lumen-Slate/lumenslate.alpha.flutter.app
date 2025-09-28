@@ -47,28 +47,31 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB3Fob3uXsc-EeUs6klXOR4Xlkc7IL7dGE',
-    appId: '1:352355856094:web:1fe14860975a1247b99c4f',
-    messagingSenderId: '352355856094',
-    projectId: 'lumen-slate',
-    authDomain: 'lumen-slate.firebaseapp.com',
-    storageBucket: 'lumen-slate.firebasestorage.app',
+    apiKey: 'AIzaSyB8olHHNeUI3Vgc_Po2NoULX0tFwr6yvOY',
+    appId: '1:287658179545:web:6fc8a5eea7ad7ecc87f7c8',
+    messagingSenderId: '287658179545',
+    projectId: 'lumenslate-30f66',
+    authDomain: 'lumenslate-30f66.firebaseapp.com',
+    storageBucket: 'lumenslate-30f66.firebasestorage.app',
+    measurementId: 'G-ZRS4Z9T7GZ',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAMN_fS01BomWELCGNactGF9k5vgr087po',
-    appId: '1:352355856094:android:010e419f1c95d942b99c4f',
-    messagingSenderId: '352355856094',
-    projectId: 'lumen-slate',
-    storageBucket: 'lumen-slate.firebasestorage.app',
+    apiKey: 'AIzaSyB1gRS9XF6MmBfrXWyEfOkZhxDSJt4Zdeo',
+    appId: '1:287658179545:android:b06e76e9ffb0ac0d87f7c8',
+    messagingSenderId: '287658179545',
+    projectId: 'lumenslate-30f66',
+    storageBucket: 'lumenslate-30f66.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBkXAqdJcH7qrv_qu_FjjZ0H2tRfRJ9FGM',
-    appId: '1:352355856094:ios:7ee3bf6d7ee94cd1b99c4f',
-    messagingSenderId: '352355856094',
-    projectId: 'lumen-slate',
-    storageBucket: 'lumen-slate.firebasestorage.app',
+    apiKey: 'AIzaSyCb4-PNArXfcAqPbfJ5OstM5LcwrB3bl-s',
+    appId: '1:287658179545:ios:f3d6da77805e464987f7c8',
+    messagingSenderId: '287658179545',
+    projectId: 'lumenslate-30f66',
+    storageBucket: 'lumenslate-30f66.firebasestorage.app',
+    androidClientId: '287658179545-chksfenutl0v9qmmf77suik3svl9nbgg.apps.googleusercontent.com',
+    iosClientId: '287658179545-csmcsuto4jm0e35763rb6fua5mcvqa1j.apps.googleusercontent.com',
     iosBundleId: 'com.harentortoise.lumenslate',
   );
 

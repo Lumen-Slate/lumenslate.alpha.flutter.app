@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:logger/logger.dart';
 
 class PhoneAuth {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
   final logger = Logger();
   String? phoneNumber;
   late String _verificationId;
-  ConfirmationResult? _confirmationResult;  // For web
+  ConfirmationResult? _confirmationResult; // For web
 
   Future signInOTP(String countryCode, String phoneNumber) async {
     this.phoneNumber = phoneNumber;
@@ -30,10 +30,14 @@ class PhoneAuth {
           codeAutoRetrievalTimeout: (String verificationId) {
             logger.w('OTP timeout for ${countryCode + phoneNumber}');
           },
-          timeout: Duration(seconds: 120), // Adjust the timeout duration as needed
+          timeout: Duration(
+            seconds: 120,
+          ), // Adjust the timeout duration as needed
         );
       } else {
-        _confirmationResult = await _auth.signInWithPhoneNumber(countryCode + phoneNumber);
+        _confirmationResult = await _auth.signInWithPhoneNumber(
+          countryCode + phoneNumber,
+        );
         logger.i('OTP sent to ${countryCode + phoneNumber}');
       }
     } catch (e) {
@@ -49,7 +53,9 @@ class PhoneAuth {
           verificationId: _verificationId,
           smsCode: otp,
         );
-        final UserCredential userCredential = await _auth.signInWithCredential(credential);
+        final UserCredential userCredential = await _auth.signInWithCredential(
+          credential,
+        );
 
         if (userCredential.user != null) {
           return {'phoneNumber': phoneNumber ?? ''};
@@ -57,9 +63,10 @@ class PhoneAuth {
       } else {
         // Web platform
         if (_confirmationResult != null) {
-          UserCredential userCredential = await _confirmationResult!.confirm(otp);
+          UserCredential userCredential = await _confirmationResult!.confirm(
+            otp,
+          );
           if (userCredential.user != null) {
-
             return {'phoneNumber': phoneNumber ?? ''};
           }
         }
