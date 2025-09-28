@@ -45,10 +45,12 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = keystoreProperties.getProperty("storeFile")?.let { File(it) }
-            storePassword = keystoreProperties.getProperty("storePassword")
+            if (keystoreProperties.getProperty("keyAlias") != null) {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = keystoreProperties.getProperty("storeFile")?.let { File(it) }
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
         }
     }
 
@@ -67,7 +69,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            // Only use release signing if keystore properties are available
+            if (keystoreProperties.getProperty("keyAlias") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             
             // Production app name
             resValue("string", "app_name", "LumenSlate")
