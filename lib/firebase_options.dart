@@ -70,6 +70,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '287658179545',
     projectId: 'lumenslate-30f66',
     storageBucket: 'lumenslate-30f66.firebasestorage.app',
+    androidClientId: '287658179545-chksfenutl0v9qmmf77suik3svl9nbgg.apps.googleusercontent.com',
     iosClientId: '287658179545-csmcsuto4jm0e35763rb6fua5mcvqa1j.apps.googleusercontent.com',
     iosBundleId: 'com.harentortoise.lumenslate',
   );

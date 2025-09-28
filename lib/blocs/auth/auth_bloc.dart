@@ -27,7 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserRepository userRepository = UserRepository();
   final StudentRepository studentRepository = StudentRepository();
   final _logger = Logger();
-  // final GoogleSignIn _gs = GoogleSignIn.instance;
+  final GoogleSignIn _gs = GoogleSignIn.instance;
 
   AuthBloc({
     required this.googleAuthServices,
@@ -35,17 +35,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.emailAuthService,
     required this.teacherRepository,
   }) : super(AuthInitial()) {
-    // googleAuthServices.firebaseUserStream().listen((user) {
-    //   if (user == null) {
-    //     add(SignOut());
-    //   }
-    // });
 
-    // _gs.authenticationEvents.listen((event) {
-    //   if (event is GoogleSignInAuthenticationEventSignIn) {
-    //     add(AttemptGoogleSignIn(account: event.user));
-    //   }
-    // });
+    _gs.authenticationEvents.listen((event) {
+      if (event is GoogleSignInAuthenticationEventSignIn) {
+        add(AttemptGoogleSignIn(account: event.user));
+      }
+
+      if (event is GoogleSignInAuthenticationEventSignOut && state is! AuthNotSignedIn) {
+        add(SignOut());
+      }
+    });
 
     on<AttemptGoogleSignIn>((event, emit) async {
       emit(Loading());
