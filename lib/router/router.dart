@@ -14,6 +14,7 @@ import '../pages/questions_page/questions.dart';
 import '../pages/rag_agent_page/rag_agent_page.dart';
 import '../pages/sign_in_page/sign_in_page.dart';
 import '../pages/pdf_generator_page/pdf_generator_page.dart';
+import '../pages/student_dashboard_page/desktop/student_dashboard_desktop.dart';
 import '../pages/students_page/students.dart';
 import '../pages/student_detail_page/student_detail.dart';
 import '../pages/teacher_dashboard_page/teacher_dashboard.dart';
@@ -38,7 +39,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/student-dashboard',
-      pageBuilder: (context, state) => MaterialPage(child: Placeholder()),
+      pageBuilder: (context, state) => MaterialPage(child: StudentDashboardDesktop()),
     ),
     GoRoute(
       path: '/teacher-dashboard',
