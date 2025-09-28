@@ -57,6 +57,10 @@ final GoRouter router = GoRouter(
           pageBuilder: (context, state) => MaterialPage(child: SubscriptionPage()),
         ),
         GoRoute(
+          path: '/about',
+          pageBuilder: (context, state) => MaterialPage(child: AboutPage()),
+        ),
+        GoRoute(
           path: '/question-banks',
           pageBuilder: (context, state) => MaterialPage(child: QuestionBankPage()),
         ),
@@ -122,10 +126,6 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/add-question',
       pageBuilder: (context, state) => MaterialPage(child: AddQuestion()),
-    ),
-    GoRoute(
-      path: '/about',
-      pageBuilder: (context, state) => MaterialPage(child: AboutPage()),
     ),
   ],
 );

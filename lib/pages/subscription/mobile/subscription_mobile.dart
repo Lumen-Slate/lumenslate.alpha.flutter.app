@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SubscriptionMobile extends StatelessWidget {
   const SubscriptionMobile({super.key});
@@ -253,6 +254,51 @@ class SubscriptionMobile extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 18),
+                        if (index != 3)
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              onPressed: () {
+                                // TODO: Implement subscription logic for each plan
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Subscribe to ${plan['title']}')),
+                                );
+                              },
+                              child: const Text('Subscribe', style: TextStyle(color: Colors.white)),
+                            ),
+                          )
+                        else
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.deepPurple,
+                                side: const BorderSide(color: Colors.deepPurple),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              icon: const Icon(Icons.email_outlined),
+                              label: const Text('Contact Us'),
+                              onPressed: () async {
+                                final Uri emailLaunchUri = Uri(
+                                  scheme: 'mailto',
+                                  path: 'partnership.hareandtortoise@gmail.com',
+                                  query: 'subject=Enterprise Subscription Inquiry',
+                                );
+                                if (await canLaunchUrl(emailLaunchUri)) {
+                                  await launchUrl(emailLaunchUri);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Could not open email app.')),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
                       ],
                     ),
                   ),
