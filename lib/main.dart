@@ -88,11 +88,7 @@ class _AppInitializerState extends State<AppInitializer> {
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Initializing LumenSlate...'),
-              ],
+              children: [CircularProgressIndicator(), SizedBox(height: 16), Text('Initializing LumenSlate...')],
             ),
           ),
         ),
@@ -111,17 +107,13 @@ class LumenSlate extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (context) =>
-              GoogleAuthService()
-                ..initialize(clientId: AppConstants.googleSingInClientId),
+          create: (context) => GoogleAuthService()..initialize(clientId: AppConstants.googleSingInClientId),
         ),
         RepositoryProvider(create: (context) => PhoneAuth()),
         RepositoryProvider(create: (context) => EmailAuthService()),
         RepositoryProvider(create: (context) => AIRepository()),
         RepositoryProvider(create: (context) => VariationRepository()),
-        RepositoryProvider(
-          create: (context) => QuestionSegmentationRepository(),
-        ),
+        RepositoryProvider(create: (context) => QuestionSegmentationRepository()),
         RepositoryProvider(create: (context) => MCQRepository()),
         RepositoryProvider(create: (context) => MSQRepository()),
         RepositoryProvider(create: (context) => NATRepository()),
@@ -138,16 +130,10 @@ class LumenSlate extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => AuthBloc(
-              googleAuthServices: RepositoryProvider.of<GoogleAuthService>(
-                context,
-              ),
-              teacherRepository: RepositoryProvider.of<TeacherRepository>(
-                context,
-              ),
+              googleAuthServices: RepositoryProvider.of<GoogleAuthService>(context),
+              teacherRepository: RepositoryProvider.of<TeacherRepository>(context),
               phoneAuthServices: RepositoryProvider.of<PhoneAuth>(context),
-              emailAuthService: RepositoryProvider.of<EmailAuthService>(
-                context,
-              ),
+              emailAuthService: RepositoryProvider.of<EmailAuthService>(context),
             ),
           ),
           BlocProvider(create: (context) => PhoneNumberFormCubit()),
@@ -160,94 +146,61 @@ class LumenSlate extends StatelessWidget {
               RepositoryProvider.of<SubjectiveRepository>(context),
             ),
           ),
-          BlocProvider(
-            create: (context) => MCQVariationBloc(
-              RepositoryProvider.of<VariationRepository>(context),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => MSQVariationBloc(
-              RepositoryProvider.of<VariationRepository>(context),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => QuestionSegmentationBloc(
-              RepositoryProvider.of<QuestionSegmentationRepository>(context),
-            ),
-          ),
+          BlocProvider(create: (context) => MCQVariationBloc(RepositoryProvider.of<VariationRepository>(context))),
+          BlocProvider(create: (context) => MSQVariationBloc(RepositoryProvider.of<VariationRepository>(context))),
           BlocProvider(
             create: (context) =>
-                MCQBloc(RepositoryProvider.of<MCQRepository>(context)),
+                QuestionSegmentationBloc(RepositoryProvider.of<QuestionSegmentationRepository>(context)),
           ),
-          BlocProvider(
-            create: (context) =>
-                MSQBloc(RepositoryProvider.of<MSQRepository>(context)),
-          ),
+          BlocProvider(create: (context) => MCQBloc(RepositoryProvider.of<MCQRepository>(context))),
+          BlocProvider(create: (context) => MSQBloc(RepositoryProvider.of<MSQRepository>(context))),
           BlocProvider(
             create: (context) => QuestionsBloc(
               mcqRepository: RepositoryProvider.of<MCQRepository>(context),
               msqRepository: RepositoryProvider.of<MSQRepository>(context),
               natRepository: RepositoryProvider.of<NATRepository>(context),
-              subjectiveRepository: RepositoryProvider.of<SubjectiveRepository>(
-                context,
-              ),
+              subjectiveRepository: RepositoryProvider.of<SubjectiveRepository>(context),
             ),
           ),
           BlocProvider(
-            create: (context) => QuestionBankBloc(
-              repository: RepositoryProvider.of<QuestionBankRepository>(
-                context,
-              ),
-            ),
+            create: (context) => QuestionBankBloc(repository: RepositoryProvider.of<QuestionBankRepository>(context)),
+          ),
+          BlocProvider(create: (context) => ChatAgentBloc(repository: RepositoryProvider.of<AgentRepository>(context))),
+          BlocProvider(
+            create: (context) => RagAgentBloc(repository: RepositoryProvider.of<RagAgentRepository>(context)),
           ),
           BlocProvider(
-            create: (context) => ChatAgentBloc(
-              repository: RepositoryProvider.of<AgentRepository>(context),
-            ),
+            create: (context) => ClassroomBloc(repository: RepositoryProvider.of<ClassroomRepository>(context)),
           ),
           BlocProvider(
-            create: (context) => RagAgentBloc(
-              repository: RepositoryProvider.of<RagAgentRepository>(context),
-            ),
+            create: (context) => AssignmentBloc(repository: RepositoryProvider.of<AssignmentRepository>(context)),
           ),
           BlocProvider(
-            create: (context) => ClassroomBloc(
-              repository: RepositoryProvider.of<ClassroomRepository>(context),
-            ),
+            create: (context) =>
+                RagDocumentBloc(ragAgentRepository: RepositoryProvider.of<RagAgentRepository>(context)),
           ),
-          BlocProvider(
-            create: (context) => AssignmentBloc(
-              repository: RepositoryProvider.of<AssignmentRepository>(context),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => RagDocumentBloc(
-              ragAgentRepository: RepositoryProvider.of<RagAgentRepository>(
-                context,
-              ),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => StudentBloc(
-              repository: RepositoryProvider.of<StudentRepository>(context),
-            ),
-          ),
+          BlocProvider(create: (context) => StudentBloc(repository: RepositoryProvider.of<StudentRepository>(context))),
         ],
         child: MaterialApp.router(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
+          theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
           routerConfig: router,
-          builder: (context, child) => ResponsiveBreakpoints.builder(
-            child: child!,
-            breakpoints: const [
-              Breakpoint(start: 0, end: 450, name: MOBILE),
-              Breakpoint(start: 451, end: 800, name: TABLET),
-              Breakpoint(start: 801, end: 1920, name: DESKTOP),
-            ],
+          builder: (context, child) => BlocListener<AuthBloc, AuthState>(
+            listenWhen: (previous, current) => previous != current,
+            listener: (context, state) {
+              if (state is AuthNotSignedIn) {
+                router.go('/');
+              }
+            },
+            child: ResponsiveBreakpoints.builder(
+              child: child!,
+              breakpoints: const [
+                Breakpoint(start: 0, end: 450, name: MOBILE),
+                Breakpoint(start: 451, end: 800, name: TABLET),
+                Breakpoint(start: 801, end: 1920, name: DESKTOP),
+              ],
+            ),
           ),
         ),
       ),
