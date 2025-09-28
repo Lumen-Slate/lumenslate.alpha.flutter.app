@@ -17,6 +17,7 @@ import '../pages/pdf_generator_page/pdf_generator_page.dart';
 import '../pages/student_dashboard_page/desktop/student_dashboard_desktop.dart';
 import '../pages/students_page/students.dart';
 import '../pages/student_detail_page/student_detail.dart';
+import '../pages/subscription/subscription.dart';
 import '../pages/teacher_dashboard_page/teacher_dashboard.dart';
 import '../pages/sign_in_page/mobile/email_sign_in_page.dart';
 
@@ -50,6 +51,10 @@ final GoRouter router = GoRouter(
       path: '/teacher-dashboard',
       pageBuilder: (context, state) => MaterialPage(child: TeacherDashboardPage()),
       routes: [
+        GoRoute(
+          path: '/subscription',
+          pageBuilder: (context, state) => MaterialPage(child: SubscriptionPage()),
+        ),
         GoRoute(
           path: '/question-banks',
           pageBuilder: (context, state) => MaterialPage(child: QuestionBankPage()),
