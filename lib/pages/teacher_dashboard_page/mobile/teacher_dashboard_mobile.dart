@@ -39,7 +39,15 @@ class TeacherDashboardMobile extends StatelessWidget {
               title: Text('Subscription', style: GoogleFonts.poppins(fontSize: 16)),
               onTap: () {
                 Navigator.pop(context);
-                GoRouter.of(context).go('/teacher-dashboard/subscription');
+                context.push('/subscription');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info_outline),
+              title: Text('About', style: GoogleFonts.poppins(fontSize: 16)),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/about');
               },
             ),
           ],
