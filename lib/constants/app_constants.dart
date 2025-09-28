@@ -22,7 +22,7 @@ class AppConstants {
     }
   }
 
-  static const String googleSingInClientId = '352355856094-sc9g1njgb1r7rt9a0iq95tfetukpqeef.apps.googleusercontent.com';
+  static const String googleSingInClientId = '287658179545-n2d1dj5t0pgokuk37kob063uk0j76ehm.apps.googleusercontent.com';
 
   static Duration otpTimeOutDuration = const Duration(minutes: 2);
 }

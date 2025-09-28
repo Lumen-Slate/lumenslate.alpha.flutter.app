@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:lumen_slate/repositories/user_repository.dart';
 
@@ -26,12 +27,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserRepository userRepository = UserRepository();
   final StudentRepository studentRepository = StudentRepository();
   final _logger = Logger();
+  // final GoogleSignIn _gs = GoogleSignIn.instance;
 
   AuthBloc({
-    required this.googleAuthServices, 
-    required this.phoneAuthServices, 
+    required this.googleAuthServices,
+    required this.phoneAuthServices,
     required this.emailAuthService,
-    required this.teacherRepository
+    required this.teacherRepository,
   }) : super(AuthInitial()) {
     // googleAuthServices.firebaseUserStream().listen((user) {
     //   if (user == null) {
@@ -39,10 +41,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     //   }
     // });
 
-    on<GoogleSignIn>((event, emit) async {
+    // _gs.authenticationEvents.listen((event) {
+    //   if (event is GoogleSignInAuthenticationEventSignIn) {
+    //     add(AttemptGoogleSignIn(account: event.user));
+    //   }
+    // });
+
+    on<AttemptGoogleSignIn>((event, emit) async {
       emit(Loading());
       try {
-        Map<String, dynamic>? response = await googleAuthServices.signIn();
+        Map<String, dynamic>? response;
+        if (event.account == null) {
+          Logger().d('No GoogleSignInAccount provided, initiating sign-in flow.');
+          response = await googleAuthServices.signIn();
+        } else {
+          Logger().d('Using provided GoogleSignInAccount for sign-in. ${event.account}');
+          response = {
+            'id': event.account!.id,
+            'email': event.account!.email,
+            'displayName': event.account!.displayName,
+            'photoUrl': event.account!.photoUrl,
+          };
+        }
+
+        Logger().d('Google Sign-In response: $response');
         if (response == null) {
           emit(AuthNotSignedIn());
           return;
@@ -196,8 +218,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthNotSignedIn());
           return;
         }
-
-
       } catch (e) {
         _logger.e('Error choosing student role: $e');
         emit(AuthNotSignedIn());
@@ -205,14 +225,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<EmailSignIn>((event, emit) async {
+    on<AttemptEmailSignIn>((event, emit) async {
       emit(Loading());
       try {
-        Map<String, dynamic>? response = await emailAuthService.signIn(
-          email: event.email,
-          password: event.password,
-        );
-        
+        Map<String, dynamic>? response = await emailAuthService.signIn(email: event.email, password: event.password);
+
         if (response == null) {
           emit(AuthNotSignedIn());
           return;
@@ -226,7 +243,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<EmailSignUp>((event, emit) async {
+    on<AttemptEmailSignUp>((event, emit) async {
       emit(Loading());
       try {
         Map<String, dynamic>? response = await emailAuthService.signUp(
@@ -234,7 +251,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           password: event.password,
           displayName: event.displayName,
         );
-        
+
         if (response == null) {
           emit(AuthNotSignedIn());
           return;
