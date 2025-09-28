@@ -3,7 +3,11 @@ part of 'auth_bloc.dart';
 @immutable
 sealed class AuthEvent {}
 
-class GoogleSignIn extends AuthEvent {}
+class AttemptGoogleSignIn extends AuthEvent {
+  final GoogleSignInAccount? account;
+
+  AttemptGoogleSignIn({this.account});
+}
 
 class OTPSignIn extends AuthEvent {
   final String countryCode;
@@ -38,19 +42,19 @@ class OTPVerify extends AuthEvent {
   OTPVerify({required this.otp});
 }
 
-class EmailSignIn extends AuthEvent {
+class AttemptEmailSignIn extends AuthEvent {
   final String email;
   final String password;
 
-  EmailSignIn({required this.email, required this.password});
+  AttemptEmailSignIn({required this.email, required this.password});
 }
 
-class EmailSignUp extends AuthEvent {
+class AttemptEmailSignUp extends AuthEvent {
   final String email;
   final String password;
   final String displayName;
 
-  EmailSignUp({required this.email, required this.password, required this.displayName});
+  AttemptEmailSignUp({required this.email, required this.password, required this.displayName});
 }
 
 class SendPasswordResetEmail extends AuthEvent {

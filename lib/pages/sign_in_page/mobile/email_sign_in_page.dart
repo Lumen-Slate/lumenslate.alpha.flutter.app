@@ -48,7 +48,7 @@ class _EmailSignInFormMobileState extends State<EmailSignInFormMobile> {
     if (_formKey.currentState!.validate()) {
       if (_isSignUp) {
         context.read<AuthBloc>().add(
-          EmailSignUp(
+          AttemptEmailSignUp(
             email: _emailController.text.trim(),
             password: _passwordController.text,
             displayName: _nameController.text.trim(),
@@ -56,7 +56,7 @@ class _EmailSignInFormMobileState extends State<EmailSignInFormMobile> {
         );
       } else {
         context.read<AuthBloc>().add(
-          EmailSignIn(email: _emailController.text.trim(), password: _passwordController.text),
+          AttemptEmailSignIn(email: _emailController.text.trim(), password: _passwordController.text),
         );
       }
     }
