@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import 'desktop/question_bank.dart';
-import 'mobile/question_bank.dart';
+import 'desktop/question_bank_desktop.dart';
+import 'mobile/question_bank_mobile.dart';
 
 class QuestionBankPage extends StatelessWidget {
   const QuestionBankPage({super.key});

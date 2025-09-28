@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/question_bank/question_bank_bloc.dart';
-
 import '../../../models/question_bank.dart';
+import 'components/question_bank_tile_mobile.dart';
+import 'components/create_bank_dialog.dart';
 
 class QuestionBankPageMobile extends StatefulWidget {
   const QuestionBankPageMobile({super.key});
@@ -32,10 +33,8 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
     });
 
     if (query.isEmpty) {
-      // Reset to original list without search
       context.read<QuestionBankBloc>().add(InitializeQuestionBankPaging(teacherId: _teacherId));
     } else {
-      // Perform search
       context.read<QuestionBankBloc>().add(
         SearchQuestionBanks(
           teacherId: _teacherId,
@@ -49,6 +48,25 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
     context.go('/add_question_bank');
   }
 
+  Future<void> _showCreateQuestionBankDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return CreateBankDialog(
+          onCreate: (name, topic, tags) async {
+            final repo = context.read<QuestionBankBloc>().repository;
+            final response = await repo.createQuestionBank(name, topic, _teacherId, tags);
+            if (response.statusCode == 200 || response.statusCode == 201) {
+              context.read<QuestionBankBloc>().add(InitializeQuestionBankPaging(teacherId: _teacherId));
+              return true;
+            }
+            return false;
+          },
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -59,6 +77,7 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Colors.white,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -77,29 +96,39 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
         ),
       ),
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('Question Banks', style: GoogleFonts.poppins(fontSize: 20)),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _navigateToAddQuestionBankPage,
-      //   child: const Icon(Icons.add),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreateQuestionBankDialog,
+        child: const Icon(Icons.add),
+      ),
       body: Column(
         children: [
-          // Search Field
+          // Search Bar (desktop style)
           Padding(
-            padding: const EdgeInsets.all(20),
-            child: TextField(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            child: SearchBar(
               controller: _searchController,
-              onChanged: _performSearch,
-              decoration: InputDecoration(
-                hintText: 'Search question banks...',
-                prefixIcon: Icon(Icons.search, color: Colors.teal[700]),
-                suffixIcon: _currentSearchQuery.isNotEmpty
-                    ? IconButton(
+              onChanged: (value) {
+                _performSearch(value);
+              },
+              leading: const Padding(
+                padding: EdgeInsets.only(left: 12.0),
+                child: Icon(Icons.search),
+              ),
+              backgroundColor: WidgetStateProperty.all(Colors.white),
+              hintText: "Search question banks",
+              hintStyle: WidgetStateProperty.all(
+                GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+              ),
+              trailing: _currentSearchQuery.isNotEmpty
+                  ? [
+                      IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           setState(() {
@@ -108,12 +137,9 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
                           _searchController.clear();
                           _performSearch('');
                         },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+                      ),
+                    ]
+                  : null,
             ),
           ),
           // Question Banks List
@@ -130,26 +156,7 @@ class _QuestionBankPageMobileState extends State<QuestionBankPageMobile> {
                   );
                 },
                 builderDelegate: PagedChildBuilderDelegate(
-                  itemBuilder: (context, item, index) => Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        item.name,
-                        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                        'Topic: ${item.topic}',
-                        style: GoogleFonts.poppins(fontSize: 14),
-                      ),
-                      trailing: const Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        // Navigate to question bank details
-                      },
-                    ),
-                  ),
+                  itemBuilder: (context, item, index) => QuestionBankTileMobile(bank: item),
                   noItemsFoundIndicatorBuilder: (context) => Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
