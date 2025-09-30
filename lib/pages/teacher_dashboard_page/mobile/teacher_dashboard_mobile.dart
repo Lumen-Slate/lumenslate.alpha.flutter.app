@@ -34,6 +34,22 @@ class TeacherDashboardMobile extends StatelessWidget {
                 context.read<AuthBloc>().add(SignOut());
               },
             ),
+            ListTile(
+              leading: Icon(Icons.subscriptions),
+              title: Text('Subscription', style: GoogleFonts.poppins(fontSize: 16)),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/teacher-dashboard/subscription');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info_outline),
+              title: Text('About', style: GoogleFonts.poppins(fontSize: 16)),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/teacher-dashboard/about');
+              },
+            ),
           ],
         ),
       ),
