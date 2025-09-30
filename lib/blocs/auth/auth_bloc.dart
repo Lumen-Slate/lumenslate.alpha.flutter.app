@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:lumen_slate/repositories/user_repository.dart';
 
@@ -26,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserRepository userRepository = UserRepository();
   final StudentRepository studentRepository = StudentRepository();
   final _logger = Logger();
+  final GoogleSignIn _gs = GoogleSignIn.instance;
 
   AuthBloc({
     required this.googleAuthServices,
@@ -33,22 +35,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.emailAuthService,
     required this.teacherRepository,
   }) : super(AuthInitial()) {
-    _logger.i('AuthBloc initialized');
-    // googleAuthServices.firebaseUserStream().listen((user) {
-    //   if (user == null) {
-    //     add(SignOut());
-    //   }
-    // });
 
-    on<GoogleSignIn>((event, emit) async {
-      _logger.i('GoogleSignIn event triggered');
+    _gs.authenticationEvents.listen((event) {
+      if (event is GoogleSignInAuthenticationEventSignIn) {
+        add(AttemptGoogleSignIn(account: event.user));
+      }
+
+      if (event is GoogleSignInAuthenticationEventSignOut && state is! AuthNotSignedIn) {
+        add(SignOut());
+      }
+    });
+
+    on<AttemptGoogleSignIn>((event, emit) async {
       emit(Loading());
       try {
-        _logger.i('Attempting Google sign in');
-        Map<String, dynamic>? response = await googleAuthServices.signIn();
-        _logger.i('Google sign in response: "+response.toString()+"');
+        Map<String, dynamic>? response;
+        if (event.account == null) {
+          response = await googleAuthServices.signIn();
+        } else {
+          response = {
+            'id': event.account!.id,
+            'email': event.account!.email,
+            'displayName': event.account!.displayName,
+            'photoUrl': event.account!.photoUrl,
+          };
+        }
+
         if (response == null) {
-          _logger.w('Google sign in returned null response');
           emit(AuthNotSignedIn());
           return;
         }
@@ -259,16 +272,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<EmailSignIn>((event, emit) async {
-      _logger.i('EmailSignIn event triggered for email: ${event.email}');
+    on<AttemptEmailSignIn>((event, emit) async {
       emit(Loading());
       try {
-        _logger.i('Attempting email sign in');
-        Map<String, dynamic>? response = await emailAuthService.signIn(
-          email: event.email,
-          password: event.password,
-        );
-        _logger.i('Email sign in response: "+response.toString()+"');
+        Map<String, dynamic>? response = await emailAuthService.signIn(email: event.email, password: event.password);
         if (response == null) {
           _logger.w('Email sign in returned null response');
           emit(AuthNotSignedIn());
@@ -282,8 +289,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<EmailSignUp>((event, emit) async {
-      _logger.i('EmailSignUp event triggered for email: ${event.email}');
+    on<AttemptEmailSignUp>((event, emit) async {
       emit(Loading());
       try {
         _logger.i('Attempting email sign up');
@@ -292,7 +298,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           password: event.password,
           displayName: event.displayName,
         );
-        _logger.i('Email sign up response: "+response.toString()+"');
         if (response == null) {
           _logger.w('Email sign up returned null response');
           emit(AuthNotSignedIn());

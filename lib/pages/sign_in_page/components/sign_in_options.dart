@@ -35,7 +35,7 @@ class SignInOptionsDesktop extends StatelessWidget {
                 // Google Sign In Button
                 OutlinedButton(
                   onPressed: () {
-                    context.read<AuthBloc>().add(GoogleSignIn());
+                    context.read<AuthBloc>().add(AttemptGoogleSignIn());
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

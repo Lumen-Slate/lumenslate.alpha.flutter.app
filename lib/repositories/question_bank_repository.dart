@@ -4,17 +4,16 @@ import '../constants/app_constants.dart';
 import '../models/question_bank.dart';
 
 class QuestionBankRepository {
-  final Dio _client = Dio(
-    BaseOptions(
-      baseUrl: AppConstants.backendDomain,
-    ),
-  );
+  final Dio _client = Dio(BaseOptions(baseUrl: AppConstants.backendDomain));
 
   final Logger _logger = Logger();
 
-  Future<Response> createQuestionBank(QuestionBank questionBank) async {
+  Future<Response> createQuestionBank(String name, String topic, String teacherId, List<String> tags) async {
     try {
-      return await _client.post('/question-banks', data: questionBank.toJson());
+      return await _client.post(
+        '/question-banks',
+        data: {'name': name, 'topic': topic, 'teacherId': teacherId, 'tags': tags},
+      );
     } on DioException catch (dioError, stackTrace) {
       _logger.e(
         'Error creating Question Bank: Status code ${dioError.response?.statusCode}',
@@ -37,7 +36,7 @@ class QuestionBankRepository {
         'offset': offset.toString(),
         'teacherId': teacherId,
       };
-      
+
       if (searchQuery != null && searchQuery.isNotEmpty) {
         queryParams['q'] = searchQuery;
       }
