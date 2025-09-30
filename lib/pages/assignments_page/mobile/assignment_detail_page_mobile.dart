@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lumen_slate/lib.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
+
 import '../../../blocs/assignment/assignment_bloc.dart';
 import '../../../services/assignment_export_service.dart';
 
@@ -11,24 +15,30 @@ class AssignmentDetailPageMobile extends StatefulWidget {
   const AssignmentDetailPageMobile({super.key, required this.assignmentId});
 
   @override
-  State<AssignmentDetailPageMobile> createState() => _AssignmentDetailPageMobileState();
+  State<AssignmentDetailPageMobile> createState() =>
+      _AssignmentDetailPageMobileState();
 }
 
-class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile> {
+class _AssignmentDetailPageMobileState
+    extends State<AssignmentDetailPageMobile> {
   final String _teacherId = '0692d515-1621-44ea-85e7-a41335858ee2';
-  
+
   @override
   void initState() {
-    context.read<AssignmentBloc>().add(FetchAssignmentById(id: widget.assignmentId, extended: true));
+    context.read<AssignmentBloc>().add(
+      FetchAssignmentById(id: widget.assignmentId, extended: true),
+    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvokedWithResult: (result, __) {
+      onPopInvokedWithResult: (result, _) {
         if (result) {
-          context.read<AssignmentBloc>().add(InitializeAssignmentPaging(extended: false, teacherId: _teacherId));
+          context.read<AssignmentBloc>().add(
+            InitializeAssignmentPaging(extended: false, teacherId: _teacherId),
+          );
         }
       },
       child: Scaffold(
@@ -115,7 +125,10 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
                           ),
                           const SizedBox(height: 16),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.red[50],
                               borderRadius: BorderRadius.circular(8),
@@ -124,7 +137,11 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.schedule, size: 16, color: Colors.red[600]),
+                                Icon(
+                                  Icons.schedule,
+                                  size: 16,
+                                  color: Colors.red[600],
+                                ),
                                 const SizedBox(width: 6),
                                 Text(
                                   "Due: ${DateFormat('dd-MM-yyyy').format(state.assignment.dueDate)}",
@@ -140,32 +157,42 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Questions Sections
-                    if (state.assignment.mcqs != null && state.assignment.mcqs!.isNotEmpty)
+                    if (state.assignment.mcqs != null &&
+                        state.assignment.mcqs!.isNotEmpty)
                       _buildQuestionSection(
                         title: "Multiple Choice Questions",
                         description: "Choose the correct option",
                         backgroundColor: Colors.blue,
-                        children: state.assignment.mcqs!.map((q) => _buildMobileMCQTile(q)).toList(),
+                        children: state.assignment.mcqs!
+                            .map((q) => _buildMobileMCQTile(q))
+                            .toList(),
                       ),
-                    if (state.assignment.msqs != null && state.assignment.msqs!.isNotEmpty)
+                    if (state.assignment.msqs != null &&
+                        state.assignment.msqs!.isNotEmpty)
                       _buildQuestionSection(
                         title: "Multiple Select Questions",
                         description: "Select all correct options",
                         backgroundColor: Colors.green,
-                        children: state.assignment.msqs!.map((q) => _buildMobileMSQTile(q)).toList(),
+                        children: state.assignment.msqs!
+                            .map((q) => _buildMobileMSQTile(q))
+                            .toList(),
                       ),
-                    if (state.assignment.nats != null && state.assignment.nats!.isNotEmpty)
+                    if (state.assignment.nats != null &&
+                        state.assignment.nats!.isNotEmpty)
                       _buildQuestionSection(
                         title: "Numerical Answer Type",
                         description: "Type the numerical answer",
                         backgroundColor: Colors.orange,
-                        children: state.assignment.nats!.map((q) => _buildMobileNATTile(q)).toList(),
+                        children: state.assignment.nats!
+                            .map((q) => _buildMobileNATTile(q))
+                            .toList(),
                       ),
-                    if (state.assignment.subjectives != null && state.assignment.subjectives!.isNotEmpty)
+                    if (state.assignment.subjectives != null &&
+                        state.assignment.subjectives!.isNotEmpty)
                       _buildQuestionSection(
                         title: "Subjective Questions",
                         description: "Write descriptive answers",
@@ -176,7 +203,8 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
                       ),
 
                     // Comments Section
-                    if (state.assignment.comments != null && state.assignment.comments!.isNotEmpty)
+                    if (state.assignment.comments != null &&
+                        state.assignment.comments!.isNotEmpty)
                       _buildQuestionSection(
                         title: "Comments",
                         description: "Remarks and feedback",
@@ -196,7 +224,11 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
                                 CircleAvatar(
                                   radius: 12,
                                   backgroundColor: Colors.grey[400],
-                                  child: const Icon(Icons.person, size: 14, color: Colors.white),
+                                  child: const Icon(
+                                    Icons.person,
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
@@ -222,19 +254,28 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
                     const SizedBox(height: 16),
                     Text(
                       'Failed to load assignment',
-                      style: GoogleFonts.poppins(fontSize: 18, color: Colors.red[600]),
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: Colors.red[600],
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       state.error.toString(),
-                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
                         context.read<AssignmentBloc>().add(
-                          FetchAssignmentById(id: widget.assignmentId, extended: true),
+                          FetchAssignmentById(
+                            id: widget.assignmentId,
+                            extended: true,
+                          ),
                         );
                       },
                       child: const Text('Retry'),
@@ -251,7 +292,10 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
     );
   }
 
-  Future<void> _exportAssignment(BuildContext context, AssignmentExtended assignment) async {
+  Future<void> _exportAssignment(
+    BuildContext context,
+    AssignmentExtended assignment,
+  ) async {
     // Show export options dialog
     showDialog(
       context: context,
@@ -296,7 +340,16 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
     );
   }
 
-  Future<void> _performExport(BuildContext context, String format, AssignmentExtended assignment) async {
+  Future<void> _performExport(
+    BuildContext context,
+    String format,
+    AssignmentExtended assignment,
+  ) async {
+    // Capture navigator and scaffold messenger before async operations
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    bool dialogShown = false;
+    
     try {
       // Show loading indicator
       showDialog(
@@ -317,30 +370,86 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
           ),
         ),
       );
+      dialogShown = true;
 
+      // Add timeout to prevent infinite loading
+      Future<File> exportFuture;
       if (format == 'PDF') {
-        await AssignmentExportService.exportAssignmentPDF(assignment);
+        exportFuture = AssignmentExportService.exportAssignmentPDF(assignment);
       } else {
-        await AssignmentExportService.exportAssignmentCSV(assignment);
+        exportFuture = AssignmentExportService.exportAssignmentCSV(assignment);
       }
 
-      Navigator.of(context).pop(); // Close loading dialog
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Assignment "${assignment.title}" exported as $format successfully!'),
-          backgroundColor: Colors.green,
-        ),
+      // Wait for export with timeout
+      final file = await exportFuture.timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw TimeoutException(
+            'Export operation timed out',
+            const Duration(seconds: 30),
+          );
+        },
       );
+
+      print('Export completed, file: ${file.path}');
+      print('Widget mounted: $mounted, Context mounted: ${context.mounted}');
+
+      // Close dialog first
+      if (dialogShown && mounted) {
+        print('Closing loading dialog...');
+        navigator.pop();
+        dialogShown = false;
+        
+        // Small delay to ensure dialog is closed before showing snackbar
+        await Future.delayed(const Duration(milliseconds: 100));
+        
+        print('Showing success message...');
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              'Assignment "${assignment.title}" exported as $format successfully!',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+        print('Success message shown');
+      } else {
+        print('Widget not mounted, cannot close dialog');
+      }
     } catch (e) {
-      Navigator.of(context).pop(); // Close loading dialog
+      print('Export error occurred: $e');
+      print('Widget mounted: $mounted, Context mounted: ${context.mounted}');
+      
+      // Close dialog first if it was shown
+      if (dialogShown && mounted) {
+        print('Closing loading dialog after error...');
+        navigator.pop();
+        dialogShown = false;
+        
+        // Small delay to ensure dialog is closed before showing error
+        await Future.delayed(const Duration(milliseconds: 100));
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to export assignment: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+        String errorMessage = 'Failed to export assignment: ';
+        if (e.toString().contains('timeout')) {
+          errorMessage += 'Export timed out. Please try again.';
+        } else if (e.toString().contains('permission')) {
+          errorMessage += 'Permission denied. Check storage permissions.';
+        } else {
+          errorMessage += e.toString();
+        }
+
+        print('Showing error message...');
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+        print('Error message shown');
+      } else {
+        print('Widget not mounted, cannot close dialog after error');
+      }
     }
   }
 
@@ -457,7 +566,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Question text
           Text(
             mcq.question,
@@ -469,13 +578,13 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // Options (without revealing correct answer)
           Column(
             children: mcq.options.asMap().entries.map<Widget>((entry) {
               int index = entry.key;
               String option = entry.value;
-              
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(12),
@@ -575,7 +684,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Question text
           Text(
             msq.question,
@@ -587,7 +696,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ),
           ),
           const SizedBox(height: 8),
-          
+
           // Multiple selection note
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -606,13 +715,13 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // Options (without revealing correct answers)
           Column(
             children: msq.options.asMap().entries.map<Widget>((entry) {
               int index = entry.key;
               String option = entry.value;
-              
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(12),
@@ -712,7 +821,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Question text
           Text(
             nat.question,
@@ -724,7 +833,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ),
           ),
           const SizedBox(height: 8),
-          
+
           // Numerical input note
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -743,7 +852,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // Answer input area (without showing solution)
           Container(
             width: double.infinity,
@@ -838,7 +947,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Question text
           Text(
             subjective.question,
@@ -850,7 +959,7 @@ class _AssignmentDetailPageMobileState extends State<AssignmentDetailPageMobile>
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // Answer area (without showing ideal answer or grading criteria)
           Container(
             width: double.infinity,

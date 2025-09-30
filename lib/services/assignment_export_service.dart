@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../models/questions/mcq.dart';
@@ -17,47 +19,54 @@ class AssignmentExportService {
 
   /// Export assignment questions to PDF
   static Future<File> exportAssignmentPDF(AssignmentExtended assignment) async {
-    // Get questions for this assignment
-    final mcqs = assignment.mcqs ?? [];
-    final msqs = assignment.msqs ?? [];
-    final nats = assignment.nats ?? [];
-    final subjectives = assignment.subjectives ?? [];
+    try {
+      print('Starting PDF export for assignment: ${assignment.title}');
+      
+      // Get questions for this assignment
+      final mcqs = assignment.mcqs ?? [];
+      final msqs = assignment.msqs ?? [];
+      final nats = assignment.nats ?? [];
+      final subjectives = assignment.subjectives ?? [];
 
-    final pdf = pw.Document();
+      print('Questions found - MCQs: ${mcqs.length}, MSQs: ${msqs.length}, NATs: ${nats.length}, Subjectives: ${subjectives.length}');
 
-    // Calculate total points
-    final totalPoints =
-        mcqs.fold<int>(0, (sum, q) => sum + q.points) +
-        msqs.fold<int>(0, (sum, q) => sum + q.points) +
-        nats.fold<int>(0, (sum, q) => sum + q.points) +
-        subjectives.fold<int>(0, (sum, q) => sum + q.points);
+      final pdf = pw.Document();
 
-    pdf.addPage(
-      pw.MultiPage(
-        pageTheme: pw.PageTheme(
-          pageFormat: PdfPageFormat.a4,
-          margin: const pw.EdgeInsets.all(40),
-          buildBackground: (pw.Context context) => pw.Center(
-            child: pw.Opacity(
-              opacity: 0.20,
-              child: pw.Transform.rotate(
-                angle: -0.7, // ~-40 degrees, diagonal
-                child: pw.Text(
-                  'LUMEN SLATE',
-                  textAlign: pw.TextAlign.center,
-                  maxLines: 1,
-                  softWrap: false,
-                  style: pw.TextStyle(
-                    fontSize: 80,
-                    color: PdfColors.grey600,
-                    fontWeight: pw.FontWeight.bold,
+      // Calculate total points
+      final totalPoints =
+          mcqs.fold<int>(0, (sum, q) => sum + q.points) +
+          msqs.fold<int>(0, (sum, q) => sum + q.points) +
+          nats.fold<int>(0, (sum, q) => sum + q.points) +
+          subjectives.fold<int>(0, (sum, q) => sum + q.points);
+
+      print('Total points calculated: $totalPoints');
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageTheme: pw.PageTheme(
+            pageFormat: PdfPageFormat.a4,
+            margin: const pw.EdgeInsets.all(40),
+            buildBackground: (pw.Context context) => pw.Center(
+              child: pw.Opacity(
+                opacity: 0.20,
+                child: pw.Transform.rotate(
+                  angle: -0.7, // ~-40 degrees, diagonal
+                  child: pw.Text(
+                    'LUMEN SLATE',
+                    textAlign: pw.TextAlign.center,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: pw.TextStyle(
+                      fontSize: 80,
+                      color: PdfColors.grey600,
+                      fontWeight: pw.FontWeight.normal, // Changed from bold to normal
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        build: (pw.Context context) {
+          build: (pw.Context context) {
           List<pw.Widget> content = [];
 
           // Header
@@ -156,7 +165,16 @@ class AssignmentExportService {
     // Save PDF to file
     final fileName =
         '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf';
-    return await _savePdfToFile(pdf, fileName);
+    
+    print('Saving PDF to file: $fileName');
+    final result = await _savePdfToFile(pdf, fileName);
+    print('PDF export completed successfully');
+    return result;
+  } catch (e, stackTrace) {
+    print('Error during PDF export: $e');
+    print('Stack trace: $stackTrace');
+    rethrow;
+  }
   }
 
   /// Build assignment header
@@ -169,10 +187,10 @@ class AssignmentExportService {
       children: [
         pw.Text(
           assignment.title.toUpperCase(),
-          style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.normal),
         ),
         pw.SizedBox(height: 8),
-        pw.Text(assignment.body, style: const pw.TextStyle(fontSize: 14)),
+        pw.Text(assignment.body, style: pw.TextStyle(fontSize: 14)),
         pw.SizedBox(height: 12),
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -236,7 +254,7 @@ class AssignmentExportService {
             style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16),
           ),
           pw.SizedBox(height: 4),
-          pw.Text(description, style: const pw.TextStyle(fontSize: 12)),
+          pw.Text(description, style: pw.TextStyle(fontSize: 12)),
         ],
       ),
     );
@@ -417,22 +435,93 @@ class AssignmentExportService {
       return File(fileName);
     } else {
       // For mobile/desktop platforms
-      final directory = await getApplicationDocumentsDirectory();
+      Directory directory = await _getDownloadDirectory();
+      
       final file = File('${directory.path}/$fileName');
       await file.writeAsBytes(bytes);
+      print('File saved to: ${file.path}');
       return file;
     }
   }
 
+  /// Get the appropriate download directory with permission handling
+  static Future<Directory> _getDownloadDirectory() async {
+    if (Platform.isAndroid) {
+      // Request storage permission for Android
+      final permission = await _requestStoragePermission();
+      
+      if (permission.isGranted) {
+        // Try to use Downloads directory
+        try {
+          final downloadsDir = Directory('/storage/emulated/0/Download');
+          if (await downloadsDir.exists()) {
+            print('Using Downloads directory: ${downloadsDir.path}');
+            return downloadsDir;
+          }
+        } catch (e) {
+          print('Could not access Downloads directory: $e');
+        }
+        
+        // Fallback to external storage directory
+        try {
+          final externalDir = await getExternalStorageDirectory();
+          if (externalDir != null) {
+            // Create a Downloads subdirectory in external storage
+            final downloadDir = Directory('${externalDir.path}/Downloads');
+            if (!await downloadDir.exists()) {
+              await downloadDir.create(recursive: true);
+            }
+            print('Using external storage Downloads: ${downloadDir.path}');
+            return downloadDir;
+          }
+        } catch (e) {
+          print('Could not access external storage: $e');
+        }
+      } else {
+        print('Storage permission denied');
+      }
+    }
+    
+    // Fallback to application documents directory for iOS and permission denied cases
+    final appDir = await getApplicationDocumentsDirectory();
+    print('Using application documents directory: ${appDir.path}');
+    return appDir;
+  }
+
+  /// Request storage permission for Android
+  static Future<PermissionStatus> _requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      // For Android 13+ (API 33+), we don't need storage permissions for app-specific directories
+      // For older versions, request the appropriate permission
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      if (androidInfo.version.sdkInt >= 33) {
+        // Android 13+: No permission needed for Downloads via MediaStore
+        return PermissionStatus.granted;
+      } else if (androidInfo.version.sdkInt >= 30) {
+        // Android 11-12: Request MANAGE_EXTERNAL_STORAGE
+        return await Permission.manageExternalStorage.request();
+      } else {
+        // Android 10 and below: Request WRITE_EXTERNAL_STORAGE
+        return await Permission.storage.request();
+      }
+    }
+    return PermissionStatus.granted;
+  }
+
   /// Export assignment to CSV format
   static Future<File> exportAssignmentCSV(AssignmentExtended assignment) async {
-    // Get questions for this assignment
-    final mcqs = assignment.mcqs ?? [];
-    final msqs = assignment.msqs ?? [];
-    final nats = assignment.nats ?? [];
-    final subjectives = assignment.subjectives ?? [];
+    try {
+      print('Starting CSV export for assignment: ${assignment.title}');
+      
+      // Get questions for this assignment
+      final mcqs = assignment.mcqs ?? [];
+      final msqs = assignment.msqs ?? [];
+      final nats = assignment.nats ?? [];
+      final subjectives = assignment.subjectives ?? [];
 
-    final StringBuffer csvContent = StringBuffer();
+      print('Questions found - MCQs: ${mcqs.length}, MSQs: ${msqs.length}, NATs: ${nats.length}, Subjectives: ${subjectives.length}');
+
+      final StringBuffer csvContent = StringBuffer();
 
     // CSV Headers
     csvContent.writeln('Assignment Title,${assignment.title}');
@@ -490,6 +579,8 @@ class AssignmentExportService {
     final fileName =
         '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
 
+    print('Saving CSV to file: $fileName');
+
     if (kIsWeb) {
       // For web platform
       final blob = html.Blob([csvContent.toString()], 'text/csv');
@@ -503,13 +594,22 @@ class AssignmentExportService {
       html.document.body?.children.remove(anchor);
       html.Url.revokeObjectUrl(url);
 
+      print('CSV export completed successfully (web)');
       return File(fileName);
     } else {
       // For mobile/desktop platforms
-      final directory = await getApplicationDocumentsDirectory();
+      Directory directory = await _getDownloadDirectory();
+      
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(csvContent.toString());
+      print('CSV export completed successfully (mobile)');
+      print('File saved to: ${file.path}');
       return file;
     }
+  } catch (e, stackTrace) {
+    print('Error during CSV export: $e');
+    print('Stack trace: $stackTrace');
+    rethrow;
+  }
   }
 }
