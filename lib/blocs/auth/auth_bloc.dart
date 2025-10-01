@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,12 +12,11 @@ import '../../models/students.dart';
 import '../../models/teacher.dart';
 import '../../repositories/student_repository.dart';
 import '../../repositories/teacher_repository.dart';
+import '../../services/email_auth_services.dart';
 import '../../services/google_auth_services.dart';
 import '../../services/phone_auth_services.dart';
-import '../../services/email_auth_services.dart';
 
 part 'auth_event.dart';
-
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -46,10 +46,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         Map<String, dynamic>? response;
         if (event.account == null) {
-          Logger().d('No GoogleSignInAccount provided, initiating sign-in flow.');
+          Logger().d(
+            'No GoogleSignInAccount provided, initiating sign-in flow.',
+          );
           response = await googleAuthServices.signIn();
         } else {
-          Logger().d('Using provided GoogleSignInAccount for sign-in. ${event.account}');
+          Logger().d(
+            'Using provided GoogleSignInAccount for sign-in. ${event.account}',
+          );
           response = {
             'id': event.account!.id,
             'email': event.account!.email,
@@ -81,21 +85,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       });
 
-      final user = await userCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => null);
+      final user = await userCompleter.future.timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => null,
+      );
 
       if (user != null) {
-        final checkUserResponse = await userRepository.getAllUsers({"email": user.email!, "limit": "1", "offset": "0"});
+        final checkUserResponse = await userRepository.getAllUsers({
+          "email": user.email!,
+          "limit": "1",
+          "offset": "0",
+        });
         if (checkUserResponse.data == null) {
           emit(AuthNotSignedIn());
           return;
         }
-        final userData = checkUserResponse.data[0];
-        final lumenUser = LumenUser.fromJson(userData);
         await _handleUserAuthentication({
           'email': user.email,
           'displayName': user.displayName,
           'photoUrl': user.photoURL,
         }, emit);
+        event.onSuccess?.call();
       } else {
         emit(AuthNotSignedIn());
       }
@@ -114,14 +124,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         if (response.data == null) {
           try {
-            final createTeacherResponse = await teacherRepository.createTeacher({
-              "name": event.user.name,
-              "email": event.user.email,
-            });
+            final createTeacherResponse = await teacherRepository.createTeacher(
+              {"name": event.user.name, "email": event.user.email},
+            );
             if (createTeacherResponse.statusCode! >= 200) {
               teacher = Teacher.fromJson(createTeacherResponse.data);
             } else {
-              _logger.e('Failed to create teacher: ${createTeacherResponse.data}');
+              _logger.e(
+                'Failed to create teacher: ${createTeacherResponse.data}',
+              );
               emit(AuthNotSignedIn());
               return;
             }
@@ -136,7 +147,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         // update the user role to teacher
         try {
-          final updateUserResponse = await userRepository.updateUser(event.user.copyWith(role: 'teacher'));
+          final updateUserResponse = await userRepository.updateUser(
+            event.user.copyWith(role: 'teacher'),
+          );
           if (updateUserResponse.statusCode! >= 200) {
             emit(
               AuthSignedInAsTeacher(
@@ -176,14 +189,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         if (response.data == null) {
           try {
-            final createStudentResponse = await studentRepository.createStudent({
-              "name": event.user.name,
-              "email": event.user.email,
-            });
+            final createStudentResponse = await studentRepository.createStudent(
+              {"name": event.user.name, "email": event.user.email},
+            );
             if (createStudentResponse.statusCode! >= 200) {
               student = Student.fromJson(createStudentResponse.data);
             } else {
-              _logger.e('Failed to create student: ${createStudentResponse.data}');
+              _logger.e(
+                'Failed to create student: ${createStudentResponse.data}',
+              );
               emit(AuthNotSignedIn());
               return;
             }
@@ -199,7 +213,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // update the user role to student
 
         try {
-          final updateUserResponse = await userRepository.updateUser(event.user.copyWith(role: 'student'));
+          final updateUserResponse = await userRepository.updateUser(
+            event.user.copyWith(role: 'student'),
+          );
           if (updateUserResponse.statusCode! >= 200) {
             emit(
               AuthSignedInAsStudent(
@@ -228,7 +244,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AttemptEmailSignIn>((event, emit) async {
       emit(Loading());
       try {
-        Map<String, dynamic>? response = await emailAuthService.signIn(email: event.email, password: event.password);
+        Map<String, dynamic>? response = await emailAuthService.signIn(
+          email: event.email,
+          password: event.password,
+        );
 
         if (response == null) {
           emit(AuthNotSignedIn());
@@ -297,7 +316,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   /// Helper method to handle user authentication logic for both Google and Email auth
-  Future<void> _handleUserAuthentication(Map<String, dynamic> response, Emitter<AuthState> emit) async {
+  Future<void> _handleUserAuthentication(
+    Map<String, dynamic> response,
+    Emitter<AuthState> emit,
+  ) async {
     final checkUserResponse = await userRepository.getAllUsers({
       "email": response['email'],
       "limit": "1",
@@ -313,7 +335,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           "email": response['email'],
         });
         if (createUserResponse.statusCode! >= 200) {
-          lumenUser = LumenUser.fromJson({...createUserResponse.data, 'photoUrl': response['photoUrl']});
+          lumenUser = LumenUser.fromJson({
+            ...createUserResponse.data,
+            'photoUrl': response['photoUrl'],
+          });
         } else {
           _logger.e('Failed to create user: ${createUserResponse.data}');
           emit(AuthNotSignedIn());
@@ -325,7 +350,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
     } else {
-      lumenUser = LumenUser.fromJson({...checkUserResponse.data[0], 'photoUrl': response['photoUrl']});
+      lumenUser = LumenUser.fromJson({
+        ...checkUserResponse.data[0],
+        'photoUrl': response['photoUrl'],
+      });
     }
 
     if (lumenUser.role == null) {
@@ -349,7 +377,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (createTeacherResponse.statusCode! >= 200) {
             teacher = Teacher.fromJson(createTeacherResponse.data);
           } else {
-            _logger.e('Failed to create teacher: ${createTeacherResponse.data}');
+            _logger.e(
+              'Failed to create teacher: ${createTeacherResponse.data}',
+            );
             emit(AuthNotSignedIn());
             return;
           }
@@ -382,7 +412,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (createStudentResponse.statusCode! >= 200) {
             student = Student.fromJson(createStudentResponse.data);
           } else {
-            _logger.e('Failed to create student: ${createStudentResponse.data}');
+            _logger.e(
+              'Failed to create student: ${createStudentResponse.data}',
+            );
             emit(AuthNotSignedIn());
             return;
           }
