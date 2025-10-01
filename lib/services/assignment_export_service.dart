@@ -1,16 +1,13 @@
 import 'dart:io';
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:lumen_slate/services/notification_service.dart';
+import 'package:lumen_slate/services/permission_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:universal_html/html.dart' as html;
-import 'package:url_launcher/url_launcher.dart';
 
 import '../models/questions/mcq.dart';
 import '../models/questions/msq.dart';
@@ -19,128 +16,6 @@ import '../models/questions/subjective.dart';
 
 class AssignmentExportService {
   static const String _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin = 
-      FlutterLocalNotificationsPlugin();
-  static bool _notificationsInitialized = false;
-
-  /// Initialize notifications
-  static Future<void> _initializeNotifications() async {
-    if (_notificationsInitialized || !Platform.isAndroid) return;
-
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await _notificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) async {
-        // Handle notification tap - open the file
-        if (response.payload != null && response.payload!.isNotEmpty) {
-          await _openFile(response.payload!);
-        }
-      },
-    );
-
-    // Request notification permission for Android 13+
-    if (Platform.isAndroid) {
-      await _notificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.requestNotificationsPermission();
-    }
-
-    _notificationsInitialized = true;
-  }
-
-  /// Open file using the system's default app
-  static Future<void> _openFile(String filePath) async {
-    try {
-      final file = File(filePath);
-      if (await file.exists()) {
-        // Use open_filex for better cross-platform file opening
-        final result = await OpenFilex.open(filePath);
-        
-        if (result.type != ResultType.done) {
-          // Fallback methods if open_filex fails
-          if (Platform.isAndroid) {
-            // Try Android intent
-            try {
-              final fileExtension = filePath.split('.').last.toLowerCase();
-              final mimeType = fileExtension == 'pdf' ? 'application/pdf' : 'text/csv';
-              
-              await Process.run('am', [
-                'start',
-                '-a',
-                'android.intent.action.VIEW',
-                '-d',
-                'file://$filePath',
-                '-t',
-                mimeType,
-              ]);
-            } catch (e) {
-              // Final fallback - try url_launcher
-              final uri = Uri.file(filePath);
-              if (await canLaunchUrl(uri)) {
-                await launchUrl(
-                  uri,
-                  mode: LaunchMode.externalApplication,
-                );
-              }
-            }
-          } else {
-            // For other platforms, use url_launcher
-            final uri = Uri.file(filePath);
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(
-                uri,
-                mode: LaunchMode.externalApplication,
-              );
-            }
-          }
-        }
-      } else {
-        if (kDebugMode) {
-          print('File does not exist: $filePath');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Failed to open file: $e');
-      }
-    }
-  }
-
-  /// Show download notification
-  static Future<void> _showDownloadNotification(String fileName, String filePath) async {
-    if (!Platform.isAndroid) return;
-
-    await _initializeNotifications();
-
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'download_channel',
-      'File Downloads',
-      channelDescription: 'Notifications for downloaded files',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-      icon: '@mipmap/ic_launcher',
-      autoCancel: true,
-    );
-
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await _notificationsPlugin.show(
-      DateTime.now().millisecondsSinceEpoch.remainder(100000),
-      'Download Complete',
-      'File saved: $fileName\nTap to open',
-      platformChannelSpecifics,
-      payload: filePath, // Pass file path as payload
-    );
-  }
 
   /// Export assignment questions to PDF
   static Future<File> exportAssignmentPDF(AssignmentExtended assignment) async {
@@ -545,8 +420,8 @@ class AssignmentExportService {
     } else {
       // For mobile/desktop platforms
       if (Platform.isAndroid) {
-        // Request storage permission
-        if (await _requestStoragePermission()) {
+        // Request storage permission using PermissionService
+        if (await PermissionService.requestStoragePermission()) {
           // Try to save to the public Downloads directory
           Directory? directory;
 
@@ -585,7 +460,10 @@ class AssignmentExportService {
           await file.writeAsBytes(bytes);
 
           // Show download notification
-          await _showDownloadNotification(fileName, file.path);
+          await NotificationService.showDownloadNotification(
+            fileName: fileName,
+            filePath: file.path,
+          );
 
           // Try to make the file visible to media scanner
           try {
@@ -617,28 +495,14 @@ class AssignmentExportService {
         await file.writeAsBytes(bytes);
         
         // Show download notification
-        await _showDownloadNotification(fileName, file.path);
+        await NotificationService.showDownloadNotification(
+          fileName: fileName,
+          filePath: file.path,
+        );
         
         return file;
       }
     }
-  }
-
-  /// Request storage permission for Android
-  static Future<bool> _requestStoragePermission() async {
-    if (!Platform.isAndroid) return true;
-
-    final deviceInfo = DeviceInfoPlugin();
-    final androidInfo = await deviceInfo.androidInfo;
-
-    // Android 13+ (API 33+) doesn't need WRITE_EXTERNAL_STORAGE
-    if (androidInfo.version.sdkInt >= 33) {
-      return true;
-    }
-
-    // For Android 12 and below, request storage permission
-    final status = await Permission.storage.request();
-    return status.isGranted;
   }
 
   /// Export assignment to CSV format
@@ -729,8 +593,8 @@ class AssignmentExportService {
     } else {
       // For mobile/desktop platforms
       if (Platform.isAndroid) {
-        // Request storage permission
-        if (await _requestStoragePermission()) {
+        // Request storage permission using PermissionService
+        if (await PermissionService.requestStoragePermission()) {
           // Try to save to the public Downloads directory
           Directory? directory;
 
@@ -769,7 +633,10 @@ class AssignmentExportService {
           await file.writeAsString(content);
 
           // Show download notification
-          await _showDownloadNotification(fileName, file.path);
+          await NotificationService.showDownloadNotification(
+            fileName: fileName,
+            filePath: file.path,
+          );
 
           // Try to make the file visible to media scanner
           try {
@@ -801,7 +668,10 @@ class AssignmentExportService {
         await file.writeAsString(content);
         
         // Show download notification
-        await _showDownloadNotification(fileName, file.path);
+        await NotificationService.showDownloadNotification(
+          fileName: fileName,
+          filePath: file.path,
+        );
         
         return file;
       }
