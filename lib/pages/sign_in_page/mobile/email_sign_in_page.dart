@@ -77,6 +77,25 @@ class _EmailSignInFormMobileState extends State<EmailSignInFormMobile> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        if (state is EmailAccountCreationSuccess) {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Account Created'),
+              content: Text('Account created successfully for ${state.email}. Please sign in.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    _toggleSignUpMode();
+                    context.pop();
+                  },
+                  child: const Text('login'),
+                ),
+              ],
+            ),
+          );
+        }
 
         if (state is AuthSignedInAsTeacher) {
           context.go('/teacher-dashboard');
