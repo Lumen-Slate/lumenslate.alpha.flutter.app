@@ -1,26 +1,59 @@
 {
   "project_info": {
-    "project_number": "352355856094",
-    "project_id": "lumen-slate",
-    "storage_bucket": "lumen-slate.firebasestorage.app"
+    "project_number": "287658179545",
+    "project_id": "lumenslate-30f66",
+    "storage_bucket": "lumenslate-30f66.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:352355856094:android:010e419f1c95d942b99c4f",
+        "mobilesdk_app_id": "1:287658179545:android:b06e76e9ffb0ac0d87f7c8",
         "android_client_info": {
           "package_name": "com.harentortoise.lumenslate"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "287658179545-chksfenutl0v9qmmf77suik3svl9nbgg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.harentortoise.lumenslate",
+            "certificate_hash": "4814d7fd06fc51248c42a3803fd95dec0613cc0f"
+          }
+        },
+        {
+          "client_id": "287658179545-nifnlpai9895kcbm8uqnggebe6uigmre.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.harentortoise.lumenslate",
+            "certificate_hash": "bbd35e3739acc8c465a91be64b358f1f35a338f4"
+          }
+        },
+        {
+          "client_id": "287658179545-n2d1dj5t0pgokuk37kob063uk0j76ehm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAMN_fS01BomWELCGNactGF9k5vgr087po"
+          "current_key": "AIzaSyB1gRS9XF6MmBfrXWyEfOkZhxDSJt4Zdeo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287658179545-n2d1dj5t0pgokuk37kob063uk0j76ehm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "287658179545-csmcsuto4jm0e35763rb6fua5mcvqa1j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.harentortoise.lumenslate"
+              }
+            }
+          ]
         }
       }
     }

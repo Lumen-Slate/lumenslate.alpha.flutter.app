@@ -8,6 +8,7 @@ import 'package:lumen_slate/repositories/ai/question_segmentation_repository.dar
 import 'package:lumen_slate/repositories/ai/variation_generator.dart';
 import 'package:lumen_slate/repositories/student_classroom_repository.dart';
 import 'package:lumen_slate/router/router.dart';
+import 'package:lumen_slate/services/firebase_monitoring_service.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'blocs/assignment/assignment_bloc.dart';
@@ -46,13 +47,32 @@ import 'services/phone_auth_services.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    // Initialize Firebase
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    
+    // Initialize Firebase monitoring services (Crashlytics & Performance)
+    await FirebaseMonitoringService.initialize();
 
-  // For clean URLs on web
-  usePathUrlStrategy();
+    // For clean URLs on web
+    usePathUrlStrategy();
 
-  runApp(const AppInitializer());
+    // Log successful app initialization
+    await FirebaseMonitoringService.logAppEvent('app_initialized');
+
+    runApp(const AppInitializer());
+  } catch (error, stackTrace) {
+    // Record any initialization errors to Crashlytics
+    await FirebaseMonitoringService.recordError(
+      error,
+      stackTrace,
+      reason: 'App initialization failed',
+      fatal: true,
+    );
+    
+    // Still try to run the app
+    runApp(const AppInitializer());
+  }
 }
 
 class AppInitializer extends StatefulWidget {

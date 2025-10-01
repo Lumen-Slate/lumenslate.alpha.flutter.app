@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
+import 'package:lumen_slate/services/firebase_monitoring_service.dart';
+import 'package:lumen_slate/services/notification_service.dart';
+import 'package:lumen_slate/services/permission_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -17,20 +20,24 @@ class AssignmentExportService {
 
   /// Export assignment questions to PDF
   static Future<File> exportAssignmentPDF(AssignmentExtended assignment) async {
-    // Get questions for this assignment
-    final mcqs = assignment.mcqs ?? [];
-    final msqs = assignment.msqs ?? [];
-    final nats = assignment.nats ?? [];
-    final subjectives = assignment.subjectives ?? [];
+    return await FirebaseMonitoringService.measurePerformance(
+      'assignment_pdf_export',
+      () async {
+        try {
+          // Get questions for this assignment
+          final mcqs = assignment.mcqs ?? [];
+          final msqs = assignment.msqs ?? [];
+          final nats = assignment.nats ?? [];
+          final subjectives = assignment.subjectives ?? [];
 
-    final pdf = pw.Document();
+          // Calculate total points
+          final totalPoints =
+              mcqs.fold<int>(0, (sum, q) => sum + q.points) +
+              msqs.fold<int>(0, (sum, q) => sum + q.points) +
+              nats.fold<int>(0, (sum, q) => sum + q.points) +
+              subjectives.fold<int>(0, (sum, q) => sum + q.points);
 
-    // Calculate total points
-    final totalPoints =
-        mcqs.fold<int>(0, (sum, q) => sum + q.points) +
-        msqs.fold<int>(0, (sum, q) => sum + q.points) +
-        nats.fold<int>(0, (sum, q) => sum + q.points) +
-        subjectives.fold<int>(0, (sum, q) => sum + q.points);
+          final pdf = pw.Document();
 
     pdf.addPage(
       pw.MultiPage(
@@ -156,7 +163,44 @@ class AssignmentExportService {
     // Save PDF to file
     final fileName =
         '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf';
-    return await _savePdfToFile(pdf, fileName);
+    final file = await _savePdfToFile(pdf, fileName);
+    
+    // Log successful PDF export
+    await FirebaseMonitoringService.logExportEvent(
+      'PDF',
+      fileName: fileName,
+      success: true,
+    );
+    
+    return file;
+  } catch (error, stackTrace) {
+    // Log failed PDF export
+    await FirebaseMonitoringService.recordError(
+      error,
+      stackTrace,
+      reason: 'PDF export failed for assignment: ${assignment.title}',
+    );
+    
+    await FirebaseMonitoringService.logExportEvent(
+      'PDF',
+      fileName: assignment.title,
+      success: false,
+    );
+    
+    rethrow;
+  }
+},
+attributes: {
+  'assignment_id': assignment.id,
+  'assignment_title': assignment.title,
+  'total_questions': (
+    (assignment.mcqs?.length ?? 0) +
+    (assignment.msqs?.length ?? 0) +
+    (assignment.nats?.length ?? 0) +
+    (assignment.subjectives?.length ?? 0)
+  ).toString(),
+},
+);
   }
 
   /// Build assignment header
@@ -417,20 +461,103 @@ class AssignmentExportService {
       return File(fileName);
     } else {
       // For mobile/desktop platforms
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsBytes(bytes);
-      return file;
+      if (Platform.isAndroid) {
+        // Request storage permission using PermissionService
+        if (await PermissionService.requestStoragePermission()) {
+          // Try to save to the public Downloads directory
+          Directory? directory;
+
+          try {
+            // For Android, try to get the Downloads directory
+            final externalDir = await getExternalStorageDirectory();
+            if (externalDir != null) {
+              // This gets us to /storage/emulated/0/Android/data/com.example.app/files
+              // We want /storage/emulated/0/Download
+              final publicDownloads = Directory('/storage/emulated/0/Download');
+              if (await publicDownloads.exists()) {
+                directory = publicDownloads;
+              } else {
+                // Fallback to /storage/emulated/0/Downloads (some devices use this)
+                final alternativeDownloads = Directory(
+                  '/storage/emulated/0/Downloads',
+                );
+                if (await alternativeDownloads.exists()) {
+                  directory = alternativeDownloads;
+                } else {
+                  // Final fallback to external storage directory
+                  directory = externalDir;
+                }
+              }
+            }
+          } catch (e) {
+            // If all else fails, use getExternalStorageDirectory
+            directory = await getExternalStorageDirectory();
+          }
+
+          if (directory == null) {
+            throw Exception('Unable to access storage directory');
+          }
+
+          final file = File('${directory.path}/$fileName');
+          await file.writeAsBytes(bytes);
+
+          // Show download notification
+          await NotificationService.showDownloadNotification(
+            fileName: fileName,
+            filePath: file.path,
+          );
+
+          // Try to make the file visible to media scanner
+          try {
+            if (Platform.isAndroid) {
+              // This will make the file visible in file managers
+              await Process.run('am', [
+                'broadcast',
+                '-a',
+                'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+                '-d',
+                'file://${file.path}',
+              ]);
+            }
+          } catch (e) {
+            // Media scanner broadcast failed, but file is still saved
+            if (kDebugMode) {
+              print('Media scanner notification failed: $e');
+            }
+          }
+
+          return file;
+        } else {
+          throw Exception('Storage permission denied');
+        }
+      } else {
+        // For iOS and other platforms
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/$fileName');
+        await file.writeAsBytes(bytes);
+        
+        // Show download notification
+        await NotificationService.showDownloadNotification(
+          fileName: fileName,
+          filePath: file.path,
+        );
+        
+        return file;
+      }
     }
   }
 
   /// Export assignment to CSV format
   static Future<File> exportAssignmentCSV(AssignmentExtended assignment) async {
-    // Get questions for this assignment
-    final mcqs = assignment.mcqs ?? [];
-    final msqs = assignment.msqs ?? [];
-    final nats = assignment.nats ?? [];
-    final subjectives = assignment.subjectives ?? [];
+    return await FirebaseMonitoringService.measurePerformance(
+      'assignment_csv_export',
+      () async {
+        try {
+          // Get questions for this assignment
+          final mcqs = assignment.mcqs ?? [];
+          final msqs = assignment.msqs ?? [];
+          final nats = assignment.nats ?? [];
+          final subjectives = assignment.subjectives ?? [];
 
     final StringBuffer csvContent = StringBuffer();
 
@@ -490,9 +617,51 @@ class AssignmentExportService {
     final fileName =
         '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
 
+    final file = await _saveCsvToFile(csvContent.toString(), fileName);
+    
+    // Log successful CSV export
+    await FirebaseMonitoringService.logExportEvent(
+      'CSV',
+      fileName: fileName,
+      success: true,
+    );
+    
+    return file;
+  } catch (error, stackTrace) {
+    // Log failed CSV export
+    await FirebaseMonitoringService.recordError(
+      error,
+      stackTrace,
+      reason: 'CSV export failed for assignment: ${assignment.title}',
+    );
+    
+    await FirebaseMonitoringService.logExportEvent(
+      'CSV',
+      fileName: assignment.title,
+      success: false,
+    );
+    
+    rethrow;
+  }
+},
+attributes: {
+  'assignment_id': assignment.id,
+  'assignment_title': assignment.title,
+  'total_questions': (
+    (assignment.mcqs?.length ?? 0) +
+    (assignment.msqs?.length ?? 0) +
+    (assignment.nats?.length ?? 0) +
+    (assignment.subjectives?.length ?? 0)
+  ).toString(),
+},
+);
+  }
+
+  /// Save CSV to file
+  static Future<File> _saveCsvToFile(String content, String fileName) async {
     if (kIsWeb) {
       // For web platform
-      final blob = html.Blob([csvContent.toString()], 'text/csv');
+      final blob = html.Blob([content], 'text/csv');
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.document.createElement('a') as html.AnchorElement
         ..href = url
@@ -506,10 +675,89 @@ class AssignmentExportService {
       return File(fileName);
     } else {
       // For mobile/desktop platforms
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsString(csvContent.toString());
-      return file;
+      if (Platform.isAndroid) {
+        // Request storage permission using PermissionService
+        if (await PermissionService.requestStoragePermission()) {
+          // Try to save to the public Downloads directory
+          Directory? directory;
+
+          try {
+            // For Android, try to get the Downloads directory
+            final externalDir = await getExternalStorageDirectory();
+            if (externalDir != null) {
+              // This gets us to /storage/emulated/0/Android/data/com.example.app/files
+              // We want /storage/emulated/0/Download
+              final publicDownloads = Directory('/storage/emulated/0/Download');
+              if (await publicDownloads.exists()) {
+                directory = publicDownloads;
+              } else {
+                // Fallback to /storage/emulated/0/Downloads (some devices use this)
+                final alternativeDownloads = Directory(
+                  '/storage/emulated/0/Downloads',
+                );
+                if (await alternativeDownloads.exists()) {
+                  directory = alternativeDownloads;
+                } else {
+                  // Final fallback to external storage directory
+                  directory = externalDir;
+                }
+              }
+            }
+          } catch (e) {
+            // If all else fails, use getExternalStorageDirectory
+            directory = await getExternalStorageDirectory();
+          }
+
+          if (directory == null) {
+            throw Exception('Unable to access storage directory');
+          }
+
+          final file = File('${directory.path}/$fileName');
+          await file.writeAsString(content);
+
+          // Show download notification
+          await NotificationService.showDownloadNotification(
+            fileName: fileName,
+            filePath: file.path,
+          );
+
+          // Try to make the file visible to media scanner
+          try {
+            if (Platform.isAndroid) {
+              // This will make the file visible in file managers
+              await Process.run('am', [
+                'broadcast',
+                '-a',
+                'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+                '-d',
+                'file://${file.path}',
+              ]);
+            }
+          } catch (e) {
+            // Media scanner broadcast failed, but file is still saved
+            if (kDebugMode) {
+              print('Media scanner notification failed: $e');
+            }
+          }
+
+          return file;
+        } else {
+          throw Exception('Storage permission denied');
+        }
+      } else {
+        // For iOS and other platforms
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/$fileName');
+        await file.writeAsString(content);
+        
+        // Show download notification
+        await NotificationService.showDownloadNotification(
+          fileName: fileName,
+          filePath: file.path,
+        );
+        
+        return file;
+      }
     }
   }
 }
