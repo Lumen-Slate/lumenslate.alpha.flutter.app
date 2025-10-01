@@ -1,11 +1,16 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/questions/mcq.dart';
 import '../models/questions/msq.dart';
@@ -14,6 +19,128 @@ import '../models/questions/subjective.dart';
 
 class AssignmentExportService {
   static const String _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin = 
+      FlutterLocalNotificationsPlugin();
+  static bool _notificationsInitialized = false;
+
+  /// Initialize notifications
+  static Future<void> _initializeNotifications() async {
+    if (_notificationsInitialized || !Platform.isAndroid) return;
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await _notificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        // Handle notification tap - open the file
+        if (response.payload != null && response.payload!.isNotEmpty) {
+          await _openFile(response.payload!);
+        }
+      },
+    );
+
+    // Request notification permission for Android 13+
+    if (Platform.isAndroid) {
+      await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
+    }
+
+    _notificationsInitialized = true;
+  }
+
+  /// Open file using the system's default app
+  static Future<void> _openFile(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) {
+        // Use open_filex for better cross-platform file opening
+        final result = await OpenFilex.open(filePath);
+        
+        if (result.type != ResultType.done) {
+          // Fallback methods if open_filex fails
+          if (Platform.isAndroid) {
+            // Try Android intent
+            try {
+              final fileExtension = filePath.split('.').last.toLowerCase();
+              final mimeType = fileExtension == 'pdf' ? 'application/pdf' : 'text/csv';
+              
+              await Process.run('am', [
+                'start',
+                '-a',
+                'android.intent.action.VIEW',
+                '-d',
+                'file://$filePath',
+                '-t',
+                mimeType,
+              ]);
+            } catch (e) {
+              // Final fallback - try url_launcher
+              final uri = Uri.file(filePath);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(
+                  uri,
+                  mode: LaunchMode.externalApplication,
+                );
+              }
+            }
+          } else {
+            // For other platforms, use url_launcher
+            final uri = Uri.file(filePath);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              );
+            }
+          }
+        }
+      } else {
+        if (kDebugMode) {
+          print('File does not exist: $filePath');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to open file: $e');
+      }
+    }
+  }
+
+  /// Show download notification
+  static Future<void> _showDownloadNotification(String fileName, String filePath) async {
+    if (!Platform.isAndroid) return;
+
+    await _initializeNotifications();
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'download_channel',
+      'File Downloads',
+      channelDescription: 'Notifications for downloaded files',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+      icon: '@mipmap/ic_launcher',
+      autoCancel: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await _notificationsPlugin.show(
+      DateTime.now().millisecondsSinceEpoch.remainder(100000),
+      'Download Complete',
+      'File saved: $fileName\nTap to open',
+      platformChannelSpecifics,
+      payload: filePath, // Pass file path as payload
+    );
+  }
 
   /// Export assignment questions to PDF
   static Future<File> exportAssignmentPDF(AssignmentExtended assignment) async {
@@ -417,11 +544,101 @@ class AssignmentExportService {
       return File(fileName);
     } else {
       // For mobile/desktop platforms
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsBytes(bytes);
-      return file;
+      if (Platform.isAndroid) {
+        // Request storage permission
+        if (await _requestStoragePermission()) {
+          // Try to save to the public Downloads directory
+          Directory? directory;
+
+          try {
+            // For Android, try to get the Downloads directory
+            final externalDir = await getExternalStorageDirectory();
+            if (externalDir != null) {
+              // This gets us to /storage/emulated/0/Android/data/com.example.app/files
+              // We want /storage/emulated/0/Download
+              final publicDownloads = Directory('/storage/emulated/0/Download');
+              if (await publicDownloads.exists()) {
+                directory = publicDownloads;
+              } else {
+                // Fallback to /storage/emulated/0/Downloads (some devices use this)
+                final alternativeDownloads = Directory(
+                  '/storage/emulated/0/Downloads',
+                );
+                if (await alternativeDownloads.exists()) {
+                  directory = alternativeDownloads;
+                } else {
+                  // Final fallback to external storage directory
+                  directory = externalDir;
+                }
+              }
+            }
+          } catch (e) {
+            // If all else fails, use getExternalStorageDirectory
+            directory = await getExternalStorageDirectory();
+          }
+
+          if (directory == null) {
+            throw Exception('Unable to access storage directory');
+          }
+
+          final file = File('${directory.path}/$fileName');
+          await file.writeAsBytes(bytes);
+
+          // Show download notification
+          await _showDownloadNotification(fileName, file.path);
+
+          // Try to make the file visible to media scanner
+          try {
+            if (Platform.isAndroid) {
+              // This will make the file visible in file managers
+              await Process.run('am', [
+                'broadcast',
+                '-a',
+                'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+                '-d',
+                'file://${file.path}',
+              ]);
+            }
+          } catch (e) {
+            // Media scanner broadcast failed, but file is still saved
+            if (kDebugMode) {
+              print('Media scanner notification failed: $e');
+            }
+          }
+
+          return file;
+        } else {
+          throw Exception('Storage permission denied');
+        }
+      } else {
+        // For iOS and other platforms
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/$fileName');
+        await file.writeAsBytes(bytes);
+        
+        // Show download notification
+        await _showDownloadNotification(fileName, file.path);
+        
+        return file;
+      }
     }
+  }
+
+  /// Request storage permission for Android
+  static Future<bool> _requestStoragePermission() async {
+    if (!Platform.isAndroid) return true;
+
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+
+    // Android 13+ (API 33+) doesn't need WRITE_EXTERNAL_STORAGE
+    if (androidInfo.version.sdkInt >= 33) {
+      return true;
+    }
+
+    // For Android 12 and below, request storage permission
+    final status = await Permission.storage.request();
+    return status.isGranted;
   }
 
   /// Export assignment to CSV format
@@ -490,9 +707,14 @@ class AssignmentExportService {
     final fileName =
         '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
 
+    return await _saveCsvToFile(csvContent.toString(), fileName);
+  }
+
+  /// Save CSV to file
+  static Future<File> _saveCsvToFile(String content, String fileName) async {
     if (kIsWeb) {
       // For web platform
-      final blob = html.Blob([csvContent.toString()], 'text/csv');
+      final blob = html.Blob([content], 'text/csv');
       final url = html.Url.createObjectUrlFromBlob(blob);
       final anchor = html.document.createElement('a') as html.AnchorElement
         ..href = url
@@ -506,10 +728,83 @@ class AssignmentExportService {
       return File(fileName);
     } else {
       // For mobile/desktop platforms
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsString(csvContent.toString());
-      return file;
+      if (Platform.isAndroid) {
+        // Request storage permission
+        if (await _requestStoragePermission()) {
+          // Try to save to the public Downloads directory
+          Directory? directory;
+
+          try {
+            // For Android, try to get the Downloads directory
+            final externalDir = await getExternalStorageDirectory();
+            if (externalDir != null) {
+              // This gets us to /storage/emulated/0/Android/data/com.example.app/files
+              // We want /storage/emulated/0/Download
+              final publicDownloads = Directory('/storage/emulated/0/Download');
+              if (await publicDownloads.exists()) {
+                directory = publicDownloads;
+              } else {
+                // Fallback to /storage/emulated/0/Downloads (some devices use this)
+                final alternativeDownloads = Directory(
+                  '/storage/emulated/0/Downloads',
+                );
+                if (await alternativeDownloads.exists()) {
+                  directory = alternativeDownloads;
+                } else {
+                  // Final fallback to external storage directory
+                  directory = externalDir;
+                }
+              }
+            }
+          } catch (e) {
+            // If all else fails, use getExternalStorageDirectory
+            directory = await getExternalStorageDirectory();
+          }
+
+          if (directory == null) {
+            throw Exception('Unable to access storage directory');
+          }
+
+          final file = File('${directory.path}/$fileName');
+          await file.writeAsString(content);
+
+          // Show download notification
+          await _showDownloadNotification(fileName, file.path);
+
+          // Try to make the file visible to media scanner
+          try {
+            if (Platform.isAndroid) {
+              // This will make the file visible in file managers
+              await Process.run('am', [
+                'broadcast',
+                '-a',
+                'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+                '-d',
+                'file://${file.path}',
+              ]);
+            }
+          } catch (e) {
+            // Media scanner broadcast failed, but file is still saved
+            if (kDebugMode) {
+              print('Media scanner notification failed: $e');
+            }
+          }
+
+          return file;
+        } else {
+          throw Exception('Storage permission denied');
+        }
+      } else {
+        // For iOS and other platforms
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/$fileName');
+        await file.writeAsString(content);
+        
+        // Show download notification
+        await _showDownloadNotification(fileName, file.path);
+        
+        return file;
+      }
     }
   }
 }
