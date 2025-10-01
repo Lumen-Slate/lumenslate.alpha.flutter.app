@@ -7,6 +7,13 @@ final class AuthInitial extends AuthState {}
 
 class Loading extends AuthState {}
 
+
+class EmailAccountCreationSuccess extends AuthState {
+  final String email;
+
+  EmailAccountCreationSuccess(this.email);
+}
+
 class AuthNotSignedIn extends AuthState {}
 
 class AuthSignedInAsAnonymous extends AuthState {

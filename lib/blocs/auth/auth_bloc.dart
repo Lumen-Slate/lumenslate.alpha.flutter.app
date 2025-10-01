@@ -253,6 +253,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           });
           if (createUserResponse.statusCode! >= 200) {
             Logger().d('User created successfully');
+            emit(EmailAccountCreationSuccess(event.email));
             emit(AuthNotSignedIn());
             return;
           } else {
