@@ -193,7 +193,7 @@ class LumenSlate extends StatelessWidget {
           theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), useMaterial3: true),
           routerConfig: router,
           builder: (context, child) => BlocListener<AuthBloc, AuthState>(
-            listenWhen: (previous, current) => previous != current,
+            listenWhen: (previous, current) => previous != AuthNotSignedIn,
             listener: (context, state) {
               if (state is AuthNotSignedIn) {
                 router.go('/');
