@@ -89,7 +89,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthNotSignedIn());
           return;
         }
-        event.onSuccess?.call();
+        final userData = checkUserResponse.data[0];
+        final lumenUser = LumenUser.fromJson(userData);
+        await _handleUserAuthentication({
+          'email': user.email,
+          'displayName': user.displayName,
+          'photoUrl': user.photoURL,
+        }, emit);
       } else {
         emit(AuthNotSignedIn());
       }
