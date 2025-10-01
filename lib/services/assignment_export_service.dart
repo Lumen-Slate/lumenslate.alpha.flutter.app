@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
+import 'package:lumen_slate/services/firebase_monitoring_service.dart';
 import 'package:lumen_slate/services/notification_service.dart';
 import 'package:lumen_slate/services/permission_service.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,20 +20,24 @@ class AssignmentExportService {
 
   /// Export assignment questions to PDF
   static Future<File> exportAssignmentPDF(AssignmentExtended assignment) async {
-    // Get questions for this assignment
-    final mcqs = assignment.mcqs ?? [];
-    final msqs = assignment.msqs ?? [];
-    final nats = assignment.nats ?? [];
-    final subjectives = assignment.subjectives ?? [];
+    return await FirebaseMonitoringService.measurePerformance(
+      'assignment_pdf_export',
+      () async {
+        try {
+          // Get questions for this assignment
+          final mcqs = assignment.mcqs ?? [];
+          final msqs = assignment.msqs ?? [];
+          final nats = assignment.nats ?? [];
+          final subjectives = assignment.subjectives ?? [];
 
-    final pdf = pw.Document();
+          // Calculate total points
+          final totalPoints =
+              mcqs.fold<int>(0, (sum, q) => sum + q.points) +
+              msqs.fold<int>(0, (sum, q) => sum + q.points) +
+              nats.fold<int>(0, (sum, q) => sum + q.points) +
+              subjectives.fold<int>(0, (sum, q) => sum + q.points);
 
-    // Calculate total points
-    final totalPoints =
-        mcqs.fold<int>(0, (sum, q) => sum + q.points) +
-        msqs.fold<int>(0, (sum, q) => sum + q.points) +
-        nats.fold<int>(0, (sum, q) => sum + q.points) +
-        subjectives.fold<int>(0, (sum, q) => sum + q.points);
+          final pdf = pw.Document();
 
     pdf.addPage(
       pw.MultiPage(
@@ -158,7 +163,44 @@ class AssignmentExportService {
     // Save PDF to file
     final fileName =
         '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf';
-    return await _savePdfToFile(pdf, fileName);
+    final file = await _savePdfToFile(pdf, fileName);
+    
+    // Log successful PDF export
+    await FirebaseMonitoringService.logExportEvent(
+      'PDF',
+      fileName: fileName,
+      success: true,
+    );
+    
+    return file;
+  } catch (error, stackTrace) {
+    // Log failed PDF export
+    await FirebaseMonitoringService.recordError(
+      error,
+      stackTrace,
+      reason: 'PDF export failed for assignment: ${assignment.title}',
+    );
+    
+    await FirebaseMonitoringService.logExportEvent(
+      'PDF',
+      fileName: assignment.title,
+      success: false,
+    );
+    
+    rethrow;
+  }
+},
+attributes: {
+  'assignment_id': assignment.id,
+  'assignment_title': assignment.title,
+  'total_questions': (
+    (assignment.mcqs?.length ?? 0) +
+    (assignment.msqs?.length ?? 0) +
+    (assignment.nats?.length ?? 0) +
+    (assignment.subjectives?.length ?? 0)
+  ).toString(),
+},
+);
   }
 
   /// Build assignment header
@@ -507,11 +549,15 @@ class AssignmentExportService {
 
   /// Export assignment to CSV format
   static Future<File> exportAssignmentCSV(AssignmentExtended assignment) async {
-    // Get questions for this assignment
-    final mcqs = assignment.mcqs ?? [];
-    final msqs = assignment.msqs ?? [];
-    final nats = assignment.nats ?? [];
-    final subjectives = assignment.subjectives ?? [];
+    return await FirebaseMonitoringService.measurePerformance(
+      'assignment_csv_export',
+      () async {
+        try {
+          // Get questions for this assignment
+          final mcqs = assignment.mcqs ?? [];
+          final msqs = assignment.msqs ?? [];
+          final nats = assignment.nats ?? [];
+          final subjectives = assignment.subjectives ?? [];
 
     final StringBuffer csvContent = StringBuffer();
 
@@ -571,7 +617,44 @@ class AssignmentExportService {
     final fileName =
         '${assignment.title.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
 
-    return await _saveCsvToFile(csvContent.toString(), fileName);
+    final file = await _saveCsvToFile(csvContent.toString(), fileName);
+    
+    // Log successful CSV export
+    await FirebaseMonitoringService.logExportEvent(
+      'CSV',
+      fileName: fileName,
+      success: true,
+    );
+    
+    return file;
+  } catch (error, stackTrace) {
+    // Log failed CSV export
+    await FirebaseMonitoringService.recordError(
+      error,
+      stackTrace,
+      reason: 'CSV export failed for assignment: ${assignment.title}',
+    );
+    
+    await FirebaseMonitoringService.logExportEvent(
+      'CSV',
+      fileName: assignment.title,
+      success: false,
+    );
+    
+    rethrow;
+  }
+},
+attributes: {
+  'assignment_id': assignment.id,
+  'assignment_title': assignment.title,
+  'total_questions': (
+    (assignment.mcqs?.length ?? 0) +
+    (assignment.msqs?.length ?? 0) +
+    (assignment.nats?.length ?? 0) +
+    (assignment.subjectives?.length ?? 0)
+  ).toString(),
+},
+);
   }
 
   /// Save CSV to file

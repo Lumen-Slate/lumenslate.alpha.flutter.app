@@ -5,6 +5,8 @@ plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
     // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -62,6 +64,10 @@ android {
             
             // Debug app name
             resValue("string", "app_name", "LumenSlate Debug")
+            
+            // Disable Firebase monitoring in debug builds
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = false
+            manifestPlaceholders["performanceCollectionEnabled"] = false
         }
         release {
             isMinifyEnabled = true
@@ -77,6 +83,10 @@ android {
             
             // Production app name
             resValue("string", "app_name", "LumenSlate")
+            
+            // Enable Firebase monitoring in release builds
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = true
+            manifestPlaceholders["performanceCollectionEnabled"] = true
         }
     }
 }
@@ -84,6 +94,8 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-perf")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
 }
 
