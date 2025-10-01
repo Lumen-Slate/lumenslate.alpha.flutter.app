@@ -35,14 +35,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.emailAuthService,
     required this.teacherRepository,
   }) : super(AuthInitial()) {
-
     _gs.authenticationEvents.listen((event) {
       if (event is GoogleSignInAuthenticationEventSignIn) {
         add(AttemptGoogleSignIn(account: event.user));
-      }
-
-      if (event is GoogleSignInAuthenticationEventSignOut && state is! AuthNotSignedIn) {
-        add(SignOut());
       }
     });
 
@@ -251,12 +246,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           displayName: event.displayName,
         );
 
-        if (response == null) {
-          emit(AuthNotSignedIn());
+        try {
+          final createUserResponse = await userRepository.createUser({
+            "name": response?['displayName'],
+            "email": response?['email'],
+          });
+          if (createUserResponse.statusCode! >= 200) {
+            Logger().d('User created successfully');
+            emit(AuthNotSignedIn());
+            return;
+          } else {
+            _logger.e('Failed to create user: ${createUserResponse.data}');
+            emit(AuthFailure('Failed to create user'));
+            return;
+          }
+        } catch (e) {
+          _logger.e('Error creating user: $e');
+          emit(AuthFailure('Error creating user'));
           return;
         }
-
-        await _handleUserAuthentication(response, emit);
       } catch (e) {
         Logger().e('Email sign up error: $e');
         emit(AuthFailure(e.toString()));

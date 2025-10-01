@@ -22,6 +22,7 @@ class EmailAuthService {
         // Update display name
         await user.updateDisplayName(displayName);
         await user.reload();
+        await _auth.signOut();
 
         return {
           'id': user.uid,
@@ -116,7 +117,7 @@ class EmailAuthService {
       case 'operation-not-allowed':
         return 'Signing in with Email and Password is not enabled.';
       case 'invalid-credential':
-        return 'The supplied auth credential is malformed or has expired.';
+        return 'The supplied account is malformed or has expired.';
       default:
         return e.message ?? 'An unknown error occurred.';
     }
