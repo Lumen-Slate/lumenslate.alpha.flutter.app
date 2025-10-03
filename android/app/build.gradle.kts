@@ -1,15 +1,11 @@
 import java.util.Properties
-import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
-    // END: FlutterFire Configuration
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -41,18 +37,25 @@ android {
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        
-        // App metadata
+
         resValue("string", "app_name", "LumenSlate")
     }
 
     signingConfigs {
         create("release") {
-            if (keystoreProperties.getProperty("keyAlias") != null) {
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
-                storeFile = keystoreProperties.getProperty("storeFile")?.let { File(it) }
-                storePassword = keystoreProperties.getProperty("storePassword")
+            if (keystorePropertiesFile.exists() && keystoreProperties.getProperty("keyAlias") != null) {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+
+                // Verify keystore file exists
+                val keystoreFile = file(keystoreProperties["storeFile"] as String)
+                if (!keystoreFile.exists()) {
+                    throw GradleException("Keystore file not found: ${keystoreFile.absolutePath}")
+                }
+            } else {
+                throw GradleException("key.properties file missing or incomplete")
             }
         }
     }
@@ -61,11 +64,9 @@ android {
         debug {
             isDebuggable = true
             signingConfig = signingConfigs.getByName("debug")
-            
-            // Debug app name
+
             resValue("string", "app_name", "LumenSlate Debug")
-            
-            // Disable Firebase monitoring in debug builds
+
             manifestPlaceholders["crashlyticsCollectionEnabled"] = false
             manifestPlaceholders["performanceCollectionEnabled"] = false
         }
@@ -76,15 +77,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Only use release signing if keystore properties are available
-            if (keystoreProperties.getProperty("keyAlias") != null) {
-                signingConfig = signingConfigs.getByName("release")
-            }
-            
-            // Production app name
+
+            // Use release signing
+            signingConfig = signingConfigs.getByName("release")
+
             resValue("string", "app_name", "LumenSlate")
-            
-            // Enable Firebase monitoring in release builds
+
             manifestPlaceholders["crashlyticsCollectionEnabled"] = true
             manifestPlaceholders["performanceCollectionEnabled"] = true
         }
@@ -96,6 +94,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-perf")
+    implementation("com.google.android.play:integrity:1.5.0")
+    implementation("com.android.billingclient:billing:6.0.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }
 
