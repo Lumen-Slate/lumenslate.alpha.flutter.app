@@ -19,6 +19,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     
+    <!-- Billing permission for in-app purchases -->
+    <uses-permission android:name="com.android.vending.BILLING" />
+    
     <!-- URL launcher permissions -->
 <!--    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"-->
 <!--        tools:ignore="QueryAllPackagesPermission" />-->
