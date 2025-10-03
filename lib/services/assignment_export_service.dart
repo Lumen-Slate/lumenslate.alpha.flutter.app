@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:lumen_slate/models/extended/assignment_extended.dart';
 import 'package:lumen_slate/services/firebase_monitoring_service.dart';
+import 'package:lumen_slate/services/logging_service.dart';
 import 'package:lumen_slate/services/notification_service.dart';
 import 'package:lumen_slate/services/permission_service.dart';
 import 'package:path_provider/path_provider.dart';

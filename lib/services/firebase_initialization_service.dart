@@ -1,9 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:logger/logger.dart';
 import '../firebase_options.dart';
+import 'logging_service.dart';
 
 class FirebaseInitializationService {
-  static final Logger _logger = Logger();
   static bool _isInitialized = false;
   
   /// Ensures Firebase is properly initialized before any services try to access it
@@ -14,17 +13,17 @@ class FirebaseInitializationService {
     
     try {
       if (Firebase.apps.isEmpty) {
-        _logger.i('Initializing Firebase...');
+        LoggingService.firebase('Initializing Firebase...');
         await Firebase.initializeApp(
           options: DefaultFirebaseOptions.currentPlatform,
         );
-        _logger.i('Firebase initialized successfully');
+        LoggingService.firebase('Firebase initialized successfully');
       } else {
-        _logger.i('Firebase already initialized');
+        LoggingService.firebase('Firebase already initialized');
       }
       _isInitialized = true;
     } catch (e) {
-      _logger.e('Failed to initialize Firebase: $e');
+      LoggingService.firebase('Failed to initialize Firebase: $e', exception: e);
       rethrow;
     }
   }

@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:logger/logger.dart';
+import 'package:lumen_slate/services/logging_service.dart';
 
 class GoogleAuthService {
   FirebaseAuth get _auth => FirebaseAuth.instance;
   final GoogleSignIn _gs = GoogleSignIn.instance;
-  final Logger _logger = Logger();
 
   StreamSubscription? _eventsSub;
   bool _isInitialized = false;
@@ -22,7 +21,7 @@ class GoogleAuthService {
       _gs.attemptLightweightAuthentication();
       _isInitialized = true;
     } catch (e) {
-      _logger.e('GoogleAuthService initialization failed: $e');
+      LoggingService.error('GoogleAuthService initialization failed: $e');
     }
   }
 
@@ -54,10 +53,10 @@ class GoogleAuthService {
         return null;
       }
     } on GoogleSignInException catch (e) {
-      _logger.e('Google Sign-In error: ${e.code.name}, ${e.description}');
+      LoggingService.error('Google Sign-In error: ${e.code.name}, ${e.description}');
       return null;
     } catch (e) {
-      _logger.e('Unexpected sign-in error: $e');
+      LoggingService.error('Unexpected sign-in error: $e');
       return null;
     }
   }

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:logger/logger.dart';
+
+import 'logging_service.dart';
 
 class EmailAuthService {
   FirebaseAuth get _auth => FirebaseAuth.instance;
-  final Logger _logger = Logger();
 
   /// Sign up with email and password
   Future<Map<String, dynamic>?> signUp({
@@ -33,10 +33,10 @@ class EmailAuthService {
       }
       return null;
     } on FirebaseAuthException catch (e) {
-      _logger.e('Email sign up error: ${e.code} - ${e.message}');
+      LoggingService.auth('Email sign up error: ${e.code} - ${e.message}', exception: e);
       throw _handleAuthException(e);
     } catch (e) {
-      _logger.e('Unexpected sign up error: $e');
+      LoggingService.auth('Unexpected sign up error: $e', exception: e);
       throw 'An unexpected error occurred during sign up';
     }
   }
@@ -63,10 +63,10 @@ class EmailAuthService {
       }
       return null;
     } on FirebaseAuthException catch (e) {
-      _logger.e('Email sign in error: ${e.code} - ${e.message}');
+      LoggingService.auth('Email sign in error: ${e.code} - ${e.message}', exception: e);
       throw _handleAuthException(e);
     } catch (e) {
-      _logger.e('Unexpected sign in error: $e');
+      LoggingService.auth('Unexpected sign in error: $e', exception: e);
       throw 'An unexpected error occurred during sign in';
     }
   }
@@ -76,10 +76,10 @@ class EmailAuthService {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
-      _logger.e('Password reset error: ${e.code} - ${e.message}');
+      LoggingService.auth('Password reset error: ${e.code} - ${e.message}', exception: e);
       throw _handleAuthException(e);
     } catch (e) {
-      _logger.e('Unexpected password reset error: $e');
+      LoggingService.auth('Unexpected password reset error: $e', exception: e);
       throw 'An unexpected error occurred while sending password reset email';
     }
   }
@@ -89,7 +89,7 @@ class EmailAuthService {
     try {
       await _auth.signOut();
     } catch (e) {
-      _logger.e('Sign out error: $e');
+      LoggingService.auth('Sign out error: $e', exception: e);
       throw 'An error occurred while signing out';
     }
   }

@@ -304,6 +304,38 @@ class FirebaseMonitoringService {
     }
   }
 
+  /// Record a custom event for analytics
+  static Future<void> recordEvent(String event, Map<String, dynamic> parameters) async {
+    try {
+      final message = '$event: ${parameters.entries.map((e) => '${e.key}=${e.value}').join(', ')}';
+      await log(message);
+
+      if (kDebugMode) {
+        print('$_tag: Event recorded: $message');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('$_tag: Failed to record event: $e');
+      }
+    }
+  }
+
+  /// Record a breadcrumb for debugging
+  static Future<void> recordBreadcrumb(String message, {String? category}) async {
+    try {
+      final breadcrumb = category != null ? '[$category] $message' : message;
+      await log('BREADCRUMB: $breadcrumb');
+
+      if (kDebugMode) {
+        print('$_tag: Breadcrumb recorded: $breadcrumb');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('$_tag: Failed to record breadcrumb: $e');
+      }
+    }
+  }
+
   /// Log app-specific events
   static Future<void> logAppEvent(String event, {Map<String, String>? parameters}) async {
     try {

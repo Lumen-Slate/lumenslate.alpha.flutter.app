@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:logger/logger.dart';
+import 'package:lumen_slate/services/logging_service.dart';
 
 class PhoneAuth {
   FirebaseAuth get _auth => FirebaseAuth.instance;
-  final logger = Logger();
   String? phoneNumber;
   late String _verificationId;
   ConfirmationResult? _confirmationResult; // For web
@@ -22,13 +21,13 @@ class PhoneAuth {
             await _auth.signInWithCredential(credential);
           },
           verificationFailed: (FirebaseAuthException exception) =>
-              logger.w('Your phone number is not valid. ${exception.message}'),
+              LoggingService.warning('Your phone number is not valid. ${exception.message}'),
           codeSent: (String verificationId, int? resendToken) {
-            logger.i('OTP sent to ${countryCode + phoneNumber}');
+            LoggingService.info('OTP sent to ${countryCode + phoneNumber}');
             _verificationId = verificationId;
           },
           codeAutoRetrievalTimeout: (String verificationId) {
-            logger.w('OTP timeout for ${countryCode + phoneNumber}');
+            LoggingService.warning('OTP timeout for ${countryCode + phoneNumber}');
           },
           timeout: Duration(
             seconds: 120,
@@ -38,10 +37,10 @@ class PhoneAuth {
         _confirmationResult = await _auth.signInWithPhoneNumber(
           countryCode + phoneNumber,
         );
-        logger.i('OTP sent to ${countryCode + phoneNumber}');
+        LoggingService.info('OTP sent to ${countryCode + phoneNumber}');
       }
     } catch (e) {
-      logger.e('Failed to send OTP: $e');
+      LoggingService.error('Failed to send OTP: $e');
     }
   }
 
@@ -72,10 +71,10 @@ class PhoneAuth {
         }
       }
 
-      logger.w('Failed to verify OTP for $phoneNumber');
+      LoggingService.warning('Failed to verify OTP for $phoneNumber');
       return null;
     } catch (e) {
-      logger.e('Failed to verify OTP: $e');
+      LoggingService.error('Failed to verify OTP: $e');
       return null;
     }
   }

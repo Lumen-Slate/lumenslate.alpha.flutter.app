@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:logger/logger.dart';
 import 'package:lumen_slate/repositories/user_repository.dart';
+import 'package:lumen_slate/services/logging_service.dart';
 
 import '../../models/lumen_user.dart';
 import '../../models/students.dart';
@@ -26,7 +26,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final TeacherRepository teacherRepository;
   final UserRepository userRepository = UserRepository();
   final StudentRepository studentRepository = StudentRepository();
-  final _logger = Logger();
   final GoogleSignIn _gs = GoogleSignIn.instance;
 
   AuthBloc({
@@ -46,12 +45,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         Map<String, dynamic>? response;
         if (event.account == null) {
-          Logger().d(
+          LoggingService.debug(
             'No GoogleSignInAccount provided, initiating sign-in flow.',
           );
           response = await googleAuthServices.signIn();
         } else {
-          Logger().d(
+          LoggingService.debug(
             'Using provided GoogleSignInAccount for sign-in. ${event.account}',
           );
           response = {
@@ -62,7 +61,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           };
         }
 
-        Logger().d('Google Sign-In response: $response');
+        LoggingService.debug('Google Sign-In response: $response');
         if (response == null) {
           emit(AuthNotSignedIn());
           return;
@@ -70,7 +69,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         await _handleUserAuthentication(response, emit);
       } catch (e) {
-        Logger().e(e);
+        LoggingService.error('Google Sign-In error', exception: e);
         emit(AuthNotSignedIn());
         return;
       }
@@ -130,14 +129,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             if (createTeacherResponse.statusCode! >= 200) {
               teacher = Teacher.fromJson(createTeacherResponse.data);
             } else {
-              _logger.e(
+              LoggingService.error(
                 'Failed to create teacher: ${createTeacherResponse.data}',
               );
               emit(AuthNotSignedIn());
               return;
             }
           } catch (e) {
-            _logger.e('Error creating teacher: $e');
+            LoggingService.error('Error creating teacher: $e');
             emit(AuthNotSignedIn());
             return;
           }
@@ -159,17 +158,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             );
             return;
           } else {
-            _logger.e('Failed to update user role: ${updateUserResponse.data}');
+            LoggingService.error('Failed to update user role: ${updateUserResponse.data}');
             emit(AuthNotSignedIn());
             return;
           }
         } catch (e) {
-          _logger.e('Error choosing teacher role: $e');
+          LoggingService.error('Error choosing teacher role: $e');
           emit(AuthNotSignedIn());
           return;
         }
       } catch (e) {
-        _logger.e('Error choosing teacher role: $e');
+        LoggingService.error('Error choosing teacher role: $e');
         emit(AuthNotSignedIn());
         return;
       }
@@ -195,14 +194,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             if (createStudentResponse.statusCode! >= 200) {
               student = Student.fromJson(createStudentResponse.data);
             } else {
-              _logger.e(
+              LoggingService.error(
                 'Failed to create student: ${createStudentResponse.data}',
               );
               emit(AuthNotSignedIn());
               return;
             }
           } catch (e) {
-            _logger.e('Error creating student: $e');
+            LoggingService.error('Error creating student: $e');
             emit(AuthNotSignedIn());
             return;
           }
@@ -225,17 +224,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             );
             return;
           } else {
-            _logger.e('Failed to update user role: ${updateUserResponse.data}');
+            LoggingService.error('Failed to update user role: ${updateUserResponse.data}');
             emit(AuthNotSignedIn());
             return;
           }
         } catch (e) {
-          _logger.e('Error choosing student role: $e');
+          LoggingService.error('Error choosing student role: $e');
           emit(AuthNotSignedIn());
           return;
         }
       } catch (e) {
-        _logger.e('Error choosing student role: $e');
+        LoggingService.error('Error choosing student role: $e');
         emit(AuthNotSignedIn());
         return;
       }
@@ -256,7 +255,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         await _handleUserAuthentication(response, emit);
       } catch (e) {
-        Logger().e('Email sign in error: $e');
+        LoggingService.error('Email sign in error: $e');
         emit(AuthFailure(e.toString()));
         return;
       }
@@ -277,22 +276,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             "email": response?['email'],
           });
           if (createUserResponse.statusCode! >= 200) {
-            Logger().d('User created successfully');
+            LoggingService.debug('User created successfully');
             emit(EmailAccountCreationSuccess(event.email));
             emit(AuthNotSignedIn());
             return;
           } else {
-            _logger.e('Failed to create user: ${createUserResponse.data}');
+            LoggingService.error('Failed to create user: ${createUserResponse.data}');
             emit(AuthFailure('Failed to create user'));
             return;
           }
         } catch (e) {
-          _logger.e('Error creating user: $e');
+          LoggingService.error('Error creating user: $e');
           emit(AuthFailure('Error creating user'));
           return;
         }
       } catch (e) {
-        Logger().e('Email sign up error: $e');
+        LoggingService.error('Email sign up error: $e');
         emit(AuthFailure(e.toString()));
         return;
       }
@@ -303,7 +302,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await emailAuthService.sendPasswordResetEmail(email: event.email);
         emit(PasswordResetEmailSent(event.email));
       } catch (e) {
-        Logger().e('Password reset error: $e');
+        LoggingService.error('Password reset error: $e');
         emit(AuthFailure(e.toString()));
       }
     });
@@ -340,12 +339,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             'photoUrl': response['photoUrl'],
           });
         } else {
-          _logger.e('Failed to create user: ${createUserResponse.data}');
+          LoggingService.error('Failed to create user: ${createUserResponse.data}');
           emit(AuthNotSignedIn());
           return;
         }
       } catch (e) {
-        _logger.e('Error creating user: $e');
+        LoggingService.error('Error creating user: $e');
         emit(AuthNotSignedIn());
         return;
       }
@@ -357,7 +356,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     if (lumenUser.role == null) {
-      Logger().w('User role is null for user: ${lumenUser.id}');
+      LoggingService.warning('User role is null for user: ${lumenUser.id}');
       emit(AuthSignedInAsAnonymous(lumenUser));
       return;
     } else if (lumenUser.role == 'teacher') {
@@ -377,14 +376,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (createTeacherResponse.statusCode! >= 200) {
             teacher = Teacher.fromJson(createTeacherResponse.data);
           } else {
-            _logger.e(
+            LoggingService.error(
               'Failed to create teacher: ${createTeacherResponse.data}',
             );
             emit(AuthNotSignedIn());
             return;
           }
         } catch (e) {
-          _logger.e('Error creating teacher: $e');
+          LoggingService.error('Error creating teacher: $e');
           emit(AuthNotSignedIn());
           return;
         }
@@ -412,14 +411,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (createStudentResponse.statusCode! >= 200) {
             student = Student.fromJson(createStudentResponse.data);
           } else {
-            _logger.e(
+            LoggingService.error(
               'Failed to create student: ${createStudentResponse.data}',
             );
             emit(AuthNotSignedIn());
             return;
           }
         } catch (e) {
-          _logger.e('Error creating student: $e');
+          LoggingService.error('Error creating student: $e');
           emit(AuthNotSignedIn());
           return;
         }

@@ -1,13 +1,11 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart' as permission_handler;
+import 'logging_service.dart';
 
 /// Service for managing all app permissions centrally
 class PermissionService {
-  static const String _tag = 'PermissionService';
-
   /// Check if storage permission is required for the current platform and Android version
   static Future<bool> isStoragePermissionRequired() async {
     if (!Platform.isAndroid) return false;
@@ -30,9 +28,7 @@ class PermissionService {
 
       // Android 13+ (API 33+) doesn't need WRITE_EXTERNAL_STORAGE for Downloads folder
       if (androidInfo.version.sdkInt >= 33) {
-        if (kDebugMode) {
-          print('$_tag: Android 13+ detected, storage permission not required');
-        }
+        LoggingService.permission('Android 13+ detected, storage permission not required');
         return true;
       }
 
@@ -40,15 +36,11 @@ class PermissionService {
       final status = await permission_handler.Permission.storage.request();
       final isGranted = status.isGranted;
 
-      if (kDebugMode) {
-        print('$_tag: Storage permission ${isGranted ? 'granted' : 'denied'}');
-      }
+      LoggingService.permission('Storage permission ${isGranted ? 'granted' : 'denied'}');
 
       return isGranted;
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error requesting storage permission: $e');
-      }
+      LoggingService.error('Error requesting storage permission', exception: e);
       return false;
     }
   }
@@ -68,9 +60,7 @@ class PermissionService {
 
       return await permission_handler.Permission.storage.status;
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error checking storage permission status: $e');
-      }
+      LoggingService.error('Error checking storage permission status', exception: e);
       return permission_handler.PermissionStatus.denied;
     }
   }
@@ -82,15 +72,11 @@ class PermissionService {
       final status = await permission_handler.Permission.notification.request();
       final isGranted = status.isGranted;
 
-      if (kDebugMode) {
-        print('$_tag: Notification permission ${isGranted ? 'granted' : 'denied'}');
-      }
+      LoggingService.permission('Notification permission ${isGranted ? 'granted' : 'denied'}');
 
       return isGranted;
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error requesting notification permission: $e');
-      }
+      LoggingService.error('Error requesting notification permission', exception: e);
       return false;
     }
   }
@@ -100,9 +86,7 @@ class PermissionService {
     try {
       return await permission_handler.Permission.notification.status;
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error checking notification permission status: $e');
-      }
+      LoggingService.error('Error checking notification permission status', exception: e);
       return permission_handler.PermissionStatus.denied;
     }
   }
@@ -130,18 +114,14 @@ class PermissionService {
 
       final allGranted = statuses.values.every((status) => status.isGranted);
 
-      if (kDebugMode) {
-        print('$_tag: Media permissions ${allGranted ? 'granted' : 'denied'}');
-        statuses.forEach((permission, status) {
-          print('$_tag: ${permission.toString()} - ${status.toString()}');
-        });
-      }
+      LoggingService.permission('Media permissions ${allGranted ? 'granted' : 'denied'}');
+      statuses.forEach((permission, status) {
+        LoggingService.debug('${permission.toString()} - ${status.toString()}');
+      });
 
       return allGranted;
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error requesting media permissions: $e');
-      }
+      LoggingService.error('Error requesting media permissions', exception: e);
       return false;
     }
   }
@@ -172,9 +152,7 @@ class PermissionService {
         permission_handler.Permission.audio: await permission_handler.Permission.audio.status,
       };
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error checking media permissions status: $e');
-      }
+      LoggingService.error('Error checking media permissions status', exception: e);
       return {
         permission_handler.Permission.photos: permission_handler.PermissionStatus.denied,
         permission_handler.Permission.audio: permission_handler.PermissionStatus.denied,
@@ -186,25 +164,19 @@ class PermissionService {
   /// Returns true if all required permissions are granted
   static Future<bool> requestFileDownloadPermissions() async {
     try {
-      if (kDebugMode) {
-        print('$_tag: Requesting file download permissions...');
-      }
+      LoggingService.permission('Requesting file download permissions...');
 
       // Storage permission (for Android 12 and below)
       final storageGranted = await requestStoragePermission();
       if (!storageGranted) {
-        if (kDebugMode) {
-          print('$_tag: Storage permission required but not granted');
-        }
+        LoggingService.warning('Storage permission required but not granted');
         return false;
       }
 
       // Media permissions (for Android 13+)
       final mediaGranted = await requestMediaPermissions();
       if (!mediaGranted) {
-        if (kDebugMode) {
-          print('$_tag: Media permissions required but not granted');
-        }
+        LoggingService.warning('Media permissions required but not granted');
         // Don't fail for media permissions as they're not strictly required for downloads
         // but log the issue
       }
@@ -212,20 +184,14 @@ class PermissionService {
       // Notification permission (optional but recommended)
       final notificationGranted = await requestNotificationPermission();
       if (!notificationGranted) {
-        if (kDebugMode) {
-          print('$_tag: Notification permission not granted (optional)');
-        }
+        LoggingService.info('Notification permission not granted (optional)');
       }
 
-      if (kDebugMode) {
-        print('$_tag: File download permissions setup completed');
-      }
+      LoggingService.permission('File download permissions setup completed');
 
       return storageGranted; // Only require storage permission as essential
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error requesting file download permissions: $e');
-      }
+      LoggingService.error('Error requesting file download permissions', exception: e);
       return false;
     }
   }
@@ -236,9 +202,7 @@ class PermissionService {
       final storageStatus = await getStoragePermissionStatus();
       return storageStatus.isGranted;
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error checking file download permissions: $e');
-      }
+      LoggingService.error('Error checking file download permissions', exception: e);
       return false;
     }
   }
@@ -248,9 +212,7 @@ class PermissionService {
     try {
       return await permission_handler.openAppSettings();
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error opening app settings: $e');
-      }
+      LoggingService.error('Error opening app settings', exception: e);
       return false;
     }
   }
@@ -269,9 +231,7 @@ class PermissionService {
 
       return results;
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error getting all permissions status: $e');
-      }
+      LoggingService.error('Error getting all permissions status', exception: e);
       return {};
     }
   }
@@ -282,9 +242,7 @@ class PermissionService {
       // At minimum, we need storage permission for core functionality
       return await hasFileDownloadPermissions();
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error checking minimal permissions: $e');
-      }
+      LoggingService.error('Error checking minimal permissions', exception: e);
       return false;
     }
   }
@@ -326,9 +284,7 @@ class PermissionService {
         message: customMessage,
       );
     } catch (e) {
-      if (kDebugMode) {
-        print('$_tag: Error requesting permissions with rationale: $e');
-      }
+      LoggingService.error('Error requesting permissions with rationale', exception: e);
       return PermissionRequestResult(
         results: {},
         allGranted: false,

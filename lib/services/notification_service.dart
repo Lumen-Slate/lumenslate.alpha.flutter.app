@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lumen_slate/services/logging_service.dart';
 import 'package:lumen_slate/services/permission_service.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -172,7 +173,7 @@ class NotificationService {
       final file = File(filePath);
       if (!await file.exists()) {
         if (kDebugMode) {
-          print('File does not exist: $filePath');
+          LoggingService.debug('File does not exist: $filePath');
         }
         return false;
       }
@@ -206,7 +207,7 @@ class NotificationService {
           }
         } catch (e) {
           if (kDebugMode) {
-            print('Android intent failed: $e');
+            LoggingService.debug('Android intent failed: $e');
           }
         }
       }
@@ -223,7 +224,7 @@ class NotificationService {
       return false;
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to open file: $e');
+        LoggingService.debug('Failed to open file: $e');
       }
       return false;
     }
